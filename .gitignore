@@ -1,0 +1,43 @@
+## Ignore Visual Studio temporary files, build results, and
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio  
+.vs/
+Src/.vs/
+.vscode/ 
+*.egg
+*.sqlite
+*.sqlite2
+*.sqlite3
+## 
+## # Installer logs
+## pip-log.txt
+## pip-delete-this-directory.txt
+## /Data
+/Src/.vs/deltax
+*/bin/*
+*/obj/*
+*.exe
+*.dll
+*.pdb 
+*.log 
+Logs/
+bin/
+build/ 
+dist/
+obj/ 
+*.tgz
+*.zip 
+/Source/UI/DeltaX.GenericReportDb/wwwroot
+/Source/UI/DeltaX.VueDefaultTemplate/wwwroot

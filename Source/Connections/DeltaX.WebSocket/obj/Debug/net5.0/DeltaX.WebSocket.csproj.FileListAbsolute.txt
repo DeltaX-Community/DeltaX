@@ -1,5 +1,0 @@
-D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.WebSocket\obj\Debug\net5.0\DeltaX.WebSocket.csprojAssemblyReference.cache
-D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.WebSocket\obj\Debug\net5.0\DeltaX.WebSocket.GeneratedMSBuildEditorConfig.editorconfig
-D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.WebSocket\obj\Debug\net5.0\DeltaX.WebSocket.AssemblyInfoInputs.cache
-D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.WebSocket\obj\Debug\net5.0\DeltaX.WebSocket.AssemblyInfo.cs
-D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.WebSocket\obj\Debug\net5.0\DeltaX.WebSocket.csproj.CoreCompileInputs.cache

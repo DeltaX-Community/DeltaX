@@ -1,9 +1,0 @@
-D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.HttpServer\bin\Debug\netcoreapp3.1\DeltaX.Connections.HttpServer.deps.json
-D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.HttpServer\bin\Debug\netcoreapp3.1\DeltaX.Connections.HttpServer.dll
-D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\netcoreapp3.1\DeltaX.HttpServer.AssemblyInfoInputs.cache
-D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\netcoreapp3.1\DeltaX.HttpServer.AssemblyInfo.cs
-D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.HttpServer\bin\Debug\netcoreapp3.1\DeltaX.Connections.HttpServer.pdb
-D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\netcoreapp3.1\DeltaX.HttpServer.csproj.CoreCompileInputs.cache
-D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\netcoreapp3.1\DeltaX.Connections.HttpServer.dll
-D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\netcoreapp3.1\DeltaX.Connections.HttpServer.pdb
-D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\netcoreapp3.1\DeltaX.HttpServer.csprojAssemblyReference.cache
