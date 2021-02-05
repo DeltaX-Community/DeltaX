@@ -1,0 +1,11 @@
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\net5.0\DeltaX.Connections.HttpServer.GeneratedMSBuildEditorConfig.editorconfig
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\net5.0\DeltaX.Connections.HttpServer.AssemblyInfoInputs.cache
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\net5.0\DeltaX.Connections.HttpServer.AssemblyInfo.cs
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\net5.0\DeltaX.Connections.HttpServer.csproj.CoreCompileInputs.cache
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\net5.0\DeltaX.Connections.HttpServer.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\net5.0\ref\DeltaX.Connections.HttpServer.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\obj\Debug\net5.0\DeltaX.Connections.HttpServer.pdb
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\bin\Debug\net5.0\DeltaX.Connections.HttpServer.deps.json
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\bin\Debug\net5.0\DeltaX.Connections.HttpServer.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\bin\Debug\net5.0\ref\DeltaX.Connections.HttpServer.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.HttpServer\bin\Debug\net5.0\DeltaX.Connections.HttpServer.pdb

@@ -1,0 +1,11 @@
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\bin\Debug\net5.0\DeltaX.Database.deps.json
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\bin\Debug\net5.0\DeltaX.Database.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\bin\Debug\net5.0\ref\DeltaX.Database.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\bin\Debug\net5.0\DeltaX.Database.pdb
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\obj\Debug\net5.0\DeltaX.Database.GeneratedMSBuildEditorConfig.editorconfig
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\obj\Debug\net5.0\DeltaX.Database.AssemblyInfoInputs.cache
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\obj\Debug\net5.0\DeltaX.Database.AssemblyInfo.cs
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\obj\Debug\net5.0\DeltaX.Database.csproj.CoreCompileInputs.cache
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\obj\Debug\net5.0\DeltaX.Database.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\obj\Debug\net5.0\ref\DeltaX.Database.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Core\DeltaX.Database\obj\Debug\net5.0\DeltaX.Database.pdb

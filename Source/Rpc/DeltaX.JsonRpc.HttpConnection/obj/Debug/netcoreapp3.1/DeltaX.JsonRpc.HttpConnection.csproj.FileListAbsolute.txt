@@ -1,0 +1,16 @@
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\bin\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.deps.json
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\bin\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.dll
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\bin\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.pdb
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\bin\Debug\netcoreapp3.1\DeltaX.Connections.HttpServer.dll
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\bin\Debug\netcoreapp3.1\DeltaX.JsonRpc.dll
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\bin\Debug\netcoreapp3.1\DeltaX.Utilities.dll
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\bin\Debug\netcoreapp3.1\DeltaX.JsonRpc.pdb
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\bin\Debug\netcoreapp3.1\DeltaX.Connections.HttpServer.pdb
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\bin\Debug\netcoreapp3.1\DeltaX.Utilities.pdb
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\obj\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.csprojAssemblyReference.cache
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\obj\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.AssemblyInfoInputs.cache
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\obj\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.AssemblyInfo.cs
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\obj\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.csproj.CopyComplete
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\obj\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.dll
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\obj\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.pdb
+D:\DEV\repos\Dev.DeltaX\Source\Connections\DeltaX.JsonRpc.HttpConnection\obj\Debug\netcoreapp3.1\DeltaX.JsonRpc.HttpConnection.csproj.CoreCompileInputs.cache

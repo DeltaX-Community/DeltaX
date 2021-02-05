@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>DeltaX.Connections.WebSocket</AssemblyName>
+    <RootNamespace>DeltaX.Connections.WebSocket</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\DeltaX.Configuration.Serilog\DeltaX.Configuration.Serilog.csproj" />
+  </ItemGroup>
+
+</Project>

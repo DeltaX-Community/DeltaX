@@ -1,0 +1,17 @@
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\bin\Debug\net5.0\DeltaX.Connections.MqttClientHelper.deps.json
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\bin\Debug\net5.0\DeltaX.Connections.MqttClientHelper.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\bin\Debug\net5.0\ref\DeltaX.Connections.MqttClientHelper.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\bin\Debug\net5.0\DeltaX.Connections.MqttClientHelper.pdb
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\bin\Debug\net5.0\DeltaX.Configuration.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\bin\Debug\net5.0\DeltaX.Configuration.Serilog.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\bin\Debug\net5.0\DeltaX.Configuration.Serilog.pdb
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\bin\Debug\net5.0\DeltaX.Configuration.pdb
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\obj\Debug\net5.0\DeltaX.Connections.MqttClientHelper.csprojAssemblyReference.cache
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\obj\Debug\net5.0\DeltaX.Connections.MqttClientHelper.GeneratedMSBuildEditorConfig.editorconfig
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\obj\Debug\net5.0\DeltaX.Connections.MqttClientHelper.AssemblyInfoInputs.cache
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\obj\Debug\net5.0\DeltaX.Connections.MqttClientHelper.AssemblyInfo.cs
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\obj\Debug\net5.0\DeltaX.Connections.MqttClientHelper.csproj.CoreCompileInputs.cache
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\obj\Debug\net5.0\DeltaX.Connections.MqttClientHelper.csproj.CopyComplete
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\obj\Debug\net5.0\DeltaX.Connections.MqttClientHelper.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\obj\Debug\net5.0\ref\DeltaX.Connections.MqttClientHelper.dll
+D:\DEV\repos\DeltaX-Community\DeltaX\Source\Connections\DeltaX.MqttClientHelper\obj\Debug\net5.0\DeltaX.Connections.MqttClientHelper.pdb
