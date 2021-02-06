@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DeltaX.JsonRpc\DeltaX.JsonRpc.csproj" />
+    <ProjectReference Include="..\DeltaX.Rpc.JsonRpc\DeltaX.Rpc.JsonRpc.csproj" />
   </ItemGroup>
 
 </Project>

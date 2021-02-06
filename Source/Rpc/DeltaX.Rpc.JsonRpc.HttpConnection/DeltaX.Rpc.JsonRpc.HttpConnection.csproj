@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Connections\DeltaX.Connections.HttpServer\DeltaX.Connections.HttpServer.csproj" />
+    <ProjectReference Include="..\DeltaX.Rpc.JsonRpc\DeltaX.Rpc.JsonRpc.csproj" />
+  </ItemGroup>
+
+</Project>

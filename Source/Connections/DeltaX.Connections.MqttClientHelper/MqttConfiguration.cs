@@ -18,20 +18,23 @@
             Initialize(configurationSection);
         }
 
-        public MqttConfiguration(IConfigurationSection configurationSection)
+        public MqttConfiguration(IConfigurationSection configurationSection = null)
         {
             Initialize(configurationSection);
         }
 
         private void Initialize(IConfigurationSection configurationSection)
         {
-            ClientId = configurationSection.GetValue("ClientId", ClientId);
-            Host = configurationSection.GetValue("Host", Host);
-            Port = configurationSection.GetValue("Port", Port);
-            Secure = configurationSection.GetValue("Secure", Secure);
-            Username = configurationSection.GetValue("Username", Username);
-            Password = configurationSection.GetValue("Password", Password);
-            ReconnectDealy = configurationSection.GetValue("ReconnectDealy", ReconnectDealy);
+            if (configurationSection != null)
+            {
+                ClientId = configurationSection.GetValue("ClientId", ClientId);
+                Host = configurationSection.GetValue("Host", Host);
+                Port = configurationSection.GetValue("Port", Port);
+                Secure = configurationSection.GetValue("Secure", Secure);
+                Username = configurationSection.GetValue("Username", Username);
+                Password = configurationSection.GetValue("Password", Password);
+                ReconnectDealy = configurationSection.GetValue("ReconnectDealy", ReconnectDealy);
+            }
         }
 
         public string ClientId { get; set; } = null;
