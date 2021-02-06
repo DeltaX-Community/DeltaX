@@ -9,24 +9,26 @@
 
 
     public class Rpc
-    { 
+    {
         private IRpcConnection connection;
         private ILogger logger;
         private Dictionary<string, dynamic> callers = new Dictionary<string, dynamic>();
 
-        public Rpc(IRpcConnection connection, IDispatcher dispatcher = null, ILogger logger = null, int timeoutMs = 30000 )
+        public Rpc(IRpcConnection connection, IDispatcher dispatcher = null, ILogger logger = null, int timeoutMs = 30000)
         {
-            this.connection = connection;
+            this.Connection = connection;
             this.Dispatcher = dispatcher ?? new RpcDispatcher();
             this.logger = logger;
             TimeoutMs = timeoutMs;
 
-            this.connection.OnReceive += OnConnectionReceive;
+            this.Connection.OnReceive += OnConnectionReceive;
         }
 
         public IDispatcher Dispatcher { get; private set; }
 
         public int TimeoutMs { get; set; }
+
+        public IRpcConnection Connection { get => connection; set => connection = value; }
 
         protected virtual void OnConnectionReceive(object sender, IMessage msg)
         {
@@ -48,23 +50,23 @@
                             {
                                 throw new Exception("Bad internal response on invoke " + message.MethodName);
                             }
-                            connection.SendResponseAsync(msgResp);
+                            Connection.SendResponseAsync(msgResp);
                         }
                         else
                         {
-                            connection.SendResponseAsync(Message.CreateResponse(message, response));
+                            Connection.SendResponseAsync(Message.CreateResponse(message, response));
                         }
                     }
                     catch (RpcException e)
                     {
                         var response = Message.CreateResponseError(message, e);
-                        connection.SendResponseAsync(response);
+                        Connection.SendResponseAsync(response);
                     }
                     catch (Exception e)
                     {
                         // TODO Internal server error
                         var response = Message.CreateResponseError(message, new RpcException(e.InnerException ?? e));
-                        connection.SendResponseAsync(response);
+                        Connection.SendResponseAsync(response);
                     }
                 }
                 else if (message.IsNotification())
@@ -80,9 +82,9 @@
 
         public void UpdateRegisteredMethods()
         {
-            connection.UpdateRegisteredMethods(Dispatcher.GetMethods());
-        } 
-            
+            Connection.UpdateRegisteredMethods(Dispatcher.GetMethods());
+        }
+
         /// <summary>
         /// Publish Notification Message
         /// </summary>
@@ -91,7 +93,7 @@
         public virtual Task RemoteNotificationAsync(string methodName, object arguments)
         {
             var msg = Message.CreateNotification(methodName, arguments);
-            return connection.SendNotificationAsync(msg);
+            return Connection.SendNotificationAsync(msg);
         }
 
 
@@ -106,8 +108,8 @@
         {
             return Task.Run(() =>
             {
-                var msgReq = Message.CreateRequest(connection.ClientId, methodName, arguments);
-                var task = connection.SendRequestAsync(msgReq);
+                var msgReq = Message.CreateRequest(Connection.ClientId, methodName, arguments);
+                var task = Connection.SendRequestAsync(msgReq);
 
                 if (task.Wait(TimeoutMs))
                 {
@@ -128,19 +130,19 @@
             var taskResp = RemoteCallAsync(methodName, args);
             return taskResp.ContinueWith(t => t.Result.GetResult<TResult>());
         }
-         
+
         public virtual TResult Call<TResult>(string methodName, params object[] args)
         {
             var task = RemoteCallAsync(methodName, args);
             var msgResp = task.Result;
             return msgResp.GetResult<TResult>();
         }
-         
+
         public virtual Task NotifyAsync(string methodName, params object[] args)
         {
             return RemoteNotificationAsync(methodName, args);
         }
-         
+
         public virtual void Notify(string methodName, params object[] args)
         {
             RemoteNotificationAsync(methodName, args).Wait();
@@ -156,7 +158,8 @@
         /// <typeparam name="TSharedInterface">The interface implemented on Rpc server</typeparam>
         /// <param name="namePrefix">Prefix for message</param>
         /// <returns></returns>
-        public TSharedInterface GetServices<TSharedInterface>(string namePrefix = null, int timeoutMs = 10000) where TSharedInterface : class
+        public TSharedInterface GetServices<TSharedInterface>(string namePrefix = null, int timeoutMs = 10000, bool isNotification = false)
+            where TSharedInterface : class
         {
             dynamic caller;
             var serviceInterface = typeof(TSharedInterface);
@@ -170,12 +173,18 @@
             // Add to stack if not exist
             if (!callers.TryGetValue(callerName, out caller))
             {
-                caller = new DynamicRpcCaller<TSharedInterface>(this, namePrefix, timeoutMs);
+                caller = new DynamicRpcCaller<TSharedInterface>(this, namePrefix, timeoutMs, isNotification);
                 callers.Add(callerName, caller);
             }
 
             // Implicit convertion
             return caller;
+        }
+
+        public TSharedInterface GetNotifyServices<TSharedInterface>(string namePrefix = null, bool isNotification = false)
+            where TSharedInterface : class
+        {
+            return GetServices<TSharedInterface>(namePrefix, isNotification: isNotification);
         }
     }
 }

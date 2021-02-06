@@ -10,32 +10,33 @@
     public class ExampleService : IExampleService
     {
         private readonly Rpc rpc;
+        private readonly INotifications notify;
         private readonly ILogger logger;
 
         public ExampleService(Rpc rpc)
         {
-            this.rpc = rpc;
             this.logger = LoggerConfiguration.DefaultLoggerFactory.CreateLogger("Service");
+            this.rpc = rpc;
+            notify = rpc.GetNotifyServices<INotifications>();
         }
 
         public async Task SendBroadcastAsync(object message)
         {
-            logger.LogInformation("*** SendBroadcastAsync Receive: {@0}", message);
-            await Task.Delay(2000);
-            await rpc.NotifyAsync(nameof(INotifications.NotificationBroadcast), message);
-
+            logger.LogInformation("*** SendBroadcastAsync Receive message <{@0}> wait 2 seconds and OnNotifyBroadcast", message);
+            await Task.Delay(2000); 
+            notify.OnNotifyBroadcast(message);
             logger.LogInformation("*** SendBroadcastAsync END");
         }
 
-        public string Concatenar(string format, int a, int b)
+        public string Concat(string format, int a, int b)
         {
             return $"Formated format:{format} a:{a} b:{b}";
         }
 
-        public int Sumar(int a, int b)
+        public int Sum(int a, int b)
         {
             var result = a + b;
-            rpc.NotifyAsync(nameof(INotifications.NotifySumar), result);
+            notify.OnNotifySum(result);            
             return result;
         }
 
@@ -50,7 +51,7 @@
             return Task.CompletedTask;
         }
 
-        public async Task<float> TaskIntAsync(int a, int b)
+        public async Task<float> TaskFloatAsync(int a, int b)
         {
             Console.WriteLine("SumarAsync {0} {1}", a, b);
             await Task.Delay(500);
@@ -61,12 +62,7 @@
         public string FuncDemo(int a, string b = "pepe", CustObj obj = default)
         {
             return $"FuncDemo: a:{a} - b:{b} {JsonSerializer.Serialize(obj)}";
-        }
-
-        public string FuncDemo2(int a, string b = "pepe", CustObj obj = default)
-        {
-            return $"FuncDemo 2 ... A:{a} - B:{b} Obj:{JsonSerializer.Serialize(obj)}";
-        }
+        } 
 
         public CustObj FuncCustObj(int a, string b = "pepe", CustObj obj = default)
         {

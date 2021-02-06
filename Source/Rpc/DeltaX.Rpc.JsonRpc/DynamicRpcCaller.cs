@@ -13,12 +13,14 @@
         private Rpc rpc;
         private string namePrefix;
         private int timeoutMs;
+        private readonly bool isNotification;
 
-        public DynamicRpcCaller(Rpc rpc, string namePrefix = null, int timeoutMs = 10000)
+        public DynamicRpcCaller(Rpc rpc, string namePrefix = null, int timeoutMs = 10000, bool isNotification = false)
         {
             this.rpc = rpc;
             this.namePrefix = namePrefix ?? "";
             this.timeoutMs = timeoutMs;
+            this.isNotification = isNotification;
         }
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
@@ -35,6 +37,15 @@
 
             var isGeneric = retType.IsGenericType;
             var isAwaitable = retType.GetMethod(nameof(Task.GetAwaiter)) != null;
+            var isVoid = retType == typeof(void);
+
+            // Notifiaction
+            if(isNotification && isVoid)
+            {
+                rpc.NotifyAsync($"{namePrefix}{binder.Name}", args);
+                result = default;
+                return true;
+            }
 
             // CallResultAsync
             if (isAwaitable && isGeneric)
@@ -51,6 +62,7 @@
                 result = CallAsync(binder.Name, args);
                 return true;
             }
+
             // Call Sync
             var task = rpc.RemoteCallAsync($"{namePrefix}{binder.Name}", args);
             if (task.Wait(timeoutMs))

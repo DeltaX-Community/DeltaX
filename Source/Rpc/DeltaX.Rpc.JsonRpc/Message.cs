@@ -182,12 +182,12 @@
         {
             if (IsRequest())
             {
-                var msg = new JsonRpcRequest<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Id = Id };
+                var msg = new JsonRpcRequest<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Id = Id, Context = Context };
                 return JsonSerializer.SerializeToUtf8Bytes(msg);
             }
             else if (IsNotification())
             {
-                var msg = new JsonRpcNotification<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters };
+                var msg = new JsonRpcNotification<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Context = Context };
                 return JsonSerializer.SerializeToUtf8Bytes(msg);
             }
             else if (IsResponse())
