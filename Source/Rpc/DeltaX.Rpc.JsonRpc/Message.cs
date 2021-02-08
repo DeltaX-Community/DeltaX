@@ -3,16 +3,9 @@
     using DeltaX.Rpc.JsonRpc.Exceptions;
     using DeltaX.Rpc.JsonRpc.Interfaces;
     using System;
-    using System.Security.Principal;
+    using System.Reflection;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using System.Threading;
-
-    // TODO Utilizar datos de contexto
-    public class JsonRpcContext
-    { 
-        public String  Identity { get; set; }  
-    }
 
     class JsonRpcResponseError
     {
@@ -34,9 +27,6 @@
 
         [JsonPropertyName("method")]
         public string Method { get; set; }
-        
-        [JsonPropertyName("context")]
-        public JsonRpcContext Context { get; set; }
 
         [JsonPropertyName("params")]
         public TParam Parameters { get; set; }
@@ -52,9 +42,6 @@
 
         [JsonPropertyName("method")]
         public string Method { get; set; }
-
-        [JsonPropertyName("context")]
-        public JsonRpcContext Context { get; set; }
 
         [JsonPropertyName("params")]
         public TParam Parameters { get; set; }
@@ -80,11 +67,6 @@
 
     public class Message : IMessage
     {
-        public Message()
-        {
-            Context = new JsonRpcContext() { Identity = Thread.CurrentPrincipal?.Identity?.Name };
-        }
-
         [JsonPropertyName("jsonrpc")]
         public string Jsonrpc { get; set; } = "2.0";
 
@@ -94,18 +76,11 @@
         [JsonPropertyName("method")]
         public string MethodName { get; set; }
 
-        [JsonPropertyName("context")]
-        public JsonRpcContext Context { get; set; }
-
         [JsonPropertyName("result")]
         public JsonElement Result { set => result = value; }
 
         [JsonPropertyName("params")]
         public JsonElement Parameters {  set => parameters = value; }
-
-        // TODO: Es necesario hacer esto? 
-        // [JsonPropertyName("error")]
-        // public JsonRpcResponseError Error { get; set; }
 
         private object parameters;
         private JsonRpcResponseError error;
@@ -115,6 +90,7 @@
         private string rawDataStr;
         private byte[] rawData;
         private static int msgCount = 1;
+        private MethodInfo? methodGetResult;
 
         private static string GenerateId(string clientId)
         {
@@ -161,12 +137,12 @@
         {
             if (IsRequest())
             {
-                var msg = new JsonRpcRequest<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Id = Id, Context = Context };
+                var msg = new JsonRpcRequest<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Id = Id};
                 return JsonSerializer.Serialize(msg);
             }
             else if (IsNotification())
             {
-                var msg = new JsonRpcNotification<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Context = Context };
+                var msg = new JsonRpcNotification<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters};
                 return JsonSerializer.Serialize(msg);
             }
             else if (IsResponse())
@@ -182,12 +158,12 @@
         {
             if (IsRequest())
             {
-                var msg = new JsonRpcRequest<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Id = Id, Context = Context };
+                var msg = new JsonRpcRequest<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Id = Id};
                 return JsonSerializer.SerializeToUtf8Bytes(msg);
             }
             else if (IsNotification())
             {
-                var msg = new JsonRpcNotification<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Context = Context };
+                var msg = new JsonRpcNotification<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters};
                 return JsonSerializer.SerializeToUtf8Bytes(msg);
             }
             else if (IsResponse())
@@ -255,19 +231,20 @@
                 return (T)result;
             }
 
-            var dser = Deserialize<JsonRpcResponse<T>>(); 
+            var dser = Deserialize<JsonRpcResponse<T>>();
             if (dser?.Error != null)
             {
                 throw new RpcException(dser.Error.Code, dser.Error.Message, dser.Error.Data?.ToString());
             }
 
-            return dser != null ? dser.Result : default;
+            result = dser != null ? dser.Result : default(T);
+            return (T)result;
         }
 
         public object GetResultType(Type type)
         {
-            var mtd = GetType().GetMethod(nameof(GetResult));
-            var mtdGen = mtd.MakeGenericMethod(type);
+            methodGetResult ??= typeof(Message).GetMethod(nameof(GetResult));
+            var mtdGen = methodGetResult.MakeGenericMethod(type);
             return mtdGen.Invoke(this, null);
         }
     }

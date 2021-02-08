@@ -19,9 +19,15 @@
         /// </summary>
         event EventHandler<IRtTag> ValueSetted;
 
+        /// <summary>
+        /// Event raised on status change
+        /// </summary>
+        event EventHandler<IRtTag> StatusChanged;
+
 
         IRtConnector Connector { get; }
-         
+
+        IRtTagOptions Options { get; }
 
         /// <summary>
         /// Nombre del tag (Alias)

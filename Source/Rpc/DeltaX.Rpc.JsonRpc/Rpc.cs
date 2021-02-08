@@ -181,10 +181,10 @@
             return caller;
         }
 
-        public TSharedInterface GetNotifyServices<TSharedInterface>(string namePrefix = null, bool isNotification = false)
+        public TSharedInterface GetNotifyServices<TSharedInterface>(string namePrefix = null)
             where TSharedInterface : class
         {
-            return GetServices<TSharedInterface>(namePrefix, isNotification: isNotification);
+            return GetServices<TSharedInterface>(namePrefix, isNotification: true);
         }
     }
 }

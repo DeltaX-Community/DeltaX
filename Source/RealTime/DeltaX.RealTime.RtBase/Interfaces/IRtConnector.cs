@@ -4,8 +4,6 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-   
-
     public interface IRtConnector : IDisposable
     { 
         public Task ConnectAsync(CancellationToken? cancellationToken =null);
@@ -17,8 +15,9 @@
         /// </summary>
         /// <param name="tagName"></param>
         /// <param name="topic"></param> 
+        /// <param name="options"></param> 
         /// <returns></returns>
-        IRtTag AddTag(string tagName, string topic);
+        IRtTag AddTag(string tagName, string topic, IRtTagOptions options = null);
 
         /// <summary>
         /// Get reusable tag
@@ -40,7 +39,7 @@
         /// <returns></returns>
         bool WriteValue(IRtTag tag, IRtValue value );
 
-        bool WriteValue(string topic, IRtValue value); 
+        bool WriteValue(string topic, IRtValue value, IRtTagOptions options = null); 
 
         /// <summary>
         /// Evento que se ejecuta al recibir una actualización del tag

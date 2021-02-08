@@ -30,17 +30,18 @@
         }
 
         public MqttConfiguration Config { get; set; }
+
         public bool IsRunning { get; set; }
 
-        public MqttClientHelper(MqttConfiguration config, MqttClient client = null, ILogger<MqttClientHelper> logger = null)
+        public MqttClientHelper(MqttConfiguration config, MqttClient client = null, ILoggerFactory loggerFactory = null)
         {
-            this.Config = config;
-            this.logger = logger ?? LoggerConfiguration.DefaultLogger;
+            loggerFactory ??= LoggerConfiguration.DefaultLoggerFactory;
+            this.logger = loggerFactory.CreateLogger($"{nameof(MqttClientHelper)}");
+            this.Config = config; 
             isConnectedEvent = new ManualResetEvent(false);
             isDisconnectedEvent = new ManualResetEvent(true);
             this.Client = client ?? new MqttClient(Config.Host, Config.Port, Config.Secure, null, null, MqttSslProtocols.None);
         }
-
 
         private async Task DoConnect(CancellationToken cancellationToken)
         {
@@ -52,7 +53,7 @@
             {
                 try
                 {
-                    logger.LogDebug($"MqttClientHelper Connecting with ClientId:{Config.ClientId}");
+                    // logger.LogDebug($"MqttClientHelper Connecting with ClientId:{Config.ClientId}");
                     if (string.IsNullOrEmpty(Config.Username))
                     {
                         Client.Connect(Config.ClientId);
@@ -107,23 +108,30 @@
             OnConnectionChange?.Invoke(this, IsConnected);
         }
 
+
         public Task<bool> ConnectAsync(CancellationToken? cancellationToken = null)
         {
-            RunAsync(cancellationToken);
-            isConnectedEvent.WaitOne();
-            return Task.FromResult(IsConnected);
+            return Task.Run(() =>
+            {
+                RunAsync(cancellationToken);
+                isConnectedEvent.WaitOne();
+                return Task.FromResult(IsConnected);
+            });
         }
 
         public Task RunAsync(CancellationToken? cancellationToken = null)
         {
-            if (reconnectTask != null && IsRunning)
+            lock (this)
             {
+                if (reconnectTask != null && IsRunning)
+                {
+                    return reconnectTask;
+                }
+
+                IsRunning = true;
+                reconnectTask = Task.Run(() => DoConnect(cancellationToken ?? CancellationToken.None));
                 return reconnectTask;
             }
-
-            IsRunning = true;
-            reconnectTask = Task.Run(() => DoConnect(cancellationToken ?? CancellationToken.None));
-            return reconnectTask;
         }
 
         public void Disconnect()

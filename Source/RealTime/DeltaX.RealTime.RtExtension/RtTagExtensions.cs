@@ -11,10 +11,8 @@
     /// Ayudas utilitarias
     /// </summary>
     public static class RtTagExtensions
-    {
-
-        // FIXME move to base config
-        public static string DefaultDateTimeFormat = "o";// "yyyy/MM/dd HH:mm:ss.fff";
+    { 
+        public static string DefaultDateTimeFormat { get; set; } = "o"; // "yyyy/MM/dd HH:mm:ss.fff";
 
         /// <summary>
         /// Obtiene DateTime del tag

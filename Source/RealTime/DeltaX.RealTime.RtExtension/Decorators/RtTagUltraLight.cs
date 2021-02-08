@@ -5,7 +5,7 @@
     using System;
     using System.Text.Json;
 
-    public class RtTagUltraLightDecorator : RtTagDecoratorBase
+    public class RtTagUltraLight : RtTagDecoratorBase
     {
         private DateTime parsedTime;
         private string ulField;
@@ -13,7 +13,7 @@
         private string ulDevice;
         private IRtValue currentValueParsed;
 
-        public RtTagUltraLightDecorator(IRtTag tag, string ultraLightValuePattern) : base(tag)
+        public RtTagUltraLight(IRtTag tag, string ultraLightValuePattern) : base(tag)
         {
             if(string.IsNullOrEmpty(ultraLightValuePattern))
             {

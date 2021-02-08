@@ -15,7 +15,7 @@
         public event EventHandler<bool> Connected;
         public event EventHandler<bool> Disconnected;
 
-        public abstract IRtTag AddTag(string tagName, string topic);
+        public abstract IRtTag AddTag(string tagName, string topic, IRtTagOptions options);
 
         public abstract IRtTag GetTag(string tagName);
 
@@ -25,7 +25,7 @@
 
         public abstract bool WriteValue(IRtTag tag, IRtValue value);
 
-        public abstract bool WriteValue(string topic, IRtValue value);
+        public abstract bool WriteValue(string topic, IRtValue value, IRtTagOptions options = null);
 
         protected virtual void RaiseOnUpdatedValue(IRtTag tag)
         {

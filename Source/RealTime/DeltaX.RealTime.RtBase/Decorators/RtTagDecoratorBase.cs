@@ -12,10 +12,12 @@
             this.tag = tag;
             this.tag.ValueSetted += OnTagValueSetted;
             this.tag.ValueUpdated += OnTagValueUpdated;
+            this.tag.StatusChanged += OnStatusChanged;
         }
         
         public virtual event EventHandler<IRtTag> ValueUpdated;
         public virtual event EventHandler<IRtTag> ValueSetted;
+        public virtual event EventHandler<IRtTag> StatusChanged;
 
         protected void OnTagValueSetted(object sender, IRtTag e)
         {
@@ -25,6 +27,11 @@
         protected void OnTagValueUpdated(object sender, IRtTag e)
         {
             ValueUpdated?.Invoke(sender, this);
+        }
+
+        protected void OnStatusChanged(object sender, IRtTag e)
+        {
+            StatusChanged?.Invoke(sender, this);
         }
 
         public virtual IRtConnector Connector
@@ -47,45 +54,25 @@
    
         public virtual DateTime Updated
         {
-            get { return tag.Updated; }
-            protected set { }
+            get { return tag.Updated; } 
         }
    
         public virtual bool Status
         {
-            get { return tag.Status; }
-            protected set { }
+            get { return tag.Status; } 
         }
    
         public virtual IRtValue Value
         {
-            get { return tag.Value; }
-            protected set { }
+            get { return tag.Value; } 
         }
-
-
-        // public virtual event EventHandler<IRtTag> OnUpdatedValue
-        // {
-        //     add { tag.OnUpdatedValue += value; }
-        //     remove { tag.OnUpdatedValue -= value; }
-        // }
-        // 
-        // public virtual event EventHandler<IRtTag> OnSetValue
-        // {
-        //     add { tag.OnSetValue += value; }
-        //     remove { tag.OnSetValue -= value; }
-        // }
+        
+        public virtual IRtTagOptions Options
+        {
+            get { return tag.Options; } 
+        }
          
 
-        protected virtual void RaiseOnUpdatedValue(object sender, IRtValue value, DateTime? updated = null, bool status = true)
-        {
-            Value = value;
-            Updated = updated ?? DateTime.Now;
-            Status = status;
-
-            ValueUpdated?.Invoke(sender, this);
-        } 
-   
         public virtual bool Set(IRtValue value)
         {
             return tag.Set(value);
@@ -101,6 +88,7 @@
         { 
             tag.ValueSetted -= OnTagValueSetted;
             tag.ValueUpdated -= OnTagValueUpdated;
+            tag.StatusChanged -= OnStatusChanged;
             DettachEventHandler();
         }
     }

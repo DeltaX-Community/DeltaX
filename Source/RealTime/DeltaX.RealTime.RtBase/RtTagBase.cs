@@ -3,12 +3,17 @@
     using DeltaX.CommonExtensions;
     using DeltaX.RealTime.Interfaces;
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
 
-    public abstract class RtTagBase : IRtTag, IDisposable
-    { 
+    public abstract class RtTagBase : IRtTag, IDisposable, IEqualityComparer<RtTagBase>
+    {
+        protected bool _status;
+
         public virtual event EventHandler<IRtTag> ValueUpdated;
         public virtual event EventHandler<IRtTag> ValueSetted;
+        public virtual event EventHandler<IRtTag> StatusChanged;
            
         public virtual IRtConnector Connector { get; protected set; }
 
@@ -16,22 +21,29 @@
 
         public virtual string Topic { get; protected set; }         
 
+        public virtual IRtTagOptions Options{ get; protected set; }         
+
         public virtual IRtValue Value { get; protected set; } = RtValue.Create(string.Empty);
 
-        public virtual DateTime Updated { get; protected set; } = DateTime.Now;
-         
-        protected bool _status;
+        public virtual DateTime Updated { get; protected set; } = DateTime.MinValue;         
+        
         public virtual bool Status
         {
             get
             {
                 if (!Connector.IsConnected && _status)
-                    _status = false;
+                {
+                    Status = false;
+                }
                 return _status;
             }
             protected set
             {
-                _status = value;
+                if (_status != value)
+                {
+                    StatusChanged?.Invoke(this, this);
+                    _status = value;
+                }
             }
         }
 
@@ -59,48 +71,10 @@
             ValueUpdated?.Invoke(sender, this);
         }
 
-        // protected virtual void RaiseOnUpdatedValueJson(object sender, JsonElement value, DateTime? updated = null, bool status = true)
-        // {
-        //     if (TagType != RtTagType.Json)
-        //     {
-        //         throw new Exception($"Tag {TagName} isnt Json Type");
-        //     }
-        // 
-        //     var obj = value.JsonGetValue(TagTypeParser); 
-        //     var parsed = Convert.ToString(obj);
-        //     RaiseOnUpdatedValue(sender, RtValue.Create(parsed), updated, status);
-        // }
-        // 
-        // 
-        // 
-        // protected virtual void RaiseOnUpdatedValueUltraLight(object sender, string value, DateTime? updated = null, bool status = true)
-        // {
-        //     string _ul_field;
-        //     string _ul_command;
-        //     string _ul_device;
-        // 
-        //     if (TagType != RtTagType.UltraLight)
-        //     {
-        //         throw new Exception($"Tag {TagName} isnt UltraLight Type");
-        //     }
-        //     if (string.IsNullOrEmpty(_ul_field))
-        //     {
-        //         TagTypeParser.TryUltraLightParse(out _ul_device, out _ul_command, out _ul_field);
-        //     }
-        // 
-        //     var parsed = value.UltraLightGetValue(_ul_field, _ul_command, _ul_device);
-        //     if (!string.IsNullOrEmpty(parsed))
-        //     { 
-        //         RaiseOnUpdatedValue(sender, RtValue.Create(parsed), updated, status);
-        //     }
-        // }
-
-
-       //  protected virtual void RaiseOnDisconnect(object sender, bool status)
-       //  {
-       //      Status = status;
-       //  }
-
+        protected virtual void RaiseOnDisconnect(object sender, bool status)
+        {
+            Status = false; 
+        }
 
         protected void DettachEventHandler()
         {
@@ -111,6 +85,16 @@
         public virtual void Dispose()
         {
             DettachEventHandler();
+        }
+
+        public bool Equals(RtTagBase x, RtTagBase y)
+        {
+            return string.Equals(x.TagName, y.TagName);
+        }
+
+        public int GetHashCode([DisallowNull] RtTagBase obj)
+        {
+            return obj.TagName.GetHashCode();
         }
     }
 }

@@ -39,7 +39,7 @@ namespace DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Client
             // Rpc Ojbect
             var rpc = new Rpc(new JsonRpcMqttConnection(mqtt.Client, "test/", clientId: "ExampleClient"));
 
-            // RPC Register methods for notifications
+            // RPC Register methods for dispach notifications/events from server
             rpc.Dispatcher.RegisterMethod(this, nameof(OnNotifyBroadcast));
             rpc.Dispatcher.RegisterMethod(this, nameof(OnNotifySum));
 

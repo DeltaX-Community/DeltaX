@@ -10,7 +10,6 @@
             Regex r = new Regex(@"((?<device>\w+)\@)?((?<command>\w+)\|)?(?<field>[\w]+)",
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
-
             var res = r.Match(format);
             field = res.Groups["field"].Value;
             command = res.Groups["command"].Value;

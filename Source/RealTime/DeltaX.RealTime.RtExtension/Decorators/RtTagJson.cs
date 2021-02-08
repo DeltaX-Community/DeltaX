@@ -5,15 +5,16 @@
     using System;
     using System.Text.Json;
 
-    public class RtTagJsonDecorator : RtTagDecoratorBase
+    public class RtTagJson : RtTagDecoratorBase, IRtTag
     {
         private DateTime parsedTime;
         private IRtValue currentValueParsed;
 
-        public RtTagJsonDecorator(IRtTag tag, string jsonValuePattern) : base(tag)
+        public RtTagJson(IRtTag tag, string jsonValuePattern) : base(tag)
         {
             TagJsonValuePattern = jsonValuePattern;
-            currentValueParsed = TryParseValue(tag.Value.Text, tag.Updated);
+            currentValueParsed = TryParseValue(tag.Value.Text);
+            parsedTime = tag.Updated;
         }
          
         public string TagJsonValuePattern { get; protected set; }
@@ -24,13 +25,14 @@
             {
                 if (parsedTime != Updated)
                 {
-                    currentValueParsed = TryParseValue(tag.Value.Text, tag.Updated);
+                    currentValueParsed = TryParseValue(tag.Value.Text);
+                    parsedTime = tag.Updated;
                 }
                 return currentValueParsed;
             }
         }
 
-        private IRtValue TryParseValue(string json, DateTime updated)
+        private IRtValue TryParseValue(string json)
         {
             lock (this)
             {
@@ -44,11 +46,7 @@
                 catch
                 {
                     return RtValue.Create(string.Empty);
-                }
-                finally
-                {
-                    parsedTime = updated;
-                }
+                } 
             }
         }
 

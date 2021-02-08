@@ -40,7 +40,7 @@
             var isVoid = retType == typeof(void);
 
             // Notifiaction
-            if(isNotification && isVoid)
+            if(isNotification || isVoid)
             {
                 rpc.NotifyAsync($"{namePrefix}{binder.Name}", args);
                 result = default;

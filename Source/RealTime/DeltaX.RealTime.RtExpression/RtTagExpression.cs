@@ -11,7 +11,7 @@
         private IRtTag[] ArgumentsTags;
         private Expression expression;
 
-        public RtTagExpression(IRtConnector creator, string expresionFull)
+        public RtTagExpression(IRtConnector creator, string expresionFull, IRtTagOptions options = null)
         {
             string patternAddressRegex = @"\{[^{} ]+\}";
             string expresion = expresionFull.Trim().TrimStart('=');
@@ -26,7 +26,7 @@
                 foreach (Match match in matches)
                 {
                     var tagDefinition = match.Value.Trim().TrimStart('{').TrimEnd('}');
-                    argumentsTags[i] = creator.AddTagDefinition(tagDefinition);
+                    argumentsTags[i] = creator.AddTagDefinition(tagDefinition, options);
                     expresion = expresion.Replace(match.Value, $"arg{i}");
                     i++;
                 }

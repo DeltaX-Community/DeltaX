@@ -44,7 +44,12 @@ namespace DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest
 
             var server = RunRpcServer();
             var client = new ExampleClient(); 
-            Task.WaitAll(server, client.RunAsync());  
+            Task.WaitAll(server, client.RunAsync());
+
+
+            DateTime now = DateTime.Now;
+
+            now.ToOADate();
         }
     }
 }

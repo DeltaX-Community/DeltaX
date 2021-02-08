@@ -1,14 +1,14 @@
 ﻿namespace DeltaX.Connections.MqttClientHelper
 { 
     using Microsoft.Extensions.Configuration;
-
+    using System;
 
     public class MqttConfiguration 
     {
-        public MqttConfiguration(string section, string configFileName = null)
+        public MqttConfiguration(string sectionName = "Mqtt", string configFileName = "appsettings.json")
         {
             var builder = DeltaX.Configuration.Configuration.GetConfigurationBuilder(configFileName);
-            var configurationSection = builder.Build().GetSection(section);
+            var configurationSection = builder.Build().GetSection(sectionName);
             Initialize(configurationSection);
         } 
 
@@ -37,7 +37,7 @@
             }
         }
 
-        public string ClientId { get; set; } = null;
+        public string ClientId { get; set; } = Guid.NewGuid().ToString("N");
 
         public string Host { get; set; } = "127.0.0.1";
 
