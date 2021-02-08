@@ -51,5 +51,10 @@
             Text = double.IsNaN(value) ? string.Empty : Numeric.ToString();
             Binary = Encoding.ASCII.GetBytes(Text);
         }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

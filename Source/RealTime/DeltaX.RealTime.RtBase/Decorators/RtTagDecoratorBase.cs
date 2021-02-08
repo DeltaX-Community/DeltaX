@@ -54,12 +54,14 @@
    
         public virtual DateTime Updated
         {
-            get { return tag.Updated; } 
+            get { return tag.Updated; }
+            protected set { }
         }
    
         public virtual bool Status
         {
-            get { return tag.Status; } 
+            get { return tag.Status; }
+            protected set { }
         }
    
         public virtual IRtValue Value
@@ -70,8 +72,7 @@
         public virtual IRtTagOptions Options
         {
             get { return tag.Options; } 
-        }
-         
+        }         
 
         public virtual bool Set(IRtValue value)
         {

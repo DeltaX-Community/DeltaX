@@ -34,12 +34,14 @@
                 switch (element.ValueKind)
                 {
                     case JsonValueKind.Object:
-                        var x = element.EnumerateObject().FirstOrDefault(o => o.Name == member);
+                        var x = element.EnumerateObject().First(o => o.Name == member); 
                         element = x.Value;
                         break;
                     case JsonValueKind.Array:
-                        element = element.EnumerateArray().ElementAtOrDefault(int.Parse(member));
+                        element = element.EnumerateArray().ElementAt(int.Parse(member));
                         break;
+                    case JsonValueKind.Undefined:
+                        throw new Exception(member);
                 }
             }
 

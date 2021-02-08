@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaX.RealTime.RtMqtt", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaX.RealTime.Mqtt.FunctionalTest", "FunctionalTest\DeltaX.RealTime.Mqtt.FunctionalTest\DeltaX.RealTime.Mqtt.FunctionalTest.csproj", "{34B67310-7153-4C13-88B6-2D61A000B012}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaX.CommonExtensions.UnitTest", "UnitTest\DeltaX.CommonExtensions.UnitTest\DeltaX.CommonExtensions.UnitTest.csproj", "{1E516A2D-EEC0-4886-A8BA-9678C898B43A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,10 @@ Global
 		{34B67310-7153-4C13-88B6-2D61A000B012}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34B67310-7153-4C13-88B6-2D61A000B012}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34B67310-7153-4C13-88B6-2D61A000B012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E516A2D-EEC0-4886-A8BA-9678C898B43A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E516A2D-EEC0-4886-A8BA-9678C898B43A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E516A2D-EEC0-4886-A8BA-9678C898B43A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E516A2D-EEC0-4886-A8BA-9678C898B43A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +164,7 @@ Global
 		{217BFCE9-2BD4-4085-A2C8-00A6786AE815} = {B9B2B733-8096-4FC6-B920-E43742AAFF76}
 		{A9310AF7-310C-4B36-8F2D-50CDBA476EB3} = {698232C6-0116-42AF-B865-E504C3C47A61}
 		{34B67310-7153-4C13-88B6-2D61A000B012} = {B9B2B733-8096-4FC6-B920-E43742AAFF76}
+		{1E516A2D-EEC0-4886-A8BA-9678C898B43A} = {38DEF0EB-CC5A-4C51-B6CE-19F1A19AD7FE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {700E020D-63DB-452D-BE0E-E771462AB1DA}

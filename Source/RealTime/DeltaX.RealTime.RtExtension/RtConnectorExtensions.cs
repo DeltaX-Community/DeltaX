@@ -39,7 +39,7 @@
             return conn.GetOrAddTag(topic, topic, options);
         }
 
-        public static IRtTag GetOrAddTag(this IRtConnector conn, string tagName, string topic, IRtTagOptions options)
+        public static IRtTag GetOrAddTag(this IRtConnector conn, string tagName, string topic, IRtTagOptions options = null)
         {
             var tag = conn.GetTag(tagName);
             if (tag == null)
@@ -49,7 +49,7 @@
             return tag;
         }
 
-        public static IRtTag AddTagDefinition(this IRtConnector conn, string tagDefinition, IRtTagOptions options)
+        public static IRtTag AddTagDefinition(this IRtConnector conn, string tagDefinition, IRtTagOptions options = null)
         {
             var tsplit = tagDefinition.Split(new[] { "@" }, 2, StringSplitOptions.None);
             var topic = tsplit[0];
