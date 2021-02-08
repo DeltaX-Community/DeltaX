@@ -5,7 +5,7 @@
 
     public class MqttConfiguration 
     {
-        public MqttConfiguration(string sectionName = "Mqtt", string configFileName = "appsettings.json")
+        public MqttConfiguration(string sectionName, string configFileName = "appsettings.json")
         {
             var builder = DeltaX.Configuration.Configuration.GetConfigurationBuilder(configFileName);
             var configurationSection = builder.Build().GetSection(sectionName);
