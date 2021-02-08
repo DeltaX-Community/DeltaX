@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaX.CommonExtensions\DeltaX.CommonExtensions.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.CommonExtensions\DeltaX.CommonExtensions.csproj" />
   </ItemGroup>
 
 </Project>

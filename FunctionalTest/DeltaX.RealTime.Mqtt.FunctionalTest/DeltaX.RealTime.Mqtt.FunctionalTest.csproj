@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\Connections\DeltaX.Connections.MqttClientHelper\DeltaX.Connections.MqttClientHelper.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.Configuration.Serilog\DeltaX.Configuration.Serilog.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExpression\DeltaX.RealTime.RtExpression.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExtension\DeltaX.RealTime.RtExtension.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtMqtt\DeltaX.RealTime.RtMqtt.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
