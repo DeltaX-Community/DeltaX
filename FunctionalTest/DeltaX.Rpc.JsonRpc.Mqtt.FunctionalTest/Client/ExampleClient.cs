@@ -1,20 +1,20 @@
-﻿using DeltaX.Configuration.Serilog;
-using DeltaX.Connections.MqttClientHelper;
-using DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Shared;
-using DeltaX.Rpc.JsonRpc.MqttConnection;
-using Microsoft.Extensions.Logging;
-using System; 
-using System.Threading.Tasks;
-
-namespace DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Client
+﻿namespace DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Client
 {
+    using DeltaX.Configuration;
+    using DeltaX.Connections.MqttClientHelper;
+    using DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Shared;
+    using DeltaX.Rpc.JsonRpc.MqttConnection;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Threading.Tasks; 
+
     public class ExampleClient : INotifications
     {
         private ILogger logger;
 
         public ExampleClient()
         {
-            logger = LoggerConfiguration.DefaultLoggerFactory.CreateLogger("Client");
+            logger = Configuration.DefaultLoggerFactory.CreateLogger("Client");
         }
 
         public void OnNotifyBroadcast(object message)

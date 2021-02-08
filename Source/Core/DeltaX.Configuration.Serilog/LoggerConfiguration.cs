@@ -11,28 +11,7 @@ using System.Threading.Tasks;
 namespace DeltaX.Configuration.Serilog
 {
     public class LoggerConfiguration
-    {
-        static ILoggerFactory defaultLoggerFactory;
-        static Microsoft.Extensions.Logging.ILogger defaultLogger;
-
-        public static ILoggerFactory DefaultLoggerFactory
-        {
-            get
-            {
-                defaultLoggerFactory ??= GetSerilogLoggerFactory();
-                return defaultLoggerFactory;
-            }
-        }
-
-        public static Microsoft.Extensions.Logging.ILogger DefaultLogger
-        {
-            get
-            { 
-                defaultLogger ??= DefaultLoggerFactory.CreateLogger("");
-                return defaultLogger;
-            }
-        }
-
+    { 
         public static ILoggerFactory GetSerilogLoggerFactory()
         {
             return new LoggerFactory().AddSerilog();

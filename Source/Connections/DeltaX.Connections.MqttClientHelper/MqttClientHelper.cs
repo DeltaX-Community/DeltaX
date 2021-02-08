@@ -1,6 +1,6 @@
 ﻿namespace DeltaX.Connections.MqttClientHelper
 {
-    using DeltaX.Configuration.Serilog; 
+    using DeltaX.Configuration; 
     using Microsoft.Extensions.Logging; 
     using System;
     using System.Threading;
@@ -35,7 +35,7 @@
 
         public MqttClientHelper(MqttConfiguration config, MqttClient client = null, ILoggerFactory loggerFactory = null)
         {
-            loggerFactory ??= LoggerConfiguration.DefaultLoggerFactory;
+            loggerFactory ??= Configuration.DefaultLoggerFactory;
             this.logger = loggerFactory.CreateLogger($"{nameof(MqttClientHelper)}");
             this.Config = config; 
             isConnectedEvent = new ManualResetEvent(false);

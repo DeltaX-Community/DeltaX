@@ -1,8 +1,8 @@
 ﻿namespace DeltaX.Configuration
 {
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Configuration.Json;
-    using System.IO;
+    using Microsoft.Extensions.Configuration; 
+    using Microsoft.Extensions.Logging; 
+    using DeltaX.Configuration.Serilog;
 
     public class Configuration
     {
@@ -24,7 +24,31 @@
             return new ConfigurationBuilder().AddJsonFile(configFileName, optional, reloadOnChange);
         }
 
+        static ILoggerFactory defaultLoggerFactory;
+        static ILogger defaultLogger;
 
-       
+        public static ILoggerFactory DefaultLoggerFactory
+        {
+            get
+            {
+                defaultLoggerFactory ??= LoggerConfiguration.GetSerilogLoggerFactory();
+                return defaultLoggerFactory;
+            }
+        }
+
+        public static ILogger DefaultLogger
+        {
+            get
+            {
+                defaultLogger ??= DefaultLoggerFactory.CreateLogger("");
+                return defaultLogger;
+            }
+        }
+
+        public static void SetDefaultLogger( )
+        {
+            LoggerConfiguration.SetSerilog( );
+        }
+
     }
 }

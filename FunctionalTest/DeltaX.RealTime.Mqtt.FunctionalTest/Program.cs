@@ -1,22 +1,23 @@
-﻿using DeltaX.Configuration.Serilog;
-using DeltaX.Connections.MqttClientHelper;
-using DeltaX.RealTime.Interfaces;
-using DeltaX.RealTime.RtExpression;
-using DeltaX.RealTime.RtMqtt;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-
-namespace DeltaX.RealTime.Mqtt.FunctionalTest
+﻿namespace DeltaX.RealTime.Mqtt.FunctionalTest
 {
+    using DeltaX.Configuration.Serilog;
+    using DeltaX.Connections.MqttClientHelper;
+    using DeltaX.RealTime.Interfaces;
+    using DeltaX.RealTime.RtExpression;
+    using DeltaX.RealTime.RtMqtt;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Threading;
+    using DeltaX.Configuration;
+
     class Program
     {
         static ILogger logger;
 
         static void Main(string[] args)
         {
-            LoggerConfiguration.SetSerilog();
-            logger = LoggerConfiguration.DefaultLoggerFactory.CreateLogger("Main");
+            Configuration.SetDefaultLogger();
+            logger = Configuration.DefaultLoggerFactory.CreateLogger("Main");
             logger.LogInformation("Start DeltaX.RealTime.Mqtt.FunctionalTest");
 
             var config = new MqttConfiguration("Mqtt", "appsettings.json");

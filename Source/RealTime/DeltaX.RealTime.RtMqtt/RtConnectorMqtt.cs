@@ -1,6 +1,6 @@
 ﻿namespace DeltaX.RealTime.RtMqtt
 {
-    using DeltaX.Configuration.Serilog;
+    using DeltaX.Configuration;
     using DeltaX.Connections.MqttClientHelper;
     using DeltaX.RealTime.Interfaces;
     using Microsoft.Extensions.Configuration;
@@ -39,7 +39,7 @@
 
         protected RtConnectorMqtt(MqttClientHelper mqttClient, ILoggerFactory loggerFactory = null)
         {
-            loggerFactory ??= LoggerConfiguration.DefaultLoggerFactory;
+            loggerFactory ??= Configuration.DefaultLoggerFactory;
 
             this.mqttClient = mqttClient;
             this.logger = loggerFactory.CreateLogger($"{nameof(RtConnectorMqtt)}");

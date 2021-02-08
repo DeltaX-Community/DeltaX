@@ -7,7 +7,7 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks; 
-    using DeltaX.Configuration.Serilog;
+    using DeltaX.Configuration;
 
     public class WebSocketListener
     {
@@ -30,7 +30,7 @@
         {
             this.UriPrefixes = uriPrefixes ?? throw new ArgumentNullException(nameof(uriPrefixes));
             this.HttpListener = new HttpListener();
-            this.logger = logger ?? LoggerConfiguration.DefaultLogger;
+            this.logger = logger ?? Configuration.DefaultLogger;
 
             foreach (string urip in uriPrefixes)
             {
@@ -41,7 +41,7 @@
         public WebSocketListener(HttpListener httpListener, ILogger logger= null)
         {
             this.HttpListener = httpListener ?? throw new ArgumentNullException(nameof(httpListener));
-            this.logger = logger ?? LoggerConfiguration.DefaultLogger;
+            this.logger = logger ?? Configuration.DefaultLogger;
         }
 
 

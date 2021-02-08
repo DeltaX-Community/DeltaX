@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaX.Configuration.Serilog\DeltaX.Configuration.Serilog.csproj" />
+    <ProjectReference Include="..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Source\Connections\DeltaX.Connections.MqttClientHelper\DeltaX.Connections.MqttClientHelper.csproj" />
-    <ProjectReference Include="..\..\Source\Core\DeltaX.Configuration.Serilog\DeltaX.Configuration.Serilog.csproj" />
     <ProjectReference Include="..\..\Source\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExpression\DeltaX.RealTime.RtExpression.csproj" />

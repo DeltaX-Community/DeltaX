@@ -1,6 +1,7 @@
 ﻿namespace DeltaX.Database
 {
     using Microsoft.Extensions.Logging;
+    using DeltaX.Configuration;
     using System;
     using System.Data;
     using System.Threading.Tasks;
@@ -9,15 +10,16 @@
     {
 
         private object _locker = new object();
-        private ILogger log;
+        private ILogger logger;
         private Exception lastException;
         private string[] connectionStrings;
         private Type dbConnectionType;
         private string currentConnectionString;
 
-        public static DatabaseBase Build<T>(string[] connectionStrings, ILogger logger = null) where T : IDbConnection, new()
+        public static DatabaseBase Build<T>(string[] connectionStrings, ILoggerFactory loggerFactory = null) 
+            where T : IDbConnection, new()
         {
-            return new DatabaseBase(typeof(T), connectionStrings, logger);
+            return new DatabaseBase(typeof(T), connectionStrings, loggerFactory);
         }
 
         /// <summary>
@@ -38,15 +40,13 @@
         /// </summary>
         public event EventHandler<string> OnConnect;
 
-        protected DatabaseBase(Type dbConnectionType, string[] connectionStrings, ILogger logger = null)
+        protected DatabaseBase(Type dbConnectionType, string[] connectionStrings, ILoggerFactory loggerFactory = null)
         {
+            loggerFactory ??= Configuration.DefaultLoggerFactory;
+            this.logger = loggerFactory.CreateLogger($"{nameof(DatabaseBase)}"); 
+            
             this.dbConnectionType = dbConnectionType;
-            this.connectionStrings = connectionStrings;
-
-            if (logger != null)
-            {
-                log = logger;
-            }
+            this.connectionStrings = connectionStrings;                        
         }
 
 
@@ -196,25 +196,25 @@
         {
             try
             {
-                log?.LogDebug("Database try ConnectionString: {0}", connectionString);
+                logger?.LogDebug("Database try ConnectionString: {0}", connectionString);
 
                 IDbConnection dbConn = (IDbConnection)Activator.CreateInstance(dbConnectionType);
 
                 dbConn.ConnectionString = connectionString;
                 dbConn.Open();
 
-                log?.LogDebug("Database State: {0}", dbConn.State);
+                logger?.LogDebug("Database State: {0}", dbConn.State);
 
                 if (dbConn.State.HasFlag(ConnectionState.Open))
                 {
-                    log?.LogDebug("Database Connected ConnectionString: {0}", connectionString);
+                    logger?.LogDebug("Database Connected ConnectionString: {0}", connectionString);
                 }
 
                 return dbConn;
             }
             catch (Exception ex)
             {
-                log?.LogError(ex, "Database Connect excepcion");
+                logger?.LogError(ex, "Database Connect excepcion");
                 throw;
             }
         }
@@ -269,7 +269,7 @@
             catch (Exception ex)
             {
                 lastException = ex;
-                log?.LogError(ex, "Database on close exception");
+                logger?.LogError(ex, "Database on close exception");
             }
         }
     }

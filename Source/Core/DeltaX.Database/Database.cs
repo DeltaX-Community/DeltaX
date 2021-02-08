@@ -8,8 +8,8 @@
     public class Database<T> : DatabaseBase, IDatabaseBase 
         where T : IDbConnection, new()
     {
-        public Database(string[] connectionStrings, ILogger<Database<T>> logger = null)
-            : base(typeof(T), connectionStrings, logger) { }
+        public Database(string[] connectionStrings, ILoggerFactory loggerFactory = null)
+            : base(typeof(T), connectionStrings, loggerFactory) { }
 
         public new T DbConnection => (T)base.DbConnection;
 

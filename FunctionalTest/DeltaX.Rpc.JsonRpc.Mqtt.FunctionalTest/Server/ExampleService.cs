@@ -1,6 +1,6 @@
 ﻿namespace DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Server
 {
-    using DeltaX.Configuration.Serilog;
+    using DeltaX.Configuration;
     using DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Shared;
     using Microsoft.Extensions.Logging;
     using System;
@@ -15,7 +15,7 @@
 
         public ExampleService(Rpc rpc)
         {
-            this.logger = LoggerConfiguration.DefaultLoggerFactory.CreateLogger("Service");
+            this.logger = Configuration.DefaultLoggerFactory.CreateLogger("Service");
             this.rpc = rpc;
             notify = rpc.GetNotifyServices<INotifications>();
         }

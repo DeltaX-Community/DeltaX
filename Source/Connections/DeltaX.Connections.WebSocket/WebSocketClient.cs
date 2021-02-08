@@ -3,6 +3,7 @@
 
 namespace DeltaX.Connections.WebSocket
 {
+    using DeltaX.Configuration;
     using DeltaX.Configuration.Serilog;
     using Microsoft.Extensions.Logging;
     using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace DeltaX.Connections.WebSocket
         {
             this.Uri = uri ?? throw new ArgumentNullException(nameof(uri));
             this.client = client ?? new ClientWebSocket();
-            this.logger = logger ?? LoggerConfiguration.DefaultLogger;
+            this.logger = logger ?? Configuration.DefaultLogger;
 
             this.IsRunning = false;
             this.isConnectedEvent = new ManualResetEvent(false);

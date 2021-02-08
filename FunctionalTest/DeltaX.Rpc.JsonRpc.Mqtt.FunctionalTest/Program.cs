@@ -1,13 +1,13 @@
-﻿using DeltaX.Configuration.Serilog;
-using DeltaX.Connections.MqttClientHelper;
-using DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Client;
-using DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Server;
-using DeltaX.Rpc.JsonRpc.MqttConnection;
-using System;
-using System.Threading.Tasks;
-
-namespace DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest
+﻿namespace DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest
 {
+    using DeltaX.Configuration;
+    using DeltaX.Connections.MqttClientHelper;
+    using DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Client;
+    using DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest.Server;
+    using DeltaX.Rpc.JsonRpc.MqttConnection;
+    using System;
+    using System.Threading.Tasks;
+
     class Program
     {
 
@@ -40,7 +40,7 @@ namespace DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest
         {
             Console.WriteLine("DeltaX.Rpc.JsonRpc.Mqtt.FunctionalTest Started!"); 
 
-            LoggerConfiguration.SetSerilog();
+            Configuration.SetDefaultLogger();
 
             var server = RunRpcServer();
             var client = new ExampleClient(); 
