@@ -1,8 +1,8 @@
-﻿using DeltaX.RealTime.RtExpression;
-using System;
-
-namespace DeltaX.Modules.TagRuleEventHandler
+﻿namespace DeltaX.Modules.TagRuleEvaluator
 {
+    using DeltaX.RealTime.RtExpression;
+    using System;
+
     public interface ITagRuleDefinition<TEvent>
     {
         TagRuleCheckType RuleCheckType { get; }

@@ -84,7 +84,7 @@
 
         private void TagArgumentOnUpdatedValue(object sender, IRtTag e)
         {
-            if (e.Updated > base.Updated)
+            if (HasNewValue())
             {
                 Eval();
             }
@@ -116,7 +116,7 @@
         {
             try
             {
-                DateTime _updated = base.Updated;
+                DateTime? _updated = null;
                 bool st = true;
                 foreach (var e in ArgumentsTags.Select((tag, index) => (tag, index)))
                 {
@@ -127,11 +127,11 @@
 
                     expression.getArgument(e.index).setArgumentValue(e.tag.Value.Numeric);
 
-                    _updated = e.tag.Updated > _updated ? e.tag.Updated : _updated;
+                    _updated = !_updated.HasValue || e.tag.Updated > _updated ? e.tag.Updated : _updated;
                 }
 
                 var value = expression.calculate();
-                RaiseOnUpdatedValue(this, RtValue.Create(value), _updated, st);
+                RaiseOnUpdatedValue(this, RtValue.Create(value), _updated ?? DateTime.Now, st);
                 return base.Value;
             }
             catch
@@ -178,7 +178,7 @@
                 {
                     Eval();
                 }
-                return base._status;
+                return base.Status;
             }
         }
 

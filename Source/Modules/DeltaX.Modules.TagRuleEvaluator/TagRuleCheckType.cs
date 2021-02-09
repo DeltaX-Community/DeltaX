@@ -1,4 +1,4 @@
-﻿namespace DeltaX.Modules.TagRuleEventHandler
+﻿namespace DeltaX.Modules.TagRuleEvaluator
 {
     public enum TagRuleCheckType
     {

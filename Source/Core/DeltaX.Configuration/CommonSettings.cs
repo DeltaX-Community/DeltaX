@@ -102,6 +102,13 @@
             var processDirectory = Path.GetDirectoryName(process.MainModule.FileName);
             Directory.SetCurrentDirectory(processDirectory);
         }
+        
+        public static void SetBasePathFromExecutable()
+        {
+            var process = Process.GetCurrentProcess();
+            var processDirectory = Path.GetDirectoryName(process.MainModule.FileName);
+            BasePath = processDirectory;
+        }
 
         public static string GetProcesConfigName()
         {
