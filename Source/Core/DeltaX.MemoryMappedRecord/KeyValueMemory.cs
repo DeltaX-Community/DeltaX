@@ -1,5 +1,7 @@
 ﻿using DeltaX.CommonExtensions;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +28,7 @@ namespace DeltaX.MemoryMappedRecord
         private const int OffsetDataIndex = 0;
         private const int OffsetUpdate = sizeof(int);
         private const int OffsetKey = OffsetUpdate + sizeof(double);
+        private readonly ILogger logger;
 
         /// <summary>
         /// tags contiene el 
@@ -33,7 +36,39 @@ namespace DeltaX.MemoryMappedRecord
         ///     Key: string clave 
         ///     indexOffset: posición en memoria donde esta alojada la referencia al dato.
         /// </summary>
-        private Dictionary<string, int> keys = new Dictionary<string, int>();
+        private ConcurrentDictionary<string, int> keys;
+
+        
+
+        /// <summary>
+        /// Inicializa la memoria
+        /// 
+        /// Craa dos memorias, una para indice y otra para datos
+        /// </summary>
+        /// <param name="MemoryName"></param>
+        /// <param name="indexCapacity"></param>
+        /// <param name="dataCapacity"></param>
+        /// <param name="persistent"></param>
+        public KeyValueMemory(
+            string MemoryName,
+            int indexCapacity = 1000000 * 128,
+            int dataCapacity = 200 * 1024 * 1024,
+            bool persistent = true,
+            ILoggerFactory loggerFactory = null)
+        {
+
+            loggerFactory ??= Configuration.Configuration.DefaultLoggerFactory;
+            this.logger = loggerFactory.CreateLogger($"KVM_{MemoryName}");
+
+            string indexName = $"{MemoryName}.index";
+            string dataName = $"{MemoryName}.data";
+
+            keys = new ConcurrentDictionary<string, int>();
+            mmIndex = new MemoryMappedRecord(indexName, indexCapacity, persistent, logger);
+            mmData = new MemoryMappedRecord(dataName, dataCapacity, persistent, logger);
+
+            InitializeKeys(); 
+        }
 
         /// <summary>
         /// Obtiene la cantidad de claves guardadas
@@ -58,40 +93,14 @@ namespace DeltaX.MemoryMappedRecord
             }
         }
 
-        /// <summary>
-        /// Inicializa la memoria
-        /// 
-        /// Craa dos memorias, una para indice y otra para datos
-        /// </summary>
-        /// <param name="MemoryName"></param>
-        /// <param name="indexCapacity"></param>
-        /// <param name="dataCapacity"></param>
-        /// <param name="persistent"></param>
-        public KeyValueMemory(string MemoryName, int indexCapacity = 1000000 * 128, int dataCapacity = 200 * 1024 * 1024, bool persistent = true)
-        {
-            string indexName = $"{MemoryName}.index";
-            string dataName = $"{MemoryName}.data";
-
-            mmIndex = new MemoryMappedRecord(indexName, indexCapacity, persistent);
-            mmData = new MemoryMappedRecord(dataName, dataCapacity, persistent);
-
-            InitializeKeys();
-        }
-         
         private bool IsChangeSizeIndex
         {
             get
             {
                 return nextPosition < mmIndex.HeaderSize;
             }
-        }
+        } 
 
-        /// <summary>
-        /// Obtiene el nombre de clave guardada
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="offset"></param>
-        /// <returns></returns>
         private string GetKey(int position)
         {
             var keyBytes = mmIndex.ReadRecord(position);
@@ -101,30 +110,38 @@ namespace DeltaX.MemoryMappedRecord
          
         void InitializeKeys()
         {
-            keys.Clear();
-            foreach (var position in mmIndex.ReadRecordsPositions())
-            { 
-                string key = GetKey(position); 
-                keys[key] = position;
+            lock (keys)
+            {
+                keys.Clear();
+                var headerSize = mmIndex.HeaderNextPosition;
+                foreach (var position in mmIndex.ReadRecordsPositions())
+                {
+                    string key = GetKey(position);
+                    keys[key] = position; 
+                }
+                nextPosition = headerSize;
             }
-            nextPosition = mmIndex.HeaderNextPosition;
         }
 
-        /// <summary>
-        /// Valida e inicializa las claves agregadas 
-        /// </summary>
         private void ValidateInitalizeKeysNextPosition()
         {
             if (IsChangeSizeIndex)
             {
-                Console.WriteLine("change header Size: {0} > {1} >>>", nextPosition, mmIndex.HeaderNextPosition);
-                foreach (var position in mmIndex.ReadRecordsPositions(nextPosition))
-                { 
-                    string tagName = GetKey(position);
-                    keys[tagName] = position;
-                    Console.WriteLine("    Add key: {0} at {1}", tagName, keys[tagName]);
+                lock (keys)
+                {
+                    var headerSize = mmIndex.HeaderNextPosition;
+                    logger?.LogInformation("change header Size: {0} to {1} >>>", nextPosition, headerSize);
+                    
+                    foreach (var position in mmIndex.ReadRecordsPositions(nextPosition))
+                    {
+                        string tagName = GetKey(position);
+                        keys[tagName] = position;
+                        // logger?.LogDebug("    Add key: {0} at {1}", tagName, keys[tagName]);
+                        nextPosition = position;
+                    }
+                    nextPosition = nextPosition > headerSize ? nextPosition : headerSize;
+                    logger?.LogInformation("Change key Count: {0} ", keys.Count);
                 }
-                nextPosition = mmIndex.HeaderNextPosition;
             }
         }
 
@@ -235,7 +252,7 @@ namespace DeltaX.MemoryMappedRecord
             {
                 if (mmData.GetSizeOfNextRecord(value.Length) <= 0)
                 {
-                    Console.WriteLine("SetValue No hay espacio en memoria de Datos para este registro");
+                    logger?.LogError("SetValue not enough memory for new record");
                     return false;
                 }
 
@@ -267,22 +284,23 @@ namespace DeltaX.MemoryMappedRecord
         /// <returns></returns>
         public bool AddValue(string key, byte[] value)
         {
-            ValidateInitalizeKeysNextPosition();
-
-            if (keys.ContainsKey(key))
+            if (GetKeyRecordPosition(key) > 0)
+            {
                 return false;
+            }
 
             var rKey = Encoding.ASCII.GetBytes(key);
 
             if (mmData.GetSizeOfNextRecord(value.Length) <= 0)
             {
-                Console.WriteLine("No hay espacio en memoria de Datos para este registro");
+                logger?.LogError("SetValue not enough memory for new data record");
                 return false;
             }
 
+            
             if (mmIndex.GetSizeOfNextRecord(rKey.Length + sizeof(int) + sizeof(double)) <= 0)
             {
-                Console.WriteLine("No hay espacio en memoria de Indice para este registro");
+                logger?.LogError("SetValue not enough memory for new index record");
                 return false;
             }
 
@@ -295,12 +313,19 @@ namespace DeltaX.MemoryMappedRecord
                 la.AddRange(rKey);
                 var rawKeyIndex = la.ToArray();
 
+                var headerNextPosition = mmIndex.HeaderNextPosition;
                 int idxKey = mmIndex.AddRecord(rawKeyIndex, rawKeyIndex.Length);
                 if (idxKey >= 0)
                 {
-                    keys[key] = idxKey;
+                    lock (key)
+                    {
+                        keys[key] = idxKey;
 
-                    nextPosition = mmIndex.HeaderNextPosition;
+                        if (headerNextPosition == nextPosition)
+                        {
+                            nextPosition = idxKey + mmIndex.ReadInt16(idxKey);
+                        }
+                    } 
                     return true;
                 }
             }

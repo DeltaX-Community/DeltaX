@@ -10,7 +10,7 @@ namespace DeltaX.Modules.TagRuleEvaluator.UnitTest
         public void Setup()
         {
              tagRuleChangeEvaluator = new TagRuleChangeEvaluator<int>();
-            tagRuleChangeEvaluator.AddRule(1, )
+            // tagRuleChangeEvaluator.AddRule(1, )
         }
 
         [Test]

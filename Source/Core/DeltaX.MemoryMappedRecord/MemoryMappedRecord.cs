@@ -1,5 +1,6 @@
 ﻿using DeltaX.CommonExtensions;
 using DeltaX.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,6 +42,7 @@ namespace DeltaX.MemoryMappedRecord
         private MemoryMappedViewAccessor mmva;
         private unsafe MMHeader* header = (MMHeader*)0;
         private IntPtr mmPtr;
+        private readonly ILogger logger;
 
         public int BlockSize { get; set; } = 128;
         public int BlockSizeMin { get; set; } = 16;
@@ -51,8 +53,10 @@ namespace DeltaX.MemoryMappedRecord
         public int RecordDataOffset { get; } = sizeof(Int16) + sizeof(Int16);
 
 
-        public MemoryMappedRecord(string memoryName, long capacity = 0, bool persistent = true)
+        public MemoryMappedRecord(string memoryName, long capacity = 0, bool persistent = true, ILogger logger = null)
         {
+            this.logger = logger;
+
             OpenMMF(memoryName, capacity, persistent);
 
             if (mmf != null)
@@ -76,10 +80,10 @@ namespace DeltaX.MemoryMappedRecord
             if (!persistent)
             {
                 if (CommonSettings.IsWindowsOs)
-                { 
+                {
                     mmf = MemoryMappedFile.CreateOrOpen(memoryName, capacity, MemoryMappedFileAccess.ReadWriteExecute,
                         MemoryMappedFileOptions.None, HandleInheritability.Inheritable);
-                    return; 
+                    return;
                 }
                 else
                 {
@@ -99,17 +103,20 @@ namespace DeltaX.MemoryMappedRecord
 
             using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
-                fs.SetLength(capacity);
+                if (fs.Length < capacity)
+                {
+                    logger?.LogWarning("File '{0}' Resize, SetLength from {1} to {2}", fileName, fs.Length, capacity);
+                    fs.SetLength(capacity);
+                }
                 mmf = MemoryMappedFile.CreateFromFile(fs, null, fs.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
             }
-            // mmf = MemoryMappedFile.CreateFromFile(fileName, FileMode.OpenOrCreate, memoryName, capacity, MemoryMappedFileAccess.ReadWrite);
-            Console.WriteLine("Opened File '{0}' capacity {1}", fileName, capacity);
+            logger?.LogInformation("Opened MemoryMappedFile '{0}'", fileName);
         }
 
         /// <summary>
         /// Inicializa la Cabecera de la memoria
         /// </summary>
-        unsafe void InitHeader()
+        private unsafe void InitHeader()
         {
             header = (MMHeader*)mmPtr.ToPointer();
 
@@ -127,7 +134,7 @@ namespace DeltaX.MemoryMappedRecord
         /// </summary>
         /// <param name="count"></param>
         /// <param name="size"></param>
-        unsafe void UpdateHeader(int count, int size)
+        private unsafe void UpdateHeader(int count, int size)
         {
             Trace.Assert(count >= 0);
             Trace.Assert(size >= 0);
@@ -207,19 +214,11 @@ namespace DeltaX.MemoryMappedRecord
             *ptr = value;
         }
 
-        /// <summary>
-        /// Escribe un arreglo de bytes en la posicion dada
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="data"></param>
-        /// <param name="length"></param>
         private unsafe void WriteBytes(int position, byte[] data, int length = -1)
         {
             Trace.Assert(position >= 0);
             Trace.Assert(data != null);
             length = length > -1 ? length : data.Length;
-            // MMRecordStruct* rec = (MMRecordStruct*)(ptrMemAccessor + position);
-            // Trace.Assert(RecordDataOffset + length <= rec->blockSize);
             Marshal.Copy(data, 0, mmPtr + position, length);
         }
 
@@ -233,8 +232,7 @@ namespace DeltaX.MemoryMappedRecord
         /// </returns>
         public List<int> ReadRecordsPositions(int initialPosition = 512)
         {
-            Trace.Assert(initialPosition >= 0);
-            var position = initialPosition;
+            var position = initialPosition > 512 ? initialPosition : 512;
 
             List<int> values = new List<int>();
             while (position < HeaderSize)

@@ -1,12 +1,12 @@
-using DeltaX.CommonExtensions;
-using DeltaX.Configuration;
-using DeltaX.MemoryMappedRecord;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-
-namespace DelataX.MemoryMappedRecord.FunctionalTest
+namespace DeltaX.MemoryMappedRecord.FunctionalTest
 {
+    using DeltaX.CommonExtensions;
+    using DeltaX.Configuration;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Threading;
+
+
     class Program
     {
         static void Main(string[] args)
@@ -16,7 +16,7 @@ namespace DelataX.MemoryMappedRecord.FunctionalTest
             Configuration.SetDefaultLogger();
             var logger = Configuration.DefaultLogger;
 
-            int rows = 200_000;
+            int rows = 110_000;
             string memoryName = "DemoMemory";
             int indexCapacity = 60_000_000;
             int dataCapacity = 60_000_000;
@@ -30,8 +30,7 @@ namespace DelataX.MemoryMappedRecord.FunctionalTest
             Console.WriteLine("Pres W for WRITE values only");
             var consoleKey = Console.ReadKey();
 
-            var loopWrite = 10;
-            while (--loopWrite > 0 || consoleKey.Key == ConsoleKey.W)
+            while (consoleKey.Key == ConsoleKey.W)
             {
                 int writed = 0;
                 var start = DateTime.Now;

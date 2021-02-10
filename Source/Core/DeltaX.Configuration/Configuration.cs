@@ -34,6 +34,10 @@
                 defaultLoggerFactory ??= LoggerConfiguration.GetSerilogLoggerFactory();
                 return defaultLoggerFactory;
             }
+            set
+            {
+                defaultLoggerFactory = value;
+            }
         }
 
         public static ILogger DefaultLogger
@@ -43,12 +47,16 @@
                 defaultLogger ??= DefaultLoggerFactory.CreateLogger("");
                 return defaultLogger;
             }
+            set
+            {
+                defaultLogger = value;
+            }
         }
 
-        public static void SetDefaultLogger( )
+        public static void SetDefaultLogger()
         {
-            LoggerConfiguration.SetSerilog( );
+            LoggerConfiguration.SetSerilog();
+            DefaultLoggerFactory = LoggerConfiguration.GetSerilogLoggerFactory();
         }
-
     }
 }
