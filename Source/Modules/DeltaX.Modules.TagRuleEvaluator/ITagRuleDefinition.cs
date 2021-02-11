@@ -1,14 +1,13 @@
 ﻿namespace DeltaX.Modules.TagRuleEvaluator
 {
-    using DeltaX.RealTime.RtExpression;
+    using DeltaX.RealTime.Interfaces; 
     using System;
 
     public interface ITagRuleDefinition<TEvent>
     {
         TagRuleCheckType RuleCheckType { get; }
-        RtTagExpression TagComparation { get; }
-        RtTagExpression TagExpression { get; } 
-        int? DiscardValue { get; }
+        IRtTag TagComparation { get; }
+        IRtTag TagExpression { get; }  
         TEvent EventId { get; }
         DateTime Updated { get; }
         DateTime PrevUpdated { get; }

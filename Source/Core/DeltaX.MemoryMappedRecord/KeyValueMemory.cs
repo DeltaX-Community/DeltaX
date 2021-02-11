@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace DeltaX.MemoryMappedRecord
 {
+
+
     /// <summary>
     /// 
     /// 
@@ -29,46 +31,53 @@ namespace DeltaX.MemoryMappedRecord
         private const int OffsetUpdate = sizeof(int);
         private const int OffsetKey = OffsetUpdate + sizeof(double);
         private readonly ILogger logger;
-
-        /// <summary>
-        /// tags contiene el 
-        /// Donde  
-        ///     Key: string clave 
-        ///     indexOffset: posición en memoria donde esta alojada la referencia al dato.
-        /// </summary>
+        private readonly KeyValueMemoryConfiguration configuration; 
         private ConcurrentDictionary<string, int> keys;
 
-        
 
-        /// <summary>
-        /// Inicializa la memoria
-        /// 
-        /// Craa dos memorias, una para indice y otra para datos
-        /// </summary>
-        /// <param name="MemoryName"></param>
-        /// <param name="indexCapacity"></param>
-        /// <param name="dataCapacity"></param>
-        /// <param name="persistent"></param>
-        public KeyValueMemory(
-            string MemoryName,
-            int indexCapacity = 1000000 * 128,
-            int dataCapacity = 200 * 1024 * 1024,
+        public static IKeyValueMemory Build(
+            KeyValueMemoryConfiguration configuration,
+            ILoggerFactory loggerFactory = null)
+        {
+            return new KeyValueMemory(configuration, loggerFactory);
+        }
+
+        public static IKeyValueMemory Build(
+            string memoryName,
+            int indexCapacity = 0,
+            int dataCapacity = 0,
             bool persistent = true,
             ILoggerFactory loggerFactory = null)
         {
+            var configuration = new KeyValueMemoryConfiguration
+            {
+                MemoryName = memoryName,
+                IndexCapacity = indexCapacity,
+                DataCapacity = dataCapacity,
+                Persistent = persistent
+            };
 
+            return new KeyValueMemory(configuration, loggerFactory);
+        }
+
+        private KeyValueMemory(KeyValueMemoryConfiguration configuration, ILoggerFactory loggerFactory = null)
+        {
+            this.configuration = configuration;
             loggerFactory ??= Configuration.Configuration.DefaultLoggerFactory;
-            this.logger = loggerFactory.CreateLogger($"KVM_{MemoryName}");
+            this.logger = loggerFactory.CreateLogger($"KVM_{configuration.MemoryName}");
 
-            string indexName = $"{MemoryName}.index";
-            string dataName = $"{MemoryName}.data";
+            string indexName = $"{configuration.MemoryName}.index";
+            string dataName = $"{configuration.MemoryName}.data";
 
             keys = new ConcurrentDictionary<string, int>();
-            mmIndex = new MemoryMappedRecord(indexName, indexCapacity, persistent, logger);
-            mmData = new MemoryMappedRecord(dataName, dataCapacity, persistent, logger);
+            mmIndex = new MemoryMappedRecord(indexName, configuration.IndexCapacity, configuration.Persistent, logger);
+            mmData = new MemoryMappedRecord(dataName, configuration.DataCapacity, configuration.Persistent, logger);
 
-            InitializeKeys(); 
-        }
+            InitializeKeys();
+        } 
+
+
+        public event EventHandler<List<string>> KeysChanged;
 
         /// <summary>
         /// Obtiene la cantidad de claves guardadas
@@ -88,8 +97,11 @@ namespace DeltaX.MemoryMappedRecord
         {
             get
             {
-                ValidateInitalizeKeysNextPosition();
-                return keys.Keys.ToList();
+                lock (keys)
+                {
+                    ValidateInitalizeKeysNextPosition();
+                    return keys.Keys.ToList();
+                }
             }
         }
 
@@ -130,7 +142,7 @@ namespace DeltaX.MemoryMappedRecord
                 lock (keys)
                 {
                     var headerSize = mmIndex.HeaderNextPosition;
-                    logger?.LogInformation("change header Size: {0} to {1} >>>", nextPosition, headerSize);
+                    logger?.LogDebug("change header Size: {0} to {1} >>>", nextPosition, headerSize);
                     
                     foreach (var position in mmIndex.ReadRecordsPositions(nextPosition))
                     {
@@ -141,7 +153,9 @@ namespace DeltaX.MemoryMappedRecord
                     }
                     nextPosition = nextPosition > headerSize ? nextPosition : headerSize;
                     logger?.LogInformation("Change key Count: {0} ", keys.Count);
-                }
+                    
+                    KeysChanged?.Invoke(this, Keys);
+                } 
             }
         }
 

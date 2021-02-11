@@ -8,17 +8,18 @@
     public class RtTagJson : RtTagDecoratorBase, IRtTag
     {
         private DateTime parsedTime;
-        private IRtValue currentValueParsed;
+        private IRtValue currentValueParsed = valueNull;
         private bool status = false;
 
         public RtTagJson(IRtTag tag, string jsonValuePattern) : base(tag)
         {
             TagJsonValuePattern = jsonValuePattern; 
-            parsedTime = DateTime.MinValue;
+            currentValueParsed = TryParseValue(tag.Value.Text);
+            parsedTime = Updated;
         }
          
         public string TagJsonValuePattern { get; protected set; }
-        
+
         public override bool Status
         {
             get

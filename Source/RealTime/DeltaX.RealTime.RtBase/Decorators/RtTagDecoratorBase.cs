@@ -6,7 +6,7 @@
     public abstract class RtTagDecoratorBase : IRtTag, IDisposable
     {
         protected IRtTag tag;
-   
+        protected static IRtValue valueNull = RtValue.Create(string.Empty);
         public RtTagDecoratorBase(IRtTag tag)
         {
             this.tag = tag;
@@ -91,6 +91,10 @@
             tag.ValueUpdated -= OnTagValueUpdated;
             tag.StatusChanged -= OnStatusChanged;
             DettachEventHandler();
+        }
+        public override string ToString()
+        {
+            return $"{TagName}={Value.Text}";
         }
     }
 

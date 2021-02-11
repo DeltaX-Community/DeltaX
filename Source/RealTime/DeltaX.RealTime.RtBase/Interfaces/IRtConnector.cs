@@ -1,11 +1,14 @@
 ﻿namespace DeltaX.RealTime.Interfaces
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
     public interface IRtConnector : IDisposable
     { 
+        public IEnumerable<string> TagNames { get; }
+
         public Task ConnectAsync(CancellationToken? cancellationToken =null);
 
         public bool Disconnect();

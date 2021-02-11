@@ -95,9 +95,9 @@
                 logger.LogInformation("-- {0} Status:{1} Value:{@2} ", pruebaJsonCounter.TagName, pruebaJsonCounter.Status, pruebaJsonCounter.Value.Numeric);  
 
                 logger.LogInformation("-- EXPRESSION {0} Status:{1} GetExpresionValues:{@2} Value:{@3} ", 
-                    pruebaExpression.TagName, pruebaExpression.Status, pruebaExpression.GetExpresionValues(), pruebaExpression.Value.Numeric);
+                    pruebaExpression.TagName, pruebaExpression.Status, pruebaExpression, pruebaExpression.Value.Numeric);
                 logger.LogInformation("-- EXPRESSION {0} Status:{1} GetExpresionValues:{@2} Value:{@3} ",
-                    pruebaExpression2.TagName, pruebaExpression2.Status, pruebaExpression2.GetExpresionValues(), pruebaExpression2.Value.Numeric);
+                    pruebaExpression2.TagName, pruebaExpression2.Status, pruebaExpression2, pruebaExpression2.Value.Numeric);
 
                 logger.LogInformation("-- ULTRALIGHT {0} Status:{1} Value:{@2}", pruebaUL1.TagName, pruebaUL1.Status, pruebaUL1.Value.Numeric);
                 logger.LogInformation("-- ULTRALIGHT {0} Status:{1} Value:{@2}", pruebaUL1_c1f1.TagName, pruebaUL1_c1f1.Status, pruebaUL1_c1f1.Value.Numeric);

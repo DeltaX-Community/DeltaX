@@ -8,6 +8,7 @@ using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Threading;
 
 namespace DeltaX.MemoryMappedRecord
 {
@@ -27,7 +28,7 @@ namespace DeltaX.MemoryMappedRecord
             public double Created_t;
             public double Updated_t;
             public int Size;
-            public int Count;
+            public int Count; 
         }
 
         unsafe public struct MMRecordStruct
@@ -42,7 +43,9 @@ namespace DeltaX.MemoryMappedRecord
         private MemoryMappedViewAccessor mmva;
         private unsafe MMHeader* header = (MMHeader*)0;
         private IntPtr mmPtr;
+        private readonly string memoryName;
         private readonly ILogger logger;
+        private Mutex sharedMutex;
 
         public int BlockSize { get; set; } = 128;
         public int BlockSizeMin { get; set; } = 16;
@@ -55,20 +58,39 @@ namespace DeltaX.MemoryMappedRecord
 
         public MemoryMappedRecord(string memoryName, long capacity = 0, bool persistent = true, ILogger logger = null)
         {
+            this.memoryName = memoryName;
             this.logger = logger;
-
-            OpenMMF(memoryName, capacity, persistent);
-
-            if (mmf != null)
+            
+            OpenOrCreateMutex();
+            
+            try
             {
-                mmva = mmf.CreateViewAccessor();
-                unsafe
-                {
-                    mmva.SafeMemoryMappedViewHandle.AcquirePointer(ref ptrMemAccessor);
-                    mmPtr = new IntPtr(ptrMemAccessor);
-                }
+                sharedMutex.WaitOne();
+                OpenMMF(memoryName, capacity, persistent);
 
-                InitHeader();
+                if (mmf != null)
+                {
+                    mmva = mmf.CreateViewAccessor();
+                    unsafe
+                    {
+                        mmva.SafeMemoryMappedViewHandle.AcquirePointer(ref ptrMemAccessor);
+                        mmPtr = new IntPtr(ptrMemAccessor);
+                    }
+
+                    InitHeader();
+                }
+            }
+            finally
+            {
+                sharedMutex.ReleaseMutex();
+            }
+        }
+
+        private void OpenOrCreateMutex()
+        {
+            if (!Mutex.TryOpenExisting($"{memoryName}.Mutex", out sharedMutex))
+            {
+                sharedMutex = new Mutex(false, $"{memoryName}.Mutex");
             }
         }
 
@@ -76,13 +98,14 @@ namespace DeltaX.MemoryMappedRecord
         private void OpenMMF(string memoryName, long capacity = 0, bool persistent = true)
         {
             string fileName = null;
+            capacity = capacity > 512 ? capacity : 512;
 
             if (!persistent)
             {
                 if (CommonSettings.IsWindowsOs)
-                {
+                { 
                     mmf = MemoryMappedFile.CreateOrOpen(memoryName, capacity, MemoryMappedFileAccess.ReadWriteExecute,
-                        MemoryMappedFileOptions.None, HandleInheritability.Inheritable);
+                        MemoryMappedFileOptions.None, HandleInheritability.Inheritable); 
                     return;
                 }
                 else
@@ -106,7 +129,15 @@ namespace DeltaX.MemoryMappedRecord
                 if (fs.Length < capacity)
                 {
                     logger?.LogWarning("File '{0}' Resize, SetLength from {1} to {2}", fileName, fs.Length, capacity);
-                    fs.SetLength(capacity);
+                    if (fs.Length == 0)
+                    {
+                        fs.SetLength(capacity);
+                        fs.Write(new byte[512]);
+                    }
+                    else
+                    {
+                        fs.SetLength(capacity);
+                    }
                 }
                 mmf = MemoryMappedFile.CreateFromFile(fs, null, fs.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
             }
@@ -255,7 +286,15 @@ namespace DeltaX.MemoryMappedRecord
         /// </summary>
         public void Flush()
         {
-            mmva.Flush();
+            try
+            {
+                sharedMutex.WaitOne();
+                mmva.Flush();
+            }
+            finally
+            {
+                sharedMutex.ReleaseMutex();
+            }
         }
 
         /// <summary>
@@ -266,6 +305,7 @@ namespace DeltaX.MemoryMappedRecord
             Flush();
             mmva.Dispose();
             mmf.Dispose();
+            sharedMutex.Dispose();
         }
 
         /// <summary>
@@ -317,7 +357,7 @@ namespace DeltaX.MemoryMappedRecord
 
             MMRecordStruct* rec = (MMRecordStruct*)(ptrMemAccessor + position);
             if (length + RecordDataOffset <= rec->blockSize)
-            {
+            { 
                 rec->length = length > 0 ? (Int16)length : (Int16)0;
                 if (length > 0)
                 {
@@ -366,31 +406,40 @@ namespace DeltaX.MemoryMappedRecord
         {
             length = length >= 0 ? length : value.Length;
 
-            // Obtengo la siguiente posicion bloque
-            int position = HeaderNextPosition;
-
-            // Calcula un tamaño para reservar
-            int blockSize = GetSizeOfNextRecord(length);
-
-            if (blockSize > 0)
+            try
             {
-                // actualiza el tamaño reservado para el bloque
-                Write(position, (Int16)blockSize);
+                sharedMutex.WaitOne();
 
-                // actualiza el tamaño usado por el bloque
-                Write(position + sizeof(Int16), (Int16)length);
+                // Obtengo la siguiente posicion bloque
+                int position = HeaderNextPosition;
 
-                // Posicion de escritura del dato
-                int wPos = position + RecordDataOffset;
+                // Calcula un tamaño para reservar
+                int blockSize = GetSizeOfNextRecord(length);
 
-                // Copia datos al bloque
-                WriteBytes(wPos, value, length);
+                if (blockSize > 0)
+                {
+                    // actualiza el tamaño reservado para el bloque
+                    Write(position, (Int16)blockSize);
 
-                // Actualiza la cabecera
-                UpdateHeader(HeaderCount + 1, position + blockSize);
-                return position;
+                    // actualiza el tamaño usado por el bloque
+                    Write(position + sizeof(Int16), (Int16)length);
+
+                    // Posicion de escritura del dato
+                    int wPos = position + RecordDataOffset;
+
+                    // Copia datos al bloque
+                    WriteBytes(wPos, value, length);
+
+                    // Actualiza la cabecera
+                    UpdateHeader(HeaderCount + 1, position + blockSize);
+                    return position;
+                }
+                return -1;
             }
-            return -1;
+            finally
+            {
+                sharedMutex.ReleaseMutex();
+            }
         }
 
     }

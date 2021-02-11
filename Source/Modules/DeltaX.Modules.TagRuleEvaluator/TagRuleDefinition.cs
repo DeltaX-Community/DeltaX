@@ -1,5 +1,6 @@
 ﻿namespace DeltaX.Modules.TagRuleEvaluator
 {
+    using DeltaX.RealTime.Interfaces;
     using DeltaX.RealTime.RtExpression;
     using Microsoft.Extensions.Logging;
     using System;
@@ -8,31 +9,35 @@
     {
         private readonly double tolerance;
         private readonly ILogger logger;
-        private readonly Func<TagRuleDefinition<TEvent>, bool> action;
+        private readonly Func<ITagRuleDefinition<TEvent>, bool> action;
 
         internal TagRuleDefinition(
             TEvent eventId,
             TagRuleCheckType ruleCheckType,
-            RtTagExpression tagExpression,
-            RtTagExpression tagComparation,
-            int? discardValue = null,
+            IRtTag tagExpression,
+            IRtTag tagComparation = null, 
             double tolerance = 0.01,
-            Func<TagRuleDefinition<TEvent>, bool> action = null)
+            Func<ITagRuleDefinition<TEvent>, bool> action = null,
+            ILogger logger = null)
         {
+            if (ruleCheckType == TagRuleCheckType.ChangeCompare && tagComparation == null)
+            {
+                throw new ArgumentNullException(nameof(tagComparation));
+            }
+
+            this.logger = logger ?? Configuration.Configuration.DefaultLogger;
             EventId = eventId;
             TagExpression = tagExpression;
             TagComparation = tagComparation;
-            RuleCheckType = ruleCheckType;
-            DiscardValue = discardValue;
+            RuleCheckType = ruleCheckType; 
             this.tolerance = tolerance;
-            this.action = action;
+            this.action = action; 
         }
 
         public TEvent EventId { get; }
-        public RtTagExpression TagExpression { get; }
-        public RtTagExpression TagComparation { get; }
-        public TagRuleCheckType RuleCheckType { get; }
-        public int? DiscardValue { get; }
+        public IRtTag TagExpression { get; }
+        public IRtTag TagComparation { get; }
+        public TagRuleCheckType RuleCheckType { get; } 
         public DateTime PrevUpdated { get; private set; }
         public DateTime Updated { get; private set; }
         public double PrevValue { get; private set; }
@@ -70,7 +75,7 @@
             PrevUpdated = Updated;
             Value = TagExpression.Value.Numeric;
             Updated = TagExpression.Updated;
-            return (int)Value != DiscardValue && Math.Abs(PrevValue - Value) > tolerance;
+            return Math.Abs(PrevValue - Value) > tolerance;
         }
 
         private bool HasCompartationChange()
@@ -91,7 +96,7 @@
             PrevUpdated = Updated;
             Value = TagExpression.Value.Numeric;
             Updated = TagExpression.Updated;
-            return (int)Value != DiscardValue && Math.Abs(CompareValue - Value) > tolerance;
+            return Math.Abs(CompareValue - Value) > tolerance;
         }
 
 
@@ -105,8 +110,8 @@
                     change = HasValueChanged();
                     if (change)
                     {
-                        logger.LogInformation("Event: [{0}] {1} TagName:[{2}] Expresion:[{3}] PrevValue:{4} Value:{5} Updated:{6}",
-                            EventId, RuleCheckType, TagExpression.TagName, TagExpression.GetExpresionValues(), PrevValue, Value, Updated);
+                        logger?.LogInformation("Event: [{0}] {1} TagName:[{2}] Expresion:[{3}] PrevValue:{4} Value:{5} Updated:{6}",
+                            EventId, RuleCheckType, TagExpression.TagName, TagExpression, PrevValue, Value, Updated);
                     }
                     break;
 
@@ -114,8 +119,8 @@
                     change = HasCompartationChange();
                     if (change)
                     {
-                        logger.LogInformation("Event: [{0}] {1} TagName:[{2}] Expresion:[{3}] PrevValue:{4} CompareValue:{5} Value:{6} Updated:{7}",
-                            EventId, RuleCheckType, TagExpression.TagName, TagExpression.GetExpresionValues(), PrevValue, CompareValue, Value, Updated);
+                        logger?.LogInformation("Event: [{0}] {1} TagName:[{2}] Expresion:[{3}] PrevValue:{4} CompareValue:{5} Value:{6} Updated:{7}",
+                            EventId, RuleCheckType, TagExpression.TagName, TagExpression, PrevValue, CompareValue, Value, Updated);
                     }
                     break;
 
@@ -123,8 +128,8 @@
                     change = HasUpdatedChanged();
                     if (change)
                     {
-                        logger.LogInformation("Event: [{0}] {1} TagName:[{2}] Expresion:[{3}] PrevValue:{4} Value:{5} Updated:{6}",
-                           EventId, RuleCheckType, TagExpression.TagName, TagExpression.GetExpresionValues(), PrevValue, Value, Updated);
+                        logger?.LogInformation("Event: [{0}] {1} TagName:[{2}] Expresion:[{3}] PrevValue:{4} Value:{5} Updated:{6}",
+                           EventId, RuleCheckType, TagExpression.TagName, TagExpression, PrevValue, Value, Updated);
                     }
                     break;
             }
@@ -133,12 +138,12 @@
             {
                 try
                 {
-                    bool ret = action.Invoke(this);
-                    logger.LogInformation("Action return: {0}", ret);
+                    var ret = action.Invoke(this);
+                    logger?.LogInformation("Action return: {0}", ret);
                 }
                 catch (Exception e)
                 {
-                    logger.LogError("Failed on event:[{0}] Error:'{1}'", EventId, e.Message);
+                    logger?.LogError("Failed on event:[{0}] Error:'{1}'", EventId, e.Message);
                 }
             }
         }

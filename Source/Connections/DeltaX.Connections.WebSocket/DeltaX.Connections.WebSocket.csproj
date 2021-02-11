@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <AssemblyName>DeltaX.Connections.WebSocket</AssemblyName>
-    <RootNamespace>DeltaX.Connections.WebSocket</RootNamespace>
+    <TargetFramework>net5.0</TargetFramework> 
   </PropertyGroup>
 
   <ItemGroup>

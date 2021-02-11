@@ -2,12 +2,15 @@
 {
     using DeltaX.RealTime.Interfaces; 
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
     public abstract class RtConnectorBase : IRtConnector
     {    
         public abstract bool IsConnected { get; }
+
+        public abstract IEnumerable<string> TagNames { get; }
 
         public event EventHandler<IRtTag> ValueUpdated;
         public event EventHandler<IRtTag> ValueSetted;

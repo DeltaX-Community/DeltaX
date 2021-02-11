@@ -11,33 +11,43 @@
     using System.Threading.Tasks;
     using uPLibrary.Networking.M2Mqtt.Messages;
 
-    public class RtConnectorMqtt : RtConnectorBase
+    public class RtConnectorMqtt : RtConnectorBase, IRtConnector
     {
         MqttClientHelper mqttClient;
-        HashSet<RtTagMqtt> Tags = new HashSet<RtTagMqtt>();
+        HashSet<RtTagMqtt> rtTags;
         private ILogger logger;
 
 
-        public static IRtConnector Build(string sectionName = "Mqtt", string configFileName = "common.json", ILoggerFactory loggerFactory = null)
+        public static IRtConnector Build(
+            string sectionName = "Mqtt",
+            string configFileName = "common.json",
+            ILoggerFactory loggerFactory = null)
         {
             var config = new MqttConfiguration(sectionName, configFileName);
             var mqttClient = new MqttClientHelper(config);
             return new RtConnectorMqtt(mqttClient, loggerFactory);
         }
 
-        public static IRtConnector Build(IConfiguration configuration, string sectionName = "Mqtt", ILoggerFactory loggerFactory = null)
+        public static IRtConnector Build(
+            IConfiguration configuration,
+            string sectionName = "Mqtt",
+            ILoggerFactory loggerFactory = null)
         {
             var config = new MqttConfiguration(configuration, sectionName);
             var mqttClient = new MqttClientHelper(config);
             return new RtConnectorMqtt(mqttClient, loggerFactory);
         }
 
-        public static IRtConnector Build(MqttClientHelper mqttClient, ILoggerFactory loggerFactory = null)
+        public static IRtConnector Build(
+            MqttClientHelper mqttClient,
+            ILoggerFactory loggerFactory = null)
         {
             return new RtConnectorMqtt(mqttClient, loggerFactory);
         }
 
-        protected RtConnectorMqtt(MqttClientHelper mqttClient, ILoggerFactory loggerFactory = null)
+        protected RtConnectorMqtt(
+            MqttClientHelper mqttClient,
+            ILoggerFactory loggerFactory = null)
         {
             loggerFactory ??= Configuration.DefaultLoggerFactory;
 
@@ -46,6 +56,8 @@
 
             this.mqttClient.OnConnectionChange += MqttOnConnectionChange;
             this.mqttClient.Client.MqttMsgPublishReceived += MqttOnMessageReceive;
+
+            rtTags = new HashSet<RtTagMqtt>();
         }
 
         private void MqttOnConnectionChange(object sender, bool isConnected)
@@ -60,25 +72,24 @@
             {
                 logger?.LogWarning("MqttOnDisconnect");
                 RaiseOnDisconnect(IsConnected);
-                lock (Tags)
+                lock (rtTags)
                 {
-                    foreach (var tag in Tags)
+                    foreach (var tag in rtTags)
                     {
-                        tag.RaiseOnDisconnect(IsConnected);
+                        tag.RaiseStatusChanged(IsConnected);
                     }
                 }
             }
-        } 
-
+        }
 
         private void MqttOnMessageReceive(object sender, MqttMsgPublishEventArgs e)
         {  
             RtTagMqtt[] tags;
             IRtMessage msg = RtMessage.Create(e.Topic, RtValue.Create(e.Message), e);
 
-            lock (Tags)
+            lock (rtTags)
             {
-                tags = Tags.Where(tt => tt.Topic == msg.Topic).ToArray();
+                tags = rtTags.Where(tt => tt.Topic == msg.Topic).ToArray();
             }
 
             foreach (var tag in tags)
@@ -93,12 +104,20 @@
 
         public override bool IsConnected => this.mqttClient.IsConnected;
 
+        public override IEnumerable<string> TagNames
+        {
+            get
+            {
+                lock (rtTags) return rtTags.Select(t => t.TagName);
+            }
+        }
+
         public override IRtTag AddTag(string tagName, string topic, IRtTagOptions options) 
         { 
             RtTagMqtt t = new RtTagMqtt(this, tagName, topic, (options as RtTagMqttOptions));
-            lock (Tags)
+            lock (rtTags)
             {                
-                Tags.Add(t);
+                rtTags.Add(t);
             }
             Subscribe(t);
             logger?.LogInformation("AddTag TagName:{0}", t.TagName);
@@ -107,23 +126,19 @@
 
         public override IRtTag GetTag(string tagName)
         {
-            lock (Tags)
+            lock (rtTags)
             {
-                return Tags.Where(t => t.TagName == tagName).FirstOrDefault();
+                return rtTags.FirstOrDefault(t => t.TagName == tagName);
             }
         }
 
         public void RemoveTag(IRtTag tag)
         {
-            try
+            lock (rtTags)
             {
-                lock (Tags)
-                {
-                    Tags.Remove(tag as RtTagMqtt);
-                }
-                logger?.LogInformation("RemoveTag TagName:{0}", tag.TagName);
+                rtTags.Remove(tag as RtTagMqtt);
             }
-            catch { }
+            logger?.LogInformation("RemoveTag TagName:{0}", tag.TagName);
         }
 
         private void Subscribe(RtTagMqtt tag)
@@ -141,9 +156,9 @@
             byte[] qosLevel;
 
             // Subscribe distinct topics only
-            lock (Tags)
+            lock (rtTags)
             {
-                var tagsByTopic = Tags.ToDictionary(t => t.Topic, t => t);
+                var tagsByTopic = rtTags.ToDictionary(t => t.Topic, t => t);
                 topics = tagsByTopic.Keys.ToArray();
                 qosLevel = tagsByTopic.Values.Select(t => (byte)t.Options.qosLevels ).ToArray();
             }
@@ -178,9 +193,9 @@
                     var writed = mqttClient.Client.Publish(tag.Topic, value.Binary, (byte)options.qosLevels, options.retain);
                     if (writed > 0)
                     {
-                        lock (Tags)
+                        lock (rtTags)
                         {
-                            foreach (var _tag in Tags.Where(t => t.Topic == tag.Topic))
+                            foreach (var _tag in rtTags.Where(t => t.Topic == tag.Topic))
                             {
                                 _tag.RaiseOnSetValue(value);
                             }

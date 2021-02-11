@@ -6,15 +6,16 @@
     using System.Text.RegularExpressions;
     using System.Linq; 
 
-    public class RtTagExpression : RtTagBase
+    public class RtTagExpression : RtTagBase, IRtTag
     {
         private IRtTag[] ArgumentsTags;
         private Expression expression;
 
         public RtTagExpression(IRtConnector creator, string expresionFull, IRtTagOptions options = null)
-        {
-            string patternAddressRegex = @"\{[^{} ]+\}";
+        { 
+            string patternAddressRegex = @"\{[^{} ]+\}"; 
             string expresion = expresionFull.Trim().TrimStart('=');
+            TagName = expresionFull;
 
             Regex rgx = new Regex(patternAddressRegex, RegexOptions.IgnoreCase);
             MatchCollection matches = rgx.Matches(expresionFull);
@@ -54,8 +55,7 @@
                 var arguments = ArgumentsTags.Select((a, i) => new Argument($"arg{i}", 0)).ToArray();
                 expression.addArguments(arguments);
 
-                TagName = expresionString;
-                Topic = GetExpresionRepr();
+                Topic = GetExpresionTopic();
 
                 Eval();
                 AttachEventsTagArguments();
@@ -100,17 +100,6 @@
             return false;
         }
 
-        private string GetExpresionRepr()
-        {
-            string expFull = expression.getExpressionString();
-
-            foreach (var e in ArgumentsTags.Select((tag, idx) => (tag.TagName, idx)))
-            {
-                expFull = expFull.Replace($"arg{e.idx}", $"{{{e.TagName}}}");
-            }
-
-            return expFull;
-        }
 
         public IRtValue Eval()
         {
@@ -146,13 +135,26 @@
             return ArgumentsTags[argIdx];
         }
 
-        public string GetExpresionValues()
+        public string GetExpresionFull()
         {
             string expFull = expression.getExpressionString();
 
-            foreach (var e in ArgumentsTags.Select((tag, idx) => (tag.Value, idx)))
+            foreach (var e in ArgumentsTags.Select((tag, idx) => (tag, idx)))
             {
-                expFull = expFull.Replace($"arg{e.idx}", $"{{{e.Value.Text}}}");
+                expFull = expFull.Replace($"arg{e.idx}", $"{{{e.tag}}}");
+            }
+
+            return expFull;
+        }
+
+
+        private string GetExpresionTopic()
+        {
+            string expFull = expression.getExpressionString();
+
+            foreach (var e in ArgumentsTags.Select((tag, idx) => (tag.Topic, idx)))
+            {
+                expFull = expFull.Replace($"arg{e.idx}", $"{{{e.Topic}}}");
             }
 
             return expFull;
@@ -178,7 +180,7 @@
                 {
                     Eval();
                 }
-                return base.Status;
+                return _status;
             }
         }
 
@@ -205,6 +207,11 @@
             base.Dispose();
             ArgumentsTags = null;
             expression = null;
+        }
+
+        public override string ToString()
+        {
+            return GetExpresionFull();
         }
     }
 }

@@ -9,6 +9,7 @@
 
     public abstract class RtTagBase : IRtTag, IDisposable, IEqualityComparer<RtTagBase>
     {
+        protected static IRtValue valueNull = RtValue.Create(string.Empty);
         protected bool _status;
 
         public virtual event EventHandler<IRtTag> ValueUpdated;
@@ -21,9 +22,9 @@
 
         public virtual string Topic { get; protected set; }         
 
-        public virtual IRtTagOptions Options{ get; protected set; }         
+        public virtual IRtTagOptions Options{ get; protected set; }
 
-        public virtual IRtValue Value { get; protected set; } = RtValue.Create(string.Empty);
+        public virtual IRtValue Value { get; protected set; } = valueNull;
 
         public virtual DateTime Updated { get; protected set; } = DateTime.MinValue;         
         
@@ -31,7 +32,7 @@
         {
             get
             {
-                if (!Connector.IsConnected && _status)
+                if (Connector != null && (!Connector.IsConnected && _status))
                 {
                     Status = false;
                 }
@@ -54,7 +55,7 @@
   
         protected virtual void RaiseOnSetValue(object sender, IRtValue value, DateTime? updated = null, bool status = true)
         {
-            Value = value;
+            Value = value ?? valueNull;
             Updated = updated?? DateTime.Now;
             Status = status;
 
@@ -64,14 +65,14 @@
 
         protected virtual void RaiseOnUpdatedValue(object sender, IRtValue value, DateTime? updated = null, bool status = true)
         {
-            Value = value;
+            Value = value ?? valueNull;
             Updated = updated ?? DateTime.Now;
             Status = status;
 
             ValueUpdated?.Invoke(sender, this);
         }
 
-        protected virtual void RaiseOnDisconnect(object sender, bool status)
+        protected virtual void RaiseStatusChanged(object sender, bool status)
         {
             Status = false; 
         }
@@ -95,6 +96,11 @@
         public int GetHashCode([DisallowNull] RtTagBase obj)
         {
             return obj.TagName.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{TagName}={Value.Text}"; 
         }
     }
 }

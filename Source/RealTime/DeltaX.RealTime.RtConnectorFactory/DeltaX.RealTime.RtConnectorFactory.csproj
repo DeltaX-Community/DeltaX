@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Connections\DeltaX.Connections.MqttClientHelper\DeltaX.Connections.MqttClientHelper.csproj" />
+    <ProjectReference Include="..\..\Core\DeltaX.MemoryMappedRecord\DeltaX.MemoryMappedRecord.csproj" />
+    <ProjectReference Include="..\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
+    <ProjectReference Include="..\DeltaX.RealTime.RtMemoryMapped\DeltaX.RealTime.RtMemoryMapped.csproj" />
+    <ProjectReference Include="..\DeltaX.RealTime.RtMqtt\DeltaX.RealTime.RtMqtt.csproj" />
+  </ItemGroup>
+
+</Project>

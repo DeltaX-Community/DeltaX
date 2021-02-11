@@ -12,9 +12,9 @@
             Initialize(configurationSection);
         } 
 
-        public MqttConfiguration(IConfiguration configuration, string section)
+        public MqttConfiguration(IConfiguration configuration, string sectionName)
         {
-            var configurationSection = configuration.GetSection(section);
+            var configurationSection = configuration.GetSection(sectionName);
             Initialize(configurationSection);
         }
 

@@ -2,7 +2,7 @@
 {
     using DeltaX.RealTime.Interfaces;
 
-    class RtTagMqtt : RtTagBase
+    class RtTagMqtt : RtTagBase, IRtTag
     {
         public RtTagMqtt(IRtConnector connector, string tagName, string topic, RtTagMqttOptions options)
         {
@@ -24,9 +24,9 @@
             base.RaiseOnUpdatedValue(Connector, value);
         }
 
-        internal void RaiseOnDisconnect(bool status)
+        internal void RaiseStatusChanged(bool status)
         {
-            base.RaiseOnDisconnect(Connector, status);
+            base.RaiseStatusChanged(Connector, status);
         } 
 
         public override void Dispose()

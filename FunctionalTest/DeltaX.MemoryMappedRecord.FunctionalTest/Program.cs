@@ -21,7 +21,7 @@ namespace DeltaX.MemoryMappedRecord.FunctionalTest
             int indexCapacity = 60_000_000;
             int dataCapacity = 60_000_000;
 
-            var kvm = new KeyValueMemory(memoryName, indexCapacity, dataCapacity, persistent: true);
+            var kvm =   KeyValueMemory.Build(memoryName, indexCapacity, dataCapacity, persistent: true);
 
             var key = "KeyPrueba_3";
             var value = ("Hola mundo como estas: " + DateTime.Now).GetBytes();

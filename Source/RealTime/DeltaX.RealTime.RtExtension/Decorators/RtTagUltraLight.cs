@@ -11,7 +11,7 @@
         private string ulField;
         private string ulCommand;
         private string ulDevice;
-        private IRtValue currentValueParsed;
+        private IRtValue currentValueParsed = valueNull;
 
         public RtTagUltraLight(IRtTag tag, string ultraLightValuePattern) : base(tag)
         {

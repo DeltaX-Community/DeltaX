@@ -6,7 +6,10 @@
     public interface IKeyValueMemory: IDisposable
     {
         int Count { get; } 
-        List<string> Keys { get; } 
+        List<string> Keys { get; }
+
+        event EventHandler<List<string>> KeysChanged;
+
         bool AddValue(string key, byte[] value); 
         void Flush();  
         double GetUpdated(string key); 
