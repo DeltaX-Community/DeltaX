@@ -16,42 +16,47 @@
         MqttClientHelper mqttClient;
         HashSet<RtTagMqtt> rtTags;
         private ILogger logger;
+        private string prefix;
 
 
         public static IRtConnector Build(
             string sectionName = "Mqtt",
             string configFileName = "common.json",
-            ILoggerFactory loggerFactory = null)
+            ILoggerFactory loggerFactory = null,
+            string prefix = null)
         {
             var config = new MqttConfiguration(sectionName, configFileName);
             var mqttClient = new MqttClientHelper(config);
-            return new RtConnectorMqtt(mqttClient, loggerFactory);
-        }
-
-        public static IRtConnector Build(
-            IConfiguration configuration,
-            string sectionName = "Mqtt",
-            ILoggerFactory loggerFactory = null)
-        {
-            var config = new MqttConfiguration(configuration, sectionName);
-            var mqttClient = new MqttClientHelper(config);
-            return new RtConnectorMqtt(mqttClient, loggerFactory);
-        }
+            return new RtConnectorMqtt(mqttClient, loggerFactory, prefix);
+        } 
 
         public static IRtConnector Build(
             MqttClientHelper mqttClient,
+            ILoggerFactory loggerFactory = null,
+            string prefix = null)
+        {
+            return new RtConnectorMqtt(mqttClient, loggerFactory, prefix);
+        }
+
+        public static IRtConnector BuildFromFactory(
+            IConfigurationSection configuration,
             ILoggerFactory loggerFactory = null)
         {
-            return new RtConnectorMqtt(mqttClient, loggerFactory);
+            var config = new MqttConfiguration(configuration);
+            var mqttClient = new MqttClientHelper(config);
+            var prefix = configuration?.GetValue<string>("Prefix", "");
+            return new RtConnectorMqtt(mqttClient, loggerFactory, prefix);
         }
 
         protected RtConnectorMqtt(
             MqttClientHelper mqttClient,
-            ILoggerFactory loggerFactory = null)
+            ILoggerFactory loggerFactory = null,
+            string prefix = null)
         {
             loggerFactory ??= Configuration.DefaultLoggerFactory;
 
             this.mqttClient = mqttClient;
+            this.prefix = prefix ?? "";
             this.logger = loggerFactory.CreateLogger($"{nameof(RtConnectorMqtt)}");
 
             this.mqttClient.OnConnectionChange += MqttOnConnectionChange;
@@ -114,7 +119,7 @@
 
         public override IRtTag AddTag(string tagName, string topic, IRtTagOptions options) 
         { 
-            RtTagMqtt t = new RtTagMqtt(this, tagName, topic, (options as RtTagMqttOptions));
+            RtTagMqtt t = new RtTagMqtt(this, tagName, $"{prefix}{topic}", (options as RtTagMqttOptions));
             lock (rtTags)
             {                
                 rtTags.Add(t);
@@ -215,7 +220,7 @@
 
         public override bool WriteValue(string topic, IRtValue value, IRtTagOptions options = null)
         {
-            return WriteValue(new RtTagMqtt(this, topic, topic, options as RtTagMqttOptions), value);
+            return WriteValue(new RtTagMqtt(this, topic, $"{prefix}{topic}", options as RtTagMqttOptions), value);
         }
 
         public override void Dispose()

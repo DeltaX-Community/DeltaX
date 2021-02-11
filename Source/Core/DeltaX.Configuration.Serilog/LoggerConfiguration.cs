@@ -5,6 +5,7 @@ namespace DeltaX.Configuration.Serilog
     using global::Serilog.Core;
     using global::Serilog.Events;
     using global::Serilog.Sinks.SystemConsole.Themes;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using System.Collections.Generic;
     using System.Threading;
@@ -17,11 +18,16 @@ namespace DeltaX.Configuration.Serilog
             return new LoggerFactory().AddSerilog();
         }
 
-        public static void SetSerilog(global::Serilog.LoggerConfiguration configuration = null)
+        public static void SetSerilog(global::Serilog.LoggerConfiguration logConfiguration = null, IConfiguration configuration = null)
         {
-            configuration ??= GetSerilogConfiguration();
-            Log.Logger = configuration.CreateLogger();
+            logConfiguration ??= GetSerilogConfiguration();
+            if (configuration != null)
+            {
+                logConfiguration.ReadFrom.Configuration(configuration);
+            }
+            Log.Logger = logConfiguration.CreateLogger();
         }
+         
 
         public static global::Serilog.LoggerConfiguration GetSerilogConfiguration()
         {

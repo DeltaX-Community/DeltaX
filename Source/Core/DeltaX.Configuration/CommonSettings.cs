@@ -63,6 +63,8 @@
 
         public static string BasePathData { get => Path.Combine(BasePath, @"Data"); }
 
+        public static string CommonConfigName => Path.Combine(BasePathConfig, "common.json");
+
         public static string DefaultDateTimeFormat { get; set; } = "o";// "yyyy/MM/dd HH:mm:ss.fff";
              
 
@@ -109,7 +111,7 @@
             var processDirectory = Path.GetDirectoryName(process.MainModule.FileName);
             BasePath = processDirectory;
         }
-
+        
         public static string GetProcesConfigName()
         {
             var process = Process.GetCurrentProcess();

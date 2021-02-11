@@ -1,0 +1,40 @@
+{
+  "TagRuleChangeConfig": {
+    "RealTimeConnectorSectionName": "RtMqttConnector",
+    "LoopEvaluateIntervalMilliseconds": 200,
+    "DefaultTolerance": 0.01,
+    "Rules": [
+      {
+        "CheckType": "ChangeValue",
+        "TagExpression": "(({tag1} - {tag2/Task.CurrentId}) / 2 > 2)",
+        "TagComparation": "1",
+        "WriteTag": "tagParaEscritura",
+        "WriteValueExpression": "1"
+      },
+      {
+        "CheckType": "ChangeUpdated",
+        "TagExpression": "({tag1} - {tag2/Task.CurrentId}) / 2",
+        "WriteTag": "powerTag",
+        "WriteValueExpression": "(({tag1} - {tag2/Task.CurrentId}) / 33)"
+      }
+    ]
+  },
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information"
+    },
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "D:\\DEV\\repos\\DeltaX-Community\\DeltaX\\Logs\\ARules1.log",
+          "restrictedToMinimumLevel": "Information",
+          "fileSizeLimitBytes": "2000000",
+          "retainedFileCountLimit": 4,
+          "rollOnFileSizeLimit": true,
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff K} [{Level:u11}] {SourceContext}|{ThreadId}|{TaskId} {Message:lj}{NewLine}{Exception}"
+        }
+      }
+    ]
+  }
+}

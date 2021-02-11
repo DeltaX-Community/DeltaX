@@ -16,7 +16,7 @@
         {
             var logger = Configuration.DefaultLoggerFactory.CreateLogger($"TaskTest_{Task.CurrentId.Value}");
              
-            var config = new KeyValueMemoryConfiguration() { MemoryName = "DemoMemory" };
+            var config = new KeyValueMemoryConfiguration() { MemoryName = "DemoMemory"};
             var conn = RtConnectorMemoryMapped.Build(config, syncWithExistentTopics: true);
 
             var tag = conn.AddTag($"TagPrueba_{Task.CurrentId.Value}");

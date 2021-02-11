@@ -1,0 +1,42 @@
+{
+  "DefaultRealTimeConnector": {
+    "Type": "DeltaX.RealTime.RtMemoryMapped; DeltaX.RealTime.RtMemoryMapped.RtConnectorMemoryMapped",
+    "SectionName": "MemoryMappedConnector"
+  },
+  "RtMqttConnector": {
+    "Type": "DeltaX.RealTime.RtMqtt; DeltaX.RealTime.RtMqtt.RtConnectorMqtt",
+    "SectionName": "MqttConnector"
+  },
+  "MemoryMappedConnector": {
+    "MemoryName": "RtData",
+    "IndexCapacity": 10000000,
+    "DataCapacity": 10000000,
+    "Persistent": true,
+    "SyncWithExistentTopics": true
+  },
+  "MqttConnector": {
+    "Host": "127.0.0.1",
+    "Port": 1883,
+    "Username": "sima",
+    "Password": "sima",
+    "Prefix": "Demo/"
+  },
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Debug"
+    },
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "default.log",
+          "restrictedToMinimumLevel": "Information",
+          "fileSizeLimitBytes": "2000000",
+          "retainedFileCountLimit": 4,
+          "rollOnFileSizeLimit": true,
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff K} [{Level:u11}] {SourceContext}|{ThreadId}|{TaskId} {Message:lj}{NewLine}{Exception}"
+        }
+      }
+    ]
+  }
+}

@@ -25,39 +25,57 @@ public class TagRuleChangeExecutorWorker : BackgroundService
         IOptions<TagRuleChangeConfig> settings)
     {
         this.logger = logger;
-        connector = connectorFactory.GetConnector();
+        this.connector = connectorFactory.GetConnector(settings?.Value?.RealTimeConnectorSectionName);
         this.connectorFactory = connectorFactory;
         this.executor = executor;
         this.settings = settings.Value;        
     }
 
+    public override Task StopAsync(CancellationToken cancellationToken)
+    {
+        logger.LogWarning("StopAsync at: {time}", DateTimeOffset.Now.ToString("o"));
+        return base.StopAsync(cancellationToken);
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        this.executor.LoadRules();
-        var LoopEvaluateInterval = settings?.LoopEvaluateIntervalMilliseconds ?? 500;
-
-        var t1 = Task.Run(async () =>
+        try
         {
-            int count = 0;
-            await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-            while (count < 100 && !stoppingToken.IsCancellationRequested)
+            this.executor.LoadRules();
+            var LoopEvaluateInterval = settings?.LoopEvaluateIntervalMilliseconds ?? 500;
+
+            await this.executor.ConnectAsync(stoppingToken);
+
+            var t1 = Task.Run(async () =>
             {
-                connector.SetNumeric("tag1", count++);
-                connector.SetNumeric("tag2/Task.CurrentId", Task.CurrentId ?? 1);
+                await this.connector.ConnectAsync(stoppingToken);
+
+                int count = 0;
                 await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-            }
-        }, stoppingToken);
+                while (count < 100 && !stoppingToken.IsCancellationRequested)
+                {
+                    connector.SetNumeric("tag1", count++);
+                    connector.SetNumeric("tag2/Task.CurrentId", Task.CurrentId ?? 1);
+                    await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+                }
+            }, stoppingToken);
 
-        var t2 = Task.Run(async () =>
+            var t2 = Task.Run(async () =>
+            {
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    logger.LogDebug("- Worker running at: {time}", DateTimeOffset.Now.ToString("o"));
+                    executor.EvaluateChanges();
+                    await Task.Delay(TimeSpan.FromMilliseconds(LoopEvaluateInterval), stoppingToken);
+                }
+            });
+
+            await Task.WhenAll(t1, t2);
+        }
+        finally
         {
-            while (!stoppingToken.IsCancellationRequested)
-            { 
-                logger.LogDebug("- Worker running at: {time}", DateTimeOffset.Now.ToString("o"));
-                executor.EvaluateChanges();
-                await Task.Delay(TimeSpan.FromMilliseconds(LoopEvaluateInterval), stoppingToken);
-            }
-        });
-
-        await Task.WhenAll(t1, t2);
+            logger.LogWarning("Process Stoped at: {time}", DateTimeOffset.Now.ToString("o"));
+        }
     }
 }
+

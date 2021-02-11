@@ -11,7 +11,6 @@
     {
         ILogger logger;
         Task reconnectTask;
-         
 
         ManualResetEvent isConnectedEvent;
         ManualResetEvent isDisconnectedEvent;

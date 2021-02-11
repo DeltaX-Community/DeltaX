@@ -1,13 +1,12 @@
 {
   "TagRuleChangeConfig": {
-    "RealTimeConnectorSectionName": "DefaultRealTimeConnector",
+    "RealTimeConnectorSectionName": "RtMqttConnector",
     "LoopEvaluateIntervalMilliseconds": 200,
     "DefaultTolerance": 0.01,
     "Rules": [
       {
         "CheckType": "ChangeValue",
         "TagExpression": "(({tag1} - {tag2/Task.CurrentId}) / 2 > 2)",
-        "TagComparation": "1",
         "WriteTag": "tagParaEscritura",
         "WriteValueExpression": "1"
       },
@@ -16,44 +15,6 @@
         "TagExpression": "({tag1} - {tag2/Task.CurrentId}) / 2",
         "WriteTag": "powerTag",
         "WriteValueExpression": "TagExpression"
-      }
-    ]
-  },
-
-  "DefaultRealTimeConnector": {
-    "Type-bkp": "RtConnectorMemoryMapped",
-    "Type": "DeltaX.RealTime.RtMemoryMapped; DeltaX.RealTime.RtMemoryMapped.RtConnectorMemoryMapped",
-    "SectionName": "MemoryMappedConnector"
-  },
-
-  "MemoryMappedConnector": {
-    "MemoryName": "RtData",
-    "IndexCapacity": 10000000,
-    "DataCapacity": 10000000,
-    "Persistent": true,
-    "SyncWithExistentTopics": true
-  },
-
-  "Serilog": {
-    "MinimumLevel": {
-      "Default": "Debug",
-      "Override222": {
-        "Microsoft": "Information",
-        "Microsoft.AspNetCore": "Information",
-        "System": "Error"
-      }
-    },
-    "WriteTo": [
-      {
-        "Name": "File",
-        "Args": {
-          "path": "AAAA.log",
-          "restrictedToMinimumLevel": "Information",
-          "fileSizeLimitBytes": "2000000",
-          "retainedFileCountLimit": 4,
-          "rollOnFileSizeLimit": true,
-          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff K} [{Level:u11}] {SourceContext}|{ThreadId}|{TaskId} {Message:lj}{NewLine}{Exception}"
-        }
       }
     ]
   }

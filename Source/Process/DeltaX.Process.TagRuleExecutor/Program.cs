@@ -1,33 +1,18 @@
 ﻿using DeltaX.Configuration;
+using DeltaX.ProcessBase;
 using DeltaX.RealTime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting; 
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Diagnostics;
 using System.IO;
 
 
-var process = Process.GetCurrentProcess();
-var processDirectory = Path.GetDirectoryName(process.MainModule.FileName);
 
-IHostBuilder CreateHostBuilder(string[] args) => Host
-    .CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration(confBuilder =>
-    { 
-        confBuilder.AddJsonFile(CommonSettings.GetProcesConfigName(), optional: true);
-        foreach (var fileName in args)
-        {
-            if (File.Exists(fileName))
-            {
-                Console.WriteLine("AddJsonFile: {0}", fileName);
-                confBuilder.AddJsonFile(fileName, optional: true);
-            }
-        }
-    })
-    .UseSerilog()
-    .UseWindowsService()
+var host = ProcessHostBase.CreateHostBuilder(args, args, false)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddHostedService<TagRuleChangeExecutorWorker>();
@@ -37,45 +22,22 @@ IHostBuilder CreateHostBuilder(string[] args) => Host
 
         services.Configure<TagRuleChangeConfig>(options =>
             hostContext.Configuration.GetSection("TagRuleChangeConfig").Bind(options));
-    });
-
-
-void ShowInstall()
-{ 
-    string servName = process.ProcessName;
-    string binPath = process.MainModule.FileName;
-    string description = "Real Time Tag Rule Executor";
-
-    Console.WriteLine("Running {0} in Console Mode...", process.ProcessName);
-    Console.WriteLine("\nHelp for install on cmd as Administrator:");
-    Console.WriteLine($" - install service:     \n    sc create {servName} binpath=\"{binPath}\" ");
-    Console.WriteLine($" - uninstall service:   \n    sc delete {servName} ");
-    Console.WriteLine($" - description service: \n    sc description {servName} \"{description}\"");
-    Console.WriteLine("\nPress key to continue");
-    Console.ReadLine();
-}
-
-
-if (Environment.UserInteractive && CommonSettings.IsWindowsOs)
-{
-    ShowInstall(); 
-}
-
-Console.WriteLine(processDirectory);
-Directory.SetCurrentDirectory(processDirectory);
- 
-var host = CreateHostBuilder(args)
-    .UseContentRoot(processDirectory)
+    })
     .Build();
 
 // Configuration Logger from json
 var configuration = host.Services.GetService<IConfiguration>();
-var logConfig = DeltaX.Configuration.Serilog.LoggerConfiguration.GetSerilogConfiguration();
-logConfig.ReadFrom.Configuration(configuration);
-Log.Logger = logConfig.CreateLogger();
-Log.Logger.Information("CurrentDirectory: {processDirectory}", processDirectory);
+Configuration.SetDefaultLogger(configuration);
 
-host.Run();
+var logger = host.Services.GetService<ILoggerFactory>().CreateLogger("Main"); 
 
-
+try
+{
+    logger?.LogInformation("Start Process {process}", Process.GetCurrentProcess());
+    host.Run();
+}
+finally
+{
+    logger?.LogInformation("End Process {process}", Process.GetCurrentProcess());
+}
 

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class TagRuleChangeExecutor
 {
@@ -30,6 +32,12 @@ public class TagRuleChangeExecutor
         cacheTags = new Dictionary<string, IRtTag>();
         tagRuleChangeEvaluator = new TagRuleChangeEvaluator<string>(ActionOnChange, this.settings.DefaultTolerance);
         connector = connectorFactory.GetConnector(this.settings.RealTimeConnectorSectionName);
+        
+    }
+
+    public Task ConnectAsync(CancellationToken cancellationToken)
+    {
+        return connector.ConnectAsync(cancellationToken);
     }
 
     private bool ActionOnChange(ITagRuleDefinition<string> arg)

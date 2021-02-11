@@ -9,32 +9,12 @@
         {
             var builder = DeltaX.Configuration.Configuration.GetConfigurationBuilder(configFileName);
             var configurationSection = builder.Build().GetSection(sectionName);
-            Initialize(configurationSection);
-        } 
-
-        public MqttConfiguration(IConfiguration configuration, string sectionName)
-        {
-            var configurationSection = configuration.GetSection(sectionName);
-            Initialize(configurationSection);
+            configurationSection?.Bind(this);
         }
 
         public MqttConfiguration(IConfigurationSection configurationSection = null)
         {
-            Initialize(configurationSection);
-        }
-
-        private void Initialize(IConfigurationSection configurationSection)
-        {
-            if (configurationSection != null)
-            {
-                ClientId = configurationSection.GetValue("ClientId", ClientId);
-                Host = configurationSection.GetValue("Host", Host);
-                Port = configurationSection.GetValue("Port", Port);
-                Secure = configurationSection.GetValue("Secure", Secure);
-                Username = configurationSection.GetValue("Username", Username);
-                Password = configurationSection.GetValue("Password", Password);
-                ReconnectDealy = configurationSection.GetValue("ReconnectDealy", ReconnectDealy);
-            }
+            configurationSection?.Bind(this); 
         }
 
         public string ClientId { get; set; } = Guid.NewGuid().ToString("N");

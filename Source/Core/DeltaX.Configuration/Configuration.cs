@@ -53,9 +53,9 @@
             }
         }
 
-        public static void SetDefaultLogger()
+        public static void SetDefaultLogger(IConfiguration configuration = null)
         {
-            LoggerConfiguration.SetSerilog();
+            LoggerConfiguration.SetSerilog(null, configuration);
             DefaultLoggerFactory = LoggerConfiguration.GetSerilogLoggerFactory();
         }
     }

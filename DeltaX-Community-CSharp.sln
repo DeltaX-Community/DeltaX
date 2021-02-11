@@ -81,6 +81,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeltaX.Process.FiniteStateM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeltaX.RealTime.RtConnectorFactory", "Source\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj", "{86670793-4346-4CEF-AE5A-83F617494BCB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{16E03F46-F4CC-4972-936F-61746EFB7E60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaX.ProcessBase", "Source\Core\DeltaX.ProcessBase\DeltaX.ProcessBase.csproj", "{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeltaX.Process.ServiceTemplate", "Templates\DeltaX.Process.ServiceTemplate\DeltaX.Process.ServiceTemplate.csproj", "{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -329,6 +335,22 @@ Global
 		{86670793-4346-4CEF-AE5A-83F617494BCB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{86670793-4346-4CEF-AE5A-83F617494BCB}.Release|x64.ActiveCfg = Release|Any CPU
 		{86670793-4346-4CEF-AE5A-83F617494BCB}.Release|x64.Build.0 = Release|Any CPU
+		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}.Debug|x64.Build.0 = Debug|Any CPU
+		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}.Release|x64.ActiveCfg = Release|Any CPU
+		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}.Release|x64.Build.0 = Release|Any CPU
+		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Debug|x64.Build.0 = Debug|Any CPU
+		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Release|x64.ActiveCfg = Release|Any CPU
+		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -370,6 +392,8 @@ Global
 		{EF91CBED-F303-45DC-986C-E8F4EBC1F4BD} = {6C082621-A041-437A-A513-139026CF82DB}
 		{74B897D1-5D7E-450F-A9BB-DD893C2B4E20} = {6C082621-A041-437A-A513-139026CF82DB}
 		{86670793-4346-4CEF-AE5A-83F617494BCB} = {698232C6-0116-42AF-B865-E504C3C47A61}
+		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC} = {5A8284E4-A2D2-4307-93E8-937161507934}
+		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2} = {16E03F46-F4CC-4972-936F-61746EFB7E60}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {700E020D-63DB-452D-BE0E-E771462AB1DA}

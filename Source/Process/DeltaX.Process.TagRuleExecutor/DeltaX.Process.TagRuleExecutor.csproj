@@ -5,17 +5,9 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="appsettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>D:\DEV\repos\DeltaX-Community\DeltaX\Bin\</OutputPath>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
@@ -28,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\DeltaX.CommonExtensions\DeltaX.CommonExtensions.csproj" />
     <ProjectReference Include="..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
+    <ProjectReference Include="..\..\Core\DeltaX.ProcessBase\DeltaX.ProcessBase.csproj" />
     <ProjectReference Include="..\..\Modules\DeltaX.Modules.TagRuleEvaluator\DeltaX.Modules.TagRuleEvaluator.csproj" />
     <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
     <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj" />
