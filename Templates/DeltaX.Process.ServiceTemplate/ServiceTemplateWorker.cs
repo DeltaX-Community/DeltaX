@@ -1,8 +1,9 @@
+using DeltaX.CommonExtensions;
+using DeltaX.RealTime;
+using DeltaX.RealTime.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System; 
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,10 +11,14 @@ using System.Threading.Tasks;
 public class ServiceTemplateWorker : BackgroundService
 {
     private readonly ILogger _logger;
+    private readonly IRtConnector connector;
 
-    public ServiceTemplateWorker(ILogger<ServiceTemplateWorker> logger)
+    public ServiceTemplateWorker(
+        ILogger<ServiceTemplateWorker> logger,
+        IRtConnector connector)
     {
         _logger = logger;
+        this.connector = connector;
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
@@ -26,6 +31,8 @@ public class ServiceTemplateWorker : BackgroundService
     {
         return Task.Run(async () =>
         {
+            connector.ConnectAsync(stoppingToken).Wait();
+
             _logger.LogWarning("Execution Started: {time}", DateTimeOffset.Now);
 
             int count = 10;
@@ -34,6 +41,8 @@ public class ServiceTemplateWorker : BackgroundService
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 _logger.LogDebug("Worker running at: {time}", DateTimeOffset.Now);
+
+                connector.SetNumeric("test/ServiceTemplateWorker", DateTime.Now.ToUnixTimestamp());
                 await Task.Delay(1000, stoppingToken);
             }
         }).ContinueWith((t) =>

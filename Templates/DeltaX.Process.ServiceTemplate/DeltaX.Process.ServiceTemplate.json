@@ -1,7 +1,9 @@
 {
+  "RealTimeConnectorSectionName": "RtMqttConnector",
+
   "Serilog": {
     "MinimumLevel": {
-      "Default": "Debug"
+      "Default": "Information"
     },
     "WriteTo": [
       {

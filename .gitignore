@@ -41,3 +41,4 @@ obj/
 *.zip 
 /Source/UI/DeltaX.GenericReportDb/wwwroot
 /Source/UI/DeltaX.VueDefaultTemplate/wwwroot
+/Data

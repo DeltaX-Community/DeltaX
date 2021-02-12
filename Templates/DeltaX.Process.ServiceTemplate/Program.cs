@@ -1,6 +1,7 @@
 using DeltaX.Configuration; 
 using DeltaX.ProcessBase;
 using DeltaX.RealTime;
+using DeltaX.RealTime.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,11 @@ var host = ProcessHostBase.CreateHostBuilder(args, args, false)
     {
         services.AddHostedService<ServiceTemplateWorker>();
         services.AddSingleton<RtConnectorFactory>();
+        services.AddSingleton<IRtConnector>(services => {
+            var connFactory = services.GetService<RtConnectorFactory>();
+            var configuration = services.GetService<IConfiguration>();
+            return connFactory.GetConnector(configuration.GetValue<string>("RealTimeConnectorSectionName"));
+        });
     })
     .Build();
   

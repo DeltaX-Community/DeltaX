@@ -12,8 +12,8 @@
         ILogger logger;
         Task reconnectTask;
 
-        ManualResetEvent isConnectedEvent;
-        ManualResetEvent isDisconnectedEvent;
+        ManualResetEventSlim isConnectedEvent;
+        ManualResetEventSlim isDisconnectedEvent;
 
         public event EventHandler<bool> OnConnectionChange;
 
@@ -23,7 +23,7 @@
         {
             get
             {
-                return isConnectedEvent.WaitOne(0)
+                return isConnectedEvent.Wait(0)
                     && Client?.IsConnected == true;
             }
         }
@@ -37,8 +37,8 @@
             loggerFactory ??= Configuration.DefaultLoggerFactory;
             this.logger = loggerFactory.CreateLogger($"{nameof(MqttClientHelper)}");
             this.Config = config; 
-            isConnectedEvent = new ManualResetEvent(false);
-            isDisconnectedEvent = new ManualResetEvent(true);
+            isConnectedEvent = new ManualResetEventSlim(false);
+            isDisconnectedEvent = new ManualResetEventSlim(true);
             this.Client = client ?? new MqttClient(Config.Host, Config.Port, Config.Secure, null, null, MqttSslProtocols.None);
         }
 
@@ -71,7 +71,7 @@
                     OnConnectionChange?.Invoke(this, IsConnected);
 
                     // block while is connected
-                    isDisconnectedEvent.WaitOne();
+                    isDisconnectedEvent.Wait(cancellationToken);
                 }
                 catch (Exception e)
                 {
@@ -113,7 +113,7 @@
             return Task.Run(() =>
             {
                 RunAsync(cancellationToken);
-                isConnectedEvent.WaitOne();
+                isConnectedEvent.Wait(cancellationToken ?? CancellationToken.None);
                 return Task.FromResult(IsConnected);
             });
         }
