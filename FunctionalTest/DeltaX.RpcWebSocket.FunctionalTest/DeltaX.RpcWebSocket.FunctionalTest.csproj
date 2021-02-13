@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+ 
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\Connections\DeltaX.Connections.WebSocket\DeltaX.Connections.WebSocket.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.CommonExtensions\DeltaX.CommonExtensions.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.ProcessBase\DeltaX.ProcessBase.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExpression\DeltaX.RealTime.RtExpression.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExtension\DeltaX.RealTime.RtExtension.csproj" />
+    <ProjectReference Include="..\..\Source\Rpc\DeltaX.Rpc.JsonRpc.WebSocketConnection\DeltaX.Rpc.JsonRpc.WebSocketConnection.csproj" />
+    <ProjectReference Include="..\..\Source\Rpc\DeltaX.Rpc.JsonRpc\DeltaX.Rpc.JsonRpc.csproj" />
+  </ItemGroup>
+
+</Project>
