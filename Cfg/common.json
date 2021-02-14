@@ -24,7 +24,8 @@
     "Port": 1883,
     "Username": "sima",
     "Password": "sima",
-    "Prefix": "Demo/"
+    "Prefix": "Demo/",
+	"ExtraTopicsSbscribe": ["#", "$SYS/#"]
   },
   
   "Serilog": {

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DeltaX.CommonExtensions
+﻿namespace DeltaX.CommonExtensions
 {
+    using System;
+
     public static class DateTimeExtensions
     { 
         public static double ToUnixTimestamp(this DateTime date, bool toUtc = true)

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace DeltaX.MemoryMappedRecord
+{
+    using System;
+    using System.Collections.Generic;
 
-namespace DeltaX.MemoryMappedRecord
-{ 
     public interface IMemoryMappedRecord: IDisposable
     {
         int BlockSize { get; set; }

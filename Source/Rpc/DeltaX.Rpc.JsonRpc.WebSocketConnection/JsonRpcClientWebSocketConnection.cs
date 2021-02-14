@@ -4,14 +4,15 @@
     using DeltaX.Rpc.JsonRpc.Interfaces;
     using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic; 
+    using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     class JsonRpcClientWebSocketConnection : IRpcConnection
     {
         private WebSocketHandler client;
         private TimeSpan timeout;
-        private ConcurrentDictionary<string, TaskCompletionSource<IMessage>> requestPending;
+        private ConcurrentDictionary<object, TaskCompletionSource<IMessage>> requestPending;
 
         public JsonRpcClientWebSocketConnection(WebSocketHandler client)
         {
@@ -76,6 +77,11 @@
         public bool UpdateRegisteredMethods(IEnumerable<string> methods)
         {
             return true;
+        }
+
+        public Task ConnectAsync(CancellationToken? cancellationToken = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }

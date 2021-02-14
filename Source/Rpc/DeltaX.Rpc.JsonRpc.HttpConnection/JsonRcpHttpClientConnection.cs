@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public class JsonRcpHttpClientConnection : IRpcConnection
@@ -95,6 +96,11 @@
             }
 
             return true;
+        }
+
+        public Task ConnectAsync(CancellationToken? cancellationToken = null)
+        {
+            return Task.CompletedTask;
         }
     }
 }

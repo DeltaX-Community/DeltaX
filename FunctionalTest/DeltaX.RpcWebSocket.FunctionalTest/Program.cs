@@ -18,10 +18,10 @@ Host
     {
         webBuilder.UseStartup<Startup>();
     })
-    // .UseWindowsService()
-    // .ConfigureServices((hostContext, services) =>
-    // {
-    //     services.AddHostedService<WebSocketsWorker>(); 
-    // })
-    .Build() 
-    .RunApp();  
+    .UseWindowsService()
+    .ConfigureServices((hostContext, services) =>
+    {
+        services.AddHostedService<RealTimeWebSocketBridgeWorker>();
+    })
+    .Build()
+    .RunApp();

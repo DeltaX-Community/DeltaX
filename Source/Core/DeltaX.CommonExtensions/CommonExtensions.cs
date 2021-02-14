@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DeltaX.CommonExtensions
+﻿namespace DeltaX.CommonExtensions
 {
+    using System;
+
     public static class CommonExtensions
     {
         public static byte[] GetBytes(this string str)

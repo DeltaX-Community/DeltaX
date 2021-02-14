@@ -83,9 +83,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeltaX.RealTime.RtConnector
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{16E03F46-F4CC-4972-936F-61746EFB7E60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaX.ProcessBase", "Source\Core\DeltaX.ProcessBase\DeltaX.ProcessBase.csproj", "{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeltaX.ProcessBase", "Source\Core\DeltaX.ProcessBase\DeltaX.ProcessBase.csproj", "{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeltaX.Process.ServiceTemplate", "Templates\DeltaX.Process.ServiceTemplate\DeltaX.Process.ServiceTemplate.csproj", "{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeltaX.RpcWebSocket.FunctionalTest", "FunctionalTest\DeltaX.RpcWebSocket.FunctionalTest\DeltaX.RpcWebSocket.FunctionalTest.csproj", "{618DDC11-D338-4612-8C8B-C4AB468419EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaX.Modules.RealTimeRpcWebSocket", "Source\Modules\DeltaX.Modules.RealTimeRpcWebSocket\DeltaX.Modules.RealTimeRpcWebSocket.csproj", "{616DC435-6FF1-47DA-A2C7-2682C29042CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -351,6 +355,22 @@ Global
 		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Release|x64.ActiveCfg = Release|Any CPU
 		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2}.Release|x64.Build.0 = Release|Any CPU
+		{618DDC11-D338-4612-8C8B-C4AB468419EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{618DDC11-D338-4612-8C8B-C4AB468419EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{618DDC11-D338-4612-8C8B-C4AB468419EE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{618DDC11-D338-4612-8C8B-C4AB468419EE}.Debug|x64.Build.0 = Debug|Any CPU
+		{618DDC11-D338-4612-8C8B-C4AB468419EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{618DDC11-D338-4612-8C8B-C4AB468419EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{618DDC11-D338-4612-8C8B-C4AB468419EE}.Release|x64.ActiveCfg = Release|Any CPU
+		{618DDC11-D338-4612-8C8B-C4AB468419EE}.Release|x64.Build.0 = Release|Any CPU
+		{616DC435-6FF1-47DA-A2C7-2682C29042CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{616DC435-6FF1-47DA-A2C7-2682C29042CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{616DC435-6FF1-47DA-A2C7-2682C29042CE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{616DC435-6FF1-47DA-A2C7-2682C29042CE}.Debug|x64.Build.0 = Debug|Any CPU
+		{616DC435-6FF1-47DA-A2C7-2682C29042CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{616DC435-6FF1-47DA-A2C7-2682C29042CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{616DC435-6FF1-47DA-A2C7-2682C29042CE}.Release|x64.ActiveCfg = Release|Any CPU
+		{616DC435-6FF1-47DA-A2C7-2682C29042CE}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -394,6 +414,8 @@ Global
 		{86670793-4346-4CEF-AE5A-83F617494BCB} = {698232C6-0116-42AF-B865-E504C3C47A61}
 		{ECFAF3F1-E7DC-458A-9C54-0030D18C1CDC} = {5A8284E4-A2D2-4307-93E8-937161507934}
 		{953B60CD-4FE1-4AC6-9EA8-98AD42E346A2} = {16E03F46-F4CC-4972-936F-61746EFB7E60}
+		{618DDC11-D338-4612-8C8B-C4AB468419EE} = {B9B2B733-8096-4FC6-B920-E43742AAFF76}
+		{616DC435-6FF1-47DA-A2C7-2682C29042CE} = {889E6B56-E843-4980-831A-FF0C4F175CF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {700E020D-63DB-452D-BE0E-E771462AB1DA}

@@ -1,4 +1,5 @@
 using DeltaX.Connections.WebSocket;
+using DeltaX.Modules.RealTimeRpcWebSocket;
 using DeltaX.RealTime;
 using DeltaX.RealTime.Interfaces;
 using DeltaX.Rpc.JsonRpc.Interfaces;
@@ -19,23 +20,20 @@ using System.Threading.Tasks;
 namespace DeltaX.RpcWebSocket.FunctionalTest
 {
     public class Startup
-    { 
+    {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<WebSocketHandlerHub>();
             services.AddSingleton<RtConnectorFactory>();
-           
-            services.AddSingleton<IRtConnector>(services => {
-                var connFactory = services.GetService<RtConnectorFactory>();
-                var configuration = services.GetService<IConfiguration>();
-                var conn =  connFactory.GetConnector(configuration.GetValue<string>("RealTimeConnectorSectionName"));
+            services.AddSingleton<IRtConnector>(serv =>
+            { 
+                var connFactory = serv.GetService<RtConnectorFactory>();
+                var configuration = serv.GetService<IConfiguration>();
+                var conn = connFactory.GetConnector(configuration.GetValue<string>("RealTimeConnectorSectionName"));
                 conn.ConnectAsync();
                 return conn;
             });
-            services.AddSingleton<RealTimeRpcWebSocketMiddleware>();
-            services.AddSingleton<IRpcWebSocketMiddleware>(s => s.GetService<RealTimeRpcWebSocketMiddleware>());
-            services.AddSingleton<IRpcConnection, JsonRpcWebSocketConnection>();
-            services.AddSingleton<Rpc.JsonRpc.Rpc>(); 
+
+            services.AddRealTimeWebSocketServices(TimeSpan.FromMilliseconds(2000));
 
             services.AddControllers();
 
@@ -54,9 +52,7 @@ namespace DeltaX.RpcWebSocket.FunctionalTest
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-           
-
+        { 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -76,67 +72,8 @@ namespace DeltaX.RpcWebSocket.FunctionalTest
                 endpoints.MapControllers();
             });
 
-            app.UseRtWebSocketBridge("/ws");
-        }
-
-        // public void ConfigureWebSocket(IApplicationBuilder app)
-        // {
-        //    var  hub = app.ApplicationServices.GetService<WebSocketHandlerHub>();
-        // 
-        //     app.Use(async (context, next) =>
-        //     {
-        //         if (context.WebSockets.IsWebSocketRequest)
-        //         {
-        //             var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-        //             await hub.RegisterWebSocket(webSocket).ReceiveAsync();
-        //             return;
-        //         }
-        //         await next();
-        //     });
-        // }
-    }
-
-    public static class WsExtend
-    {
-        public static IApplicationBuilder UseRtWebSocketBridge(this IApplicationBuilder app, string mapPrefix = "/rt")
-        {
-            var hub = app.ApplicationServices.GetService<WebSocketHandlerHub>(); 
-            var rt = app.ApplicationServices.GetService<RealTimeRpcWebSocketMiddleware>();
-            var rpc = app.ApplicationServices.GetService<Rpc.JsonRpc.Rpc>();
-            var logger = app.ApplicationServices.GetService<ILogger<RealTimeRpcWebSocketMiddleware>>();
-
-            Task.Run(async () =>
-            { 
-                logger.LogWarning("Execution Started: {time}", DateTimeOffset.Now);
-
-                while (true)
-                {
-                    logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                    logger.LogInformation("clients {clients}", hub.GetClients().Count());
-                     
-                    rt.ForceRefreshTags();
-                    await Task.Delay(1000);
-                }
-            }).ContinueWith((t) =>
-            {
-                logger.LogWarning("Execution Stoped: {time}", DateTimeOffset.Now);
-            });
-
-            return app
-                .UseWebSockets()
-                .Map(mapPrefix, app =>
-                {
-                    app.Use(async (context, next) =>
-                    {
-                        if (context.WebSockets.IsWebSocketRequest)
-                        {
-                            var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                            await hub.RegisterWebSocket(webSocket).ReceiveAsync();
-                            return;
-                        }
-                        await next();
-                    });
-                });
+            app.UseWebSockets();
+            app.UseRealTimeWebSocketBridge("/ws");
         }
     }
 }

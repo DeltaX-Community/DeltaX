@@ -14,9 +14,11 @@
     public class RtConnectorMemoryMapped : RtConnectorBase, IRtConnector
     {  
         private readonly ILogger logger; 
-        private readonly HashSet<RtTagMemoryMapped> rtTags; 
+        private readonly HashSet<RtTagMemoryMapped> rtTags;
+        private HashSet<string> extraTopics;
         private IKeyValueMemory keyValueMemory;
-         
+        private readonly bool syncWithExistentTopics;
+
         public static IRtConnector BuildFromFactory(
             IConfigurationSection configuration, 
             ILoggerFactory loggerFactory = null)
@@ -34,7 +36,7 @@
         {
             var keyValueMemory = KeyValueMemory.Build(configuration, loggerFactory);
             return new RtConnectorMemoryMapped(keyValueMemory, syncWithExistentTopics, loggerFactory);
-        } 
+        }
 
         private RtConnectorMemoryMapped(
             IKeyValueMemory keyValueMemory,
@@ -45,14 +47,11 @@
             this.rtTags = new HashSet<RtTagMemoryMapped>();
             this.logger = loggerFactory.CreateLogger($"{nameof(RtConnectorMemoryMapped)}");
             this.keyValueMemory = keyValueMemory;
-            
-            RaiseOnConnect(keyValueMemory != null);
+            this.syncWithExistentTopics = syncWithExistentTopics;
+            this.extraTopics = new HashSet<string>();
 
-            if (syncWithExistentTopics)
-            {
-                keyValueMemory.KeysChanged += KeyValueMemory_KeysChanged;
-                LoadTopics();
-            }
+            this.keyValueMemory.KeysChanged += KeyValueMemory_KeysChanged;
+            LoadTopics();
         }
 
         private void KeyValueMemory_KeysChanged(object sender, List<string> e)
@@ -62,11 +61,19 @@
 
         private void LoadTopics()
         {
-            foreach (var topic in keyValueMemory.Keys)
+            lock (rtTags)
             {
-                if (!rtTags.Any(t => t.TagName == topic))
+                if (syncWithExistentTopics)
                 {
-                    AddTag(topic, topic, null);
+                    foreach (var topic in keyValueMemory.Keys.Where(k => !rtTags.Any(t => t.TagName == k)))
+                    {
+                        AddTag(topic, topic, null);
+                    }
+                }
+
+                foreach (var topic in keyValueMemory.Keys.Where(k => !extraTopics.Contains(k)))
+                {
+                    extraTopics.Add(topic);
                 }
             }
         }
@@ -78,6 +85,15 @@
                 lock (rtTags) return rtTags.Select(t => t.TagName).ToList();
             }
         }
+
+        public override IEnumerable<string> KnownTopics
+        {
+            get
+            {
+                lock (rtTags) return extraTopics.Union(rtTags.Select(t => t.Topic)).ToHashSet();
+            }
+        }
+
 
         public override bool IsConnected => keyValueMemory != null;
 
@@ -125,9 +141,9 @@
 
         public void RemoveTag(IRtTag tag)
         {
-            lock (rtTags)
+            if (!syncWithExistentTopics)
             {
-                rtTags.Remove(tag as RtTagMemoryMapped);
+                lock (rtTags) rtTags.Remove(tag as RtTagMemoryMapped);
             }
             logger?.LogDebug("RemoveTag TagName:{0}", tag.TagName);
         }

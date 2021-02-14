@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+  </ItemGroup>
+
+
+  <ItemGroup> 
+    <ProjectReference Include="..\..\Connections\DeltaX.Connections.WebSocket\DeltaX.Connections.WebSocket.csproj" />
+    <ProjectReference Include="..\..\Core\DeltaX.CommonExtensions\DeltaX.CommonExtensions.csproj" />
+    <ProjectReference Include="..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" /> 
+    <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" /> 
+    <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj" /> 
+    <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtExpression\DeltaX.RealTime.RtExpression.csproj" />
+    <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtExtension\DeltaX.RealTime.RtExtension.csproj" />
+    <ProjectReference Include="..\..\Rpc\DeltaX.Rpc.JsonRpc.WebSocketConnection\DeltaX.Rpc.JsonRpc.WebSocketConnection.csproj" />
+    <ProjectReference Include="..\..\Rpc\DeltaX.Rpc.JsonRpc\DeltaX.Rpc.JsonRpc.csproj" />
+  </ItemGroup>
+
+</Project>

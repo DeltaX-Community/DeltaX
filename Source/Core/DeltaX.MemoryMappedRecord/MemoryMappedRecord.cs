@@ -1,22 +1,24 @@
-﻿using DeltaX.CommonExtensions;
-using DeltaX.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.IO.MemoryMappedFiles;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
-using System.Threading;
-
-namespace DeltaX.MemoryMappedRecord
+﻿namespace DeltaX.MemoryMappedRecord
 {
+    using DeltaX.CommonExtensions;
+    using DeltaX.Configuration;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.IO.MemoryMappedFiles;
+    using System.Runtime.InteropServices;
+    using System.Runtime.Versioning;
+    using System.Threading;
+
     /// <summary>
     /// Memoria Mapeada
     /// 
     /// | MMHeader                               (512 bytes) | 
+    /// | .................................................. |
     /// | MMRecordStruct first recored    4 + (data_0 bytes) |
+    /// | .................................................. |
     /// | .................................................. |
     /// | MMRecordStruct N recored        4 + (data_N bytes) |
     /// 

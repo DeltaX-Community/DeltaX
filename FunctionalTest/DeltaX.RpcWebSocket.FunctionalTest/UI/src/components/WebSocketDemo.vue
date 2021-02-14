@@ -75,6 +75,14 @@ ws.on('open', function () {
       console.log("rpc.rt.subscribe error", error);
     });
 
+  ws.call('rpc.rt.get_topics', [], 10000)
+    .then(function (result) {
+      console.log("rpc.rt.get_topics result", result);
+    })
+    .catch(function (error) {
+      console.log("rpc.rt.get_topics error", error);
+    });
+
   // ws.call('Sum', [5, 3], 10000)
   //   .then(function (result) {
   //     console.log("Sum result", result);

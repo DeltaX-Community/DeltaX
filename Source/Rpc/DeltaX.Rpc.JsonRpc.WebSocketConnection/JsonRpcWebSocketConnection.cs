@@ -6,6 +6,7 @@
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
 
@@ -13,23 +14,19 @@
     {
         private string prefix;
         private ConcurrentDictionary<string, TaskCompletionSource<IMessage>> requestPending;
-        private ConcurrentDictionary<string, WebSocketHandler> tasksToReply = new ConcurrentDictionary<string, WebSocketHandler>();
-        private IEnumerable<string> registeredMethods;
-        private WebSocketServer server;
-        private DateTimeOffset uptime;
-        private EventsRpcWs eventsRpcWs;
+        private ConcurrentDictionary<object, WebSocketHandler> tasksToReply = new ConcurrentDictionary<object, WebSocketHandler>();
+        private WebSocketHandlerHub serverHub; 
+        private IRpcWebSocketMiddleware wsMiddleware;
+        private string[] registeredMethods;
 
-        public JsonRpcWebSocketConnection(WebSocketServer server, string prefix = null, string clientId = null )
+        public JsonRpcWebSocketConnection(WebSocketHandlerHub serverHub, IRpcWebSocketMiddleware wsMiddleware,  string clientId = null )
         {
-            this.server = this.server ?? throw new ArgumentNullException(nameof(server));
-            this.prefix = prefix ?? "";
-            this.requestPending = new ConcurrentDictionary<string, TaskCompletionSource<IMessage>>();
-            this.registeredMethods = new string[0];
+            this.serverHub = serverHub ?? throw new ArgumentNullException(nameof(serverHub)); 
+            this.requestPending = new ConcurrentDictionary<string, TaskCompletionSource<IMessage>>(); 
             this.ClientId = clientId ?? Guid.NewGuid().ToString("N");
-            this.eventsRpcWs = eventsRpcWs = new EventsRpcWs(); 
-            this.uptime = new DateTimeOffset(DateTime.Now); 
+            this.wsMiddleware = wsMiddleware ?? new RpcWebSocketMiddleware();
 
-            this.server.Hub.OnMessageReceive += Hub_OnMessageReceive;
+            this.serverHub.OnMessageReceive += Hub_OnMessageReceive; 
         }
 
 
@@ -41,36 +38,46 @@
 
 
         private void Hub_OnMessageReceive(object sender, Message e) 
-        {
+        { 
             var msg = JsonRpc.Message.Parse(e.Data);
                         
             if (msg.IsRequest())
             {
-                // WebSocket Events Subscriber / Unsubscriber
-                if (msg.MethodName == "rpc.on")
+                var middlewareResponse = wsMiddleware.ProcessMessage(e.Client, msg); 
+                if (middlewareResponse!=null)
                 {
-                    var result = eventsRpcWs.Subscribe(e.Client, msg.GetParameters<string[]>());
-                    SendResponseAsync(JsonRpc.Message.CreateResponse(msg, result));
+                    tasksToReply[msg.Id] = e.Client;
+                    SendResponseAsync(middlewareResponse);
                     return;
-                }
-                else if (msg.MethodName == "rpc.off")
+                } 
+                else if (registeredMethods.Contains(msg.MethodName))
                 {
-                    var result = eventsRpcWs.Unsubscribe(e.Client, msg.GetParameters<string[]>());
-                    SendResponseAsync(JsonRpc.Message.CreateResponse(msg, result));
-                    return;
+                    tasksToReply[msg.Id] = e.Client;
+                    e.Client.OnClose -= Client_OnClose;
+                    e.Client.OnClose += Client_OnClose;
                 }
-                else
-                {
-                    tasksToReply[msg.Id] = e.Client; 
-                }
-            } 
-              
+            }
+            
             OnReceive?.Invoke(this, msg);             
+        }
+
+        private void Client_OnClose(object sender, bool e)
+        {
+            if (sender is WebSocketHandler ws)
+            {
+                lock (tasksToReply)
+                {
+                    foreach (var p in tasksToReply.Where(pair => pair.Value == ws).ToArray())
+                    {
+                        tasksToReply.Remove(p.Key, out _);
+                    }
+                }
+            }
         }
 
         public Task SendNotificationAsync(IMessage message)
         {
-            eventsRpcWs.Notify(message);
+            wsMiddleware.Notify(message);
             return Task.CompletedTask;
         }
 
@@ -98,6 +105,11 @@
         public Task<IMessage> SendRequestAsync(IMessage message)
         {
             throw new NotImplementedException();
+        }
+
+        public Task ConnectAsync(CancellationToken? cancellationToken = null)
+        {
+            return wsMiddleware.RunAsync(cancellationToken);
         }
     }
 }

@@ -46,31 +46,39 @@ public class TagRuleChangeExecutorWorker : BackgroundService
 
             await this.executor.ConnectAsync(stoppingToken);
 
-            var t1 = Task.Run(async () =>
-            {
-                await this.connector.ConnectAsync(stoppingToken);
+            /// Task.Run(async () =>
+            /// {
+            ///     await this.connector.ConnectAsync(stoppingToken);
+            /// 
+            ///     int count = 0;
+            ///     await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+            ///     while (count < 100 && !stoppingToken.IsCancellationRequested)
+            ///     {
+            ///         connector.SetNumeric("tag1", count++);
+            ///         connector.SetNumeric("tag2/Task.CurrentId", Task.CurrentId ?? 1);
+            ///         await Task.Delay(TimeSpan.FromSeconds(20), stoppingToken);
+            ///     }
+            /// }, stoppingToken);
 
-                int count = 0;
-                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-                while (count < 100 && !stoppingToken.IsCancellationRequested)
-                {
-                    connector.SetNumeric("tag1", count++);
-                    connector.SetNumeric("tag2/Task.CurrentId", Task.CurrentId ?? 1);
-                    await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-                }
-            }, stoppingToken);
-
-            var t2 = Task.Run(async () =>
+            var taskInfo = Task.Run(async () =>
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     logger.LogDebug("- Worker running at: {time}", DateTimeOffset.Now.ToString("o"));
+                    await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                }
+            });
+
+            var task = Task.Run(async () =>
+            {
+                while (!stoppingToken.IsCancellationRequested)
+                {
                     executor.EvaluateChanges();
                     await Task.Delay(TimeSpan.FromMilliseconds(LoopEvaluateInterval), stoppingToken);
                 }
             });
 
-            await Task.WhenAll(t1, t2);
+            await Task.WhenAll(taskInfo, task);
         }
         finally
         {

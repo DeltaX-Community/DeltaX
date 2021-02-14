@@ -17,25 +17,30 @@
         HashSet<RtTagMqtt> rtTags;
         private ILogger logger;
         private string prefix;
+        private string[] extraTopicsSbscribe;
+        private HashSet<string> extraTopics;
+        private bool autoAddExtraTopics = false;
 
 
         public static IRtConnector Build(
             string sectionName = "Mqtt",
             string configFileName = "common.json",
             ILoggerFactory loggerFactory = null,
-            string prefix = null)
+            string prefix = null,
+            string[] extraTopicsSbscribe = null)
         {
             var config = new MqttConfiguration(sectionName, configFileName);
             var mqttClient = new MqttClientHelper(config);
-            return new RtConnectorMqtt(mqttClient, loggerFactory, prefix);
+            return new RtConnectorMqtt(mqttClient, loggerFactory, prefix, extraTopicsSbscribe);
         } 
 
         public static IRtConnector Build(
             MqttClientHelper mqttClient,
             ILoggerFactory loggerFactory = null,
-            string prefix = null)
+            string prefix = null,
+            string[] extraTopicsSbscribe = null)
         {
-            return new RtConnectorMqtt(mqttClient, loggerFactory, prefix);
+            return new RtConnectorMqtt(mqttClient, loggerFactory, prefix, extraTopicsSbscribe);
         }
 
         public static IRtConnector BuildFromFactory(
@@ -45,24 +50,28 @@
             var config = new MqttConfiguration(configuration);
             var mqttClient = new MqttClientHelper(config);
             var prefix = configuration?.GetValue<string>("Prefix", "");
-            return new RtConnectorMqtt(mqttClient, loggerFactory, prefix);
+            var extraTopicsSbscribe = configuration?.GetSection("ExtraTopicsSbscribe")?.Get<string[]>(); 
+            return new RtConnectorMqtt(mqttClient, loggerFactory, prefix, extraTopicsSbscribe);
         }
 
         protected RtConnectorMqtt(
             MqttClientHelper mqttClient,
             ILoggerFactory loggerFactory = null,
-            string prefix = null)
+            string prefix = null, 
+            string[] extraTopicsSbscribe = null)
         {
             loggerFactory ??= Configuration.DefaultLoggerFactory;
 
             this.mqttClient = mqttClient;
             this.prefix = prefix ?? "";
             this.logger = loggerFactory.CreateLogger($"{nameof(RtConnectorMqtt)}");
+            this.extraTopicsSbscribe = extraTopicsSbscribe ?? new string[0];
+            this.extraTopics = new HashSet<string>();
 
             this.mqttClient.OnConnectionChange += MqttOnConnectionChange;
             this.mqttClient.Client.MqttMsgPublishReceived += MqttOnMessageReceive;
 
-            rtTags = new HashSet<RtTagMqtt>();
+            rtTags = new HashSet<RtTagMqtt>();            
         }
 
         private void MqttOnConnectionChange(object sender, bool isConnected)
@@ -88,19 +97,29 @@
         }
 
         private void MqttOnMessageReceive(object sender, MqttMsgPublishEventArgs e)
-        {  
+        {
             RtTagMqtt[] tags;
             IRtMessage msg = RtMessage.Create(e.Topic, RtValue.Create(e.Message), e);
 
             lock (rtTags)
             {
                 tags = rtTags.Where(tt => tt.Topic == msg.Topic).ToArray();
+
+                if (!extraTopics.Contains(e.Topic))
+                {
+                    extraTopics.Add(e.Topic);
+                }
             }
 
             foreach (var tag in tags)
             {
                 tag.RaiseOnUpdatedValue(msg.Value);
                 RaiseOnUpdatedValue(tag);
+            } 
+
+            if (autoAddExtraTopics && !tags.Any() && extraTopicsSbscribe.Any())
+            {
+                var tag = (RtTagMqtt)AddTag(e.Topic, e.Topic, null);
             }
 
             RaiseOnMessageReceive(msg);
@@ -116,16 +135,30 @@
                 lock (rtTags) return rtTags.Select(t => t.TagName);
             }
         }
+        
+        public override IEnumerable<string> KnownTopics
+        {
+            get
+            {
+                lock (rtTags) return extraTopics.Union(rtTags.Select(t => t.Topic)).ToHashSet();
+            }
+        }
 
-        public override IRtTag AddTag(string tagName, string topic, IRtTagOptions options) 
-        { 
+        public override IRtTag AddTag(string tagName, string topic, IRtTagOptions options)
+        {
+            var tag = GetTag(tagName);
+            if (tag != null)
+            {
+                return tag;
+            }
+
             RtTagMqtt t = new RtTagMqtt(this, tagName, $"{prefix}{topic}", (options as RtTagMqttOptions));
             lock (rtTags)
-            {                
+            {
                 rtTags.Add(t);
             }
             Subscribe(t);
-            logger?.LogInformation("AddTag TagName:{0}", t.TagName);
+            logger?.LogInformation("AddTag TagName:{0} prefix:{1}", t.TagName, prefix);
             return t;
         }
 
@@ -155,6 +188,7 @@
             }
         }
 
+
         private void SubscribeAll()
         {
             string[] topics;
@@ -163,15 +197,21 @@
             // Subscribe distinct topics only
             lock (rtTags)
             {
-                var tagsByTopic = rtTags.ToDictionary(t => t.Topic, t => t);
-                topics = tagsByTopic.Keys.ToArray();
-                qosLevel = tagsByTopic.Values.Select(t => (byte)t.Options.qosLevels ).ToArray();
+                var tagsByTopic = rtTags.GroupBy(t => t.Topic).Select(g => g.First()).ToList();
+                topics = tagsByTopic.Select(t => t.Topic).ToArray();
+                qosLevel = tagsByTopic.Select(t => (byte)t.Options.qosLevels).ToArray();
             }
 
             logger?.LogDebug("SubscribeAll topics.Count:{0} Topics:[{1}]", topics.Count(), string.Join(", ", topics));
             if (topics.Any())
             {
                 mqttClient.Client.Subscribe(topics, qosLevel);
+            }
+
+            if (extraTopicsSbscribe.Any())
+            {
+                qosLevel = extraTopicsSbscribe.Select(t => (byte)RtMqttMsgQosLevels.QOS_LEVEL_AT_MOST_ONCE).ToArray();
+                mqttClient.Client.Subscribe(extraTopicsSbscribe, qosLevel);
             }
         }
 

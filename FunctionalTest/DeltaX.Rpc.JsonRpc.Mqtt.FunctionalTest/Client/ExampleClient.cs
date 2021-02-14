@@ -37,7 +37,7 @@
             var mqtt = new MqttClientHelper(config);
 
             // Rpc Ojbect
-            var rpc = new Rpc(new JsonRpcMqttConnection(mqtt.Client, "test/", clientId: "ExampleClient"));
+            var rpc = new Rpc(new JsonRpcMqttConnection(mqtt, "test/", clientId: "ExampleClient"));
 
             // RPC Register methods for dispach notifications/events from server
             rpc.Dispatcher.RegisterMethod(this, nameof(OnNotifyBroadcast));

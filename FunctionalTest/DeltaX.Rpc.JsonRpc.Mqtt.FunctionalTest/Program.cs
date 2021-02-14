@@ -19,7 +19,7 @@
             config.Password = "sima";
 
             var mqtt = new MqttClientHelper(config);
-            var rpc = new Rpc(new JsonRpcMqttConnection(mqtt.Client, "test/", clientId: "ExampleService"));
+            var rpc = new Rpc(new JsonRpcMqttConnection(mqtt, "test/", clientId: "ExampleService"));
 
             var service = new ExampleService(rpc);
             rpc.Dispatcher.RegisterService(service);

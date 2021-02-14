@@ -3,7 +3,6 @@
     public enum TagRuleCheckType
     {
         ChangeValue,
-        ChangeUpdated,
-        ChangeCompare
+        ChangeUpdated
     };
 }

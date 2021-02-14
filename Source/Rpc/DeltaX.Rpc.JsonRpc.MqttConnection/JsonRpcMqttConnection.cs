@@ -1,12 +1,14 @@
 ﻿namespace DeltaX.Rpc.JsonRpc.MqttConnection
 {
+    using DeltaX.Connections.MqttClientHelper;
     using DeltaX.Rpc.JsonRpc;
     using DeltaX.Rpc.JsonRpc.Interfaces;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic; 
     using System.Linq;
-    using System.Text.Json; 
+    using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using uPLibrary.Networking.M2Mqtt;
     using uPLibrary.Networking.M2Mqtt.Messages;
@@ -16,10 +18,10 @@
         private string prefix;
         private ConcurrentDictionary<string, TaskCompletionSource<IMessage>> requestPending;
         private IEnumerable<string> registeredMethods;
-        private MqttClient client;
+        private MqttClientHelper client;
         private DateTimeOffset uptime;
 
-        public JsonRpcMqttConnection(MqttClient client, string prefix = null, string clientId = null)
+        public JsonRpcMqttConnection(MqttClientHelper client, string prefix = null, string clientId = null)
         {
             this.client = client ?? throw new ArgumentNullException(nameof(client));           
             this.prefix = prefix ?? "";
@@ -28,8 +30,8 @@
             this.ClientId = clientId ?? Guid.NewGuid().ToString("N");
             this.uptime = new DateTimeOffset(DateTime.Now);
 
-            this.client.ConnectionClosed += MqttOnConnectionClosed;
-            this.client.MqttMsgPublishReceived += MqttOnMessageReceive;
+            this.client.Client.ConnectionClosed += MqttOnConnectionClosed;
+            this.client.Client.MqttMsgPublishReceived += MqttOnMessageReceive;
 
             PublishInfo();
         }
@@ -52,7 +54,7 @@
             TaskCompletionSource<IMessage> promise;
             if (msg.IsResponse())
             {
-                if (requestPending.TryRemove(msg.Id, out promise))
+                if (requestPending.TryRemove(msg.Id.ToString(), out promise))
                 {
                     promise.SetResult(msg);
                 }
@@ -80,21 +82,21 @@
          
         public Task SendNotificationAsync(IMessage message)
         {
-            client.Publish(GetSubjectRequest(message.MethodName), message.SerializeToBytes());
+            this.client.Client.Publish(GetSubjectRequest(message.MethodName), message.SerializeToBytes());
             return Task.CompletedTask;
         }
 
         public Task<IMessage> SendRequestAsync(IMessage message)
         {
             var promise = new TaskCompletionSource<IMessage>();
-            requestPending.TryAdd(message.Id, promise);
+            requestPending.TryAdd(message.Id.ToString(), promise);
 
-            client.Subscribe(new[] { GetSubjectResponse(message.MethodName) }, new[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
-            client.Publish(GetSubjectRequest(message.MethodName), message.SerializeToBytes());
+            this.client.Client.Subscribe(new[] { GetSubjectResponse(message.MethodName) }, new[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
+            this.client.Client.Publish(GetSubjectRequest(message.MethodName), message.SerializeToBytes());
 
             promise.Task.ContinueWith((t) =>
             {
-                requestPending.TryRemove(message.Id, out _);
+                requestPending.TryRemove(message.Id.ToString(), out _);
             });
 
             return promise.Task;
@@ -103,8 +105,8 @@
         public Task SendResponseAsync(IMessage message)
         {
             var request = message.GetRequestMessage();
-            var clientId = request.Id.Split(':')[0];
-            client.Publish(GetSubjectResponse(request.MethodName, clientId), message.SerializeToBytes());
+            var clientId = request.Id.ToString().Split(':')[0];
+            this.client.Client.Publish(GetSubjectResponse(request.MethodName, clientId), message.SerializeToBytes());
             return Task.CompletedTask;
         }
 
@@ -120,7 +122,7 @@
                     methods = registeredMethods.Select(m => GetSubjectRequest(m)).ToArray()
                 };
 
-                client.Publish(
+                this.client.Client.Publish(
                     GetSubjectServiceInformation(),
                     JsonSerializer.SerializeToUtf8Bytes(info),
                     MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE,
@@ -132,7 +134,7 @@
         {
             if (IsConnected() && registeredMethods.Any())
             {
-                client.Subscribe(
+                this.client.Client.Subscribe(
                     registeredMethods.Select(m => GetSubjectRequest(m)).ToArray(),
                     registeredMethods.Select(t => MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE).ToArray()); 
             }
@@ -150,6 +152,11 @@
         public bool IsConnected()
         {
             return client?.IsConnected == true;
+        }
+
+        public Task ConnectAsync(CancellationToken? cancellationToken = null)
+        {
+            return client.RunAsync(cancellationToken);
         }
     }
 }

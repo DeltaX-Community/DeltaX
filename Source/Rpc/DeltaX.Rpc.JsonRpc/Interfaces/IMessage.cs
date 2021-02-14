@@ -4,7 +4,7 @@
 
     public interface IMessage
     {  
-        string Id { get; set; }
+        object Id { get; set; }
 
         string MethodName { get; }
 

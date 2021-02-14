@@ -1,4 +1,5 @@
-﻿using DeltaX.MemoryMappedRecord;
+﻿using DeltaX.CommonExtensions;
+using DeltaX.MemoryMappedRecord;
 using DeltaX.Modules.TagRuleEvaluator;
 using DeltaX.RealTime;
 using DeltaX.RealTime.Interfaces;
@@ -40,33 +41,39 @@ public class TagRuleChangeExecutor
         return connector.ConnectAsync(cancellationToken);
     }
 
+    public (IRtValue value, bool status, string name) ReadValue(string readExpression, ITagRuleDefinition<string> arg)
+    {
+        IRtTag tagRead;
+        switch (readExpression)
+        {
+            case "TagExpression":
+                tagRead = arg.TagExpression;
+                return (tagRead.Value, tagRead.Status, tagRead.ToString()); 
+            case "PrevValue":
+                return (RtValue.Create(arg.PrevValue), true, readExpression); 
+            case "Value":
+                return (RtValue.Create(arg.Value), true, readExpression);
+            case "UpdatedUnixTimestamp":
+                return (RtValue.Create(arg.Updated.ToUnixTimestamp()), true, "UpdatedUnixTimestamp");
+            default:
+                tagRead = GetTag(readExpression);
+                return (tagRead.Value, tagRead.Status, tagRead.ToString()); 
+        } 
+    }
+
     private bool ActionOnChange(ITagRuleDefinition<string> arg)
     {
         var rule = settings.Rules.First(r => r.EventId == arg.EventId);
 
-        IRtTag tagRead;
-        if (rule.WriteValueExpression.Trim() == "TagExpression")
-        { 
-            tagRead = arg.TagExpression; 
-        }
-        else if (rule.WriteValueExpression.Trim() == "TagComparation")
-        {
-            tagRead = arg.TagComparation;
-        }
-        else
-        {
-            tagRead = GetTag(rule.WriteValueExpression);
-        }
-
+        var read = ReadValue(rule.WriteValueExpression.Trim(), arg);
         var tagWrite = connector.GetOrAddTag(rule.WriteTag);
-        var value = tagRead.Value;
 
-        logger?.LogInformation("Action [Event={0} Type={1}]. Write Tag:[{2} Value={3} Status={4}] with ValueExpression:[<{5}> Value:{6} Status:{7}]",
-            arg.EventId, arg.RuleCheckType, tagWrite.TagName, tagWrite.Value, tagWrite.Status, tagRead, value, tagRead.Status);
+        logger?.LogInformation("Action [Event={0} Type={1}]. Write Tag:[{2} Value={3} Status={4}] Whit [<{5}> Value:{6} Status:{7}]",
+            arg.EventId, arg.RuleCheckType, tagWrite.TagName, tagWrite.Value, tagWrite.Status, read.name, read.value, read.status);
 
-        if (tagRead.Status)
+        if (read.status)
         {
-           return tagWrite.SetNumeric(value.Numeric);
+            return tagWrite.Set(read.value);
         }
         return false;
     }
@@ -77,10 +84,8 @@ public class TagRuleChangeExecutor
         foreach (var rule in settings.Rules)
         {
             count++;
-            rule.EventId = string.IsNullOrEmpty(rule.EventId) ? $"Event{count}" : rule.EventId;
-            rule.TagComparation = string.IsNullOrEmpty(rule.TagComparation) ? $"0" : rule.TagComparation;
-            tagRuleChangeEvaluator.AddRule(rule.EventId, rule.CheckType, GetTag(rule.TagExpression),
-                GetTag(rule.TagComparation), rule.Tolerance);
+            rule.EventId = string.IsNullOrEmpty(rule.EventId) ? $"Event{count}" : rule.EventId; 
+            tagRuleChangeEvaluator.AddRule(rule.EventId, rule.CheckType, GetTag(rule.TagExpression), rule.Tolerance, rule.DiscardValue);
         }
     }
 
@@ -90,7 +95,7 @@ public class TagRuleChangeExecutor
         IRtTag tag;
         if (!cacheTags.TryGetValue(expresionString, out tag))
         {
-            tag = new RtTagExpression(connector, expresionString); 
+            tag = RtTagExpression.AddExpression(connector, expresionString); 
             cacheTags[expresionString] = tag;
         }
         return tag;

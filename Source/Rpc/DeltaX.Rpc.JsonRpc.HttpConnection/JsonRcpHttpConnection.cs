@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public class JsonRcpHttpConnection : IRpcConnection
@@ -17,7 +18,7 @@
 
         private bool connected;
         private Listener listener;
-        private ConcurrentDictionary<string, Response> tasksToReply = new ConcurrentDictionary<string, Response>();
+        private ConcurrentDictionary<object, Response> tasksToReply = new ConcurrentDictionary<object, Response>();
         private IEnumerable<string> registeredMethods;
         private string prefix;
         private List<(string endpoint, Response response)> subscriptions = new List<(string, Response)>(100);
@@ -33,7 +34,7 @@
 
         private async Task OnRequest(Request request, Response response)
         {
-            if (request.Method == HttpMethod.Get 
+            if (request.Method == HttpMethod.Get
                 && request.Endpoint.StartsWith($"{prefix}/notification/"))
             {
                 if (subscriptions.Count == subscriptions.Capacity)
@@ -48,8 +49,8 @@
                 return;
             }
 
-            if (request.Method == HttpMethod.Post 
-                && registeredMethods != null 
+            if (request.Method == HttpMethod.Post
+                && registeredMethods != null
                 && registeredMethods.Contains(request.Endpoint))
             {
                 var json = await request.GetBodyAsync();
@@ -78,7 +79,7 @@
             string json = null;
             var endpoint = UriNotification(message.MethodName);
             var recipients = subscriptions.Where(s => s.endpoint == endpoint).ToArray();
-            
+
             foreach (var recipient in recipients)
             {
                 json ??= message.Serialize();
@@ -89,7 +90,7 @@
             return Task.CompletedTask;
         }
 
-        public Task<IMessage> SendRequestAsync(IMessage message )
+        public Task<IMessage> SendRequestAsync(IMessage message)
         {
             throw new NotImplementedException();
         }
@@ -118,8 +119,13 @@
 
         public bool UpdateRegisteredMethods(IEnumerable<string> methods)
         {
-            registeredMethods = methods.Select( m => UriRequest(m));
+            registeredMethods = methods.Select(m => UriRequest(m));
             return true;
+        }
+
+        public Task ConnectAsync(CancellationToken? cancellationToken = null)
+        {
+            return listener.StartAsync();
         }
     }
 }

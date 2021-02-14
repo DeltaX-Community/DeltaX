@@ -21,6 +21,10 @@
             Clients = new HashSet<WebSocketHandler>();
         }
 
+        public IEnumerable<WebSocketHandler> GetClients()
+        {
+            return Clients.ToArray();
+        }
 
         public WebSocketHandler RegisterWebSocket(WebSocket ws)
         {
@@ -71,7 +75,11 @@
         {
             foreach (var client in Clients.ToArray())
             {
-                client.SendAsync(buffer);
+                try
+                {
+                    client.SendAsync(buffer);
+                }
+                catch { }
             } 
         }
     }

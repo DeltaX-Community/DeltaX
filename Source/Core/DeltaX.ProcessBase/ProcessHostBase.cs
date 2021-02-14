@@ -1,13 +1,12 @@
-﻿using DeltaX.Configuration;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Serilog;
-using System;
-using System.Diagnostics;
-using System.IO;
-
-namespace DeltaX.ProcessBase
+﻿namespace DeltaX.ProcessBase
 {
+    using DeltaX.Configuration;
+    using Microsoft.Extensions.Hosting;
+    using Serilog;
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+
     public class ProcessHostBase
     {
         static Process process = Process.GetCurrentProcess();
@@ -31,9 +30,13 @@ namespace DeltaX.ProcessBase
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args, string[] jsonFiles = null, bool pressKeyToContinue = true)
+        public static IHostBuilder CreateHostBuilder(
+            string[] args,
+            string[] jsonFiles = null,
+            bool pressKeyToContinue = true,
+            bool showInstallHelper = true)
         {
-            if (Environment.UserInteractive && CommonSettings.IsWindowsOs)
+            if (showInstallHelper && Environment.UserInteractive && CommonSettings.IsWindowsOs)
             {
                 ShowInstallHelper(pressKeyToContinue);
             }
@@ -41,25 +44,8 @@ namespace DeltaX.ProcessBase
             Directory.SetCurrentDirectory(processDirectory);
             CommonSettings.BasePath = @"D:\DEV\repos\DeltaX-Community\DeltaX";
 
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(confBuilder =>
-                {
-                    confBuilder.AddJsonFile(CommonSettings.CommonConfigName, optional: true);
-                    confBuilder.AddJsonFile("appsettings.json", optional: true); 
-                    confBuilder.AddJsonFile(CommonSettings.GetProcesConfigName(), optional: true);                    
-
-                    if (jsonFiles != null)
-                    {
-                        foreach (var fileName in jsonFiles)
-                        {
-                            if (File.Exists(fileName))
-                            {
-                                Console.WriteLine("AddJsonFile: {0}", fileName);
-                                confBuilder.AddJsonFile(fileName, optional: true);
-                            }
-                        }
-                    }
-                })
+            return Host.CreateDefaultBuilder(args) 
+                .UseAppConfiguration(jsonFiles)
                 .UseSerilog()
                 .UseWindowsService()
                 .UseContentRoot(processDirectory);

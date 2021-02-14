@@ -36,10 +36,10 @@
         {
             loggerFactory ??= Configuration.DefaultLoggerFactory;
             this.logger = loggerFactory.CreateLogger($"{nameof(MqttClientHelper)}");
-            this.Config = config; 
+            this.Config = config;
             isConnectedEvent = new ManualResetEventSlim(false);
             isDisconnectedEvent = new ManualResetEventSlim(true);
-            this.Client = client ?? new MqttClient(Config.Host, Config.Port, Config.Secure, null, null, MqttSslProtocols.None);
+            this.Client = client ?? new MqttClient(Config.Host, Config.Port, Config.Secure, null, null, MqttSslProtocols.None);            
         }
 
         private async Task DoConnect(CancellationToken cancellationToken)
@@ -47,6 +47,9 @@
             Type prevException = null;
             isConnectedEvent.Reset();
             isDisconnectedEvent.Set();
+
+            Client.ConnectionClosed -= OnConnectionClosed;
+            Client.ConnectionClosed += OnConnectionClosed;
 
             while (!cancellationToken.IsCancellationRequested && IsRunning)
             {
@@ -60,7 +63,7 @@
                     else
                     {
                         Client.Connect(Config.ClientId, Config.Username, Config.Password);
-                    }
+                    } 
 
                     logger.LogInformation($"MqttClientHelper Connected ClientId:{Config.ClientId}");
 

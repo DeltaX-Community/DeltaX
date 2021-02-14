@@ -1,15 +1,13 @@
-﻿using DeltaX.CommonExtensions;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DeltaX.MemoryMappedRecord
+﻿namespace DeltaX.MemoryMappedRecord
 {
-
+    using DeltaX.CommonExtensions;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// 

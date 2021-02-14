@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace DeltaX.MemoryMappedRecord
+﻿namespace DeltaX.MemoryMappedRecord
 {
+    using Microsoft.Extensions.Configuration;
+
     public class KeyValueMemoryConfiguration
     {
         public KeyValueMemoryConfiguration(string sectionName, string configFileName = "appsettings.json")

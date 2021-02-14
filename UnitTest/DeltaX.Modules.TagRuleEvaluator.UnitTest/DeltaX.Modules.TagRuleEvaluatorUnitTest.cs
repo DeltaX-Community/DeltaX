@@ -49,9 +49,9 @@ namespace DeltaX.Modules.TagRuleEvaluator.UnitTest
 
             tagRuleChangeEvaluator = new TagRuleChangeEvaluator<EventType>(defaultAction);
 
-            var tag1 = new RtTagExpression(conn, "{tagEvent1}");
-            var tag2 = new RtTagExpression(conn, "{tagEvent2}");
-            var tag3 = new RtTagExpression(conn, "{tagEvent3}");
+            var tag1 = RtTagExpression.AddExpression(conn, "{tagEvent1}");
+            var tag2 = RtTagExpression.AddExpression(conn, "{tagEvent2}");
+            var tag3 = RtTagExpression.AddExpression(conn, "{tagEvent3}");
 
             tagRuleChangeEvaluator.AddRule(EventType.Event1, TagRuleCheckType.ChangeValue, tag1, null);
             tagRuleChangeEvaluator.AddRule(EventType.Event2, TagRuleCheckType.ChangeValue, tag2, null);

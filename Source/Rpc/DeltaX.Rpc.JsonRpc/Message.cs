@@ -7,6 +7,9 @@
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
+
+    #region Serialize helper
+
     class JsonRpcResponseError
     {
         [JsonPropertyName("code")]
@@ -19,49 +22,20 @@
         public object Data { get; set; }
     }
 
-    #region Serialize helper
-    class JsonRpcRequest<TParam>
+    class JsonRpcParameters<TParam>
     {
-        [JsonPropertyName("jsonrpc")]
-        public string Jsonrpc { get; set; } = "2.0";
-
-        [JsonPropertyName("method")]
-        public string Method { get; set; }
-
-        [JsonPropertyName("params")]
-        public TParam Parameters { get; set; }
-
-        [JsonPropertyName("id")]
-        public object Id { get; set; }
-    }
-
-    class JsonRpcNotification<TParam>
-    {
-        [JsonPropertyName("jsonrpc")]
-        public string Jsonrpc { get; set; } = "2.0";
-
-        [JsonPropertyName("method")]
-        public string Method { get; set; }
-
         [JsonPropertyName("params")]
         public TParam Parameters { get; set; }
     }
 
-    class JsonRpcResponse<TResult>
+    class JsonRpcResult<TResult>
     {
-        [JsonPropertyName("jsonrpc")]
-        public string Jsonrpc { get; set; } = "2.0";
-
-        [JsonPropertyName("id")]
-        public object Id { get; set; }
-
         [JsonPropertyName("result")]
         public TResult Result { get; set; }
 
         [JsonPropertyName("error")]
         public JsonRpcResponseError Error { get; set; }
     }
-
     #endregion
 
 
@@ -71,7 +45,8 @@
         public string Jsonrpc { get; set; } = "2.0";
 
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        public object Id { get; set; }
+        public string IdString { get; set; }
 
         [JsonPropertyName("method")]
         public string MethodName { get; set; }
@@ -80,11 +55,11 @@
         public JsonElement Result { set => result = value; }
 
         [JsonPropertyName("params")]
-        public JsonElement Parameters {  set => parameters = value; }
+        public JsonElement Parameters { set => parameters = value; }
 
         private object parameters;
         private JsonRpcResponseError error;
-        private object result; 
+        private object result;
         private JsonSerializerOptions jsonOptions = new JsonSerializerOptions() { IgnoreNullValues = true, WriteIndented = true };
         private IMessage request;
         private string rawDataStr;
@@ -117,7 +92,7 @@
             var error = new JsonRpcResponseError() { Code = exception.ErrorCode ?? -1, Message = exception.Message, Data = exception.StackTrace };
             return new Message() { Id = request.Id, error = error, request = request };
         }
-         
+
 
         public static IMessage Parse(byte[] rawData)
         {
@@ -137,17 +112,19 @@
         {
             if (IsRequest())
             {
-                var msg = new JsonRpcRequest<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Id = Id};
+                var msg = new { jsonrpc = Jsonrpc, method = MethodName, @params = parameters, id = Id };
                 return JsonSerializer.Serialize(msg);
             }
             else if (IsNotification())
             {
-                var msg = new JsonRpcNotification<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters};
+                var msg = new { jsonrpc = Jsonrpc, method = MethodName, @params = parameters };
                 return JsonSerializer.Serialize(msg);
             }
             else if (IsResponse())
             {
-                var msg = new JsonRpcResponse<object> { Jsonrpc = Jsonrpc, Id = Id, Error = error, Result = result };
+                object msg = error == null
+                    ? new { jsonrpc = Jsonrpc, id = Id, result = result }
+                    : new { jsonrpc = Jsonrpc, id = Id, error = error };
                 return JsonSerializer.Serialize(msg);
             }
 
@@ -158,17 +135,19 @@
         {
             if (IsRequest())
             {
-                var msg = new JsonRpcRequest<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters, Id = Id};
+                var msg = new { jsonrpc = Jsonrpc, method = MethodName, @params = parameters, id = Id };
                 return JsonSerializer.SerializeToUtf8Bytes(msg);
             }
             else if (IsNotification())
             {
-                var msg = new JsonRpcNotification<object> { Jsonrpc = Jsonrpc, Method = MethodName, Parameters = parameters};
+                var msg = new { jsonrpc = Jsonrpc, method = MethodName, @params = parameters };
                 return JsonSerializer.SerializeToUtf8Bytes(msg);
             }
             else if (IsResponse())
             {
-                var msg = new JsonRpcResponse<object> { Jsonrpc = Jsonrpc, Id = Id, Error = error, Result = result };
+                object msg = error == null
+                    ? new { jsonrpc = Jsonrpc, id = Id, result = result }
+                    : new { jsonrpc = Jsonrpc, id = Id, error = error };
                 return JsonSerializer.SerializeToUtf8Bytes(msg);
             }
 
@@ -179,7 +158,7 @@
         {
             string rid = Id?.ToString();
 
-            return !string.IsNullOrEmpty(rid) && rid.Length > 2;
+            return !string.IsNullOrEmpty(rid);
         }
 
         public bool IsRequest()
@@ -193,7 +172,7 @@
         }
 
         public bool IsNotification()
-        { 
+        {
             return !string.IsNullOrEmpty(MethodName) && !ContainId();
         }
 
@@ -220,7 +199,7 @@
                 return (T)parameters;
             }
 
-            var dser = Deserialize<JsonRpcRequest<T>>();
+            var dser = Deserialize<JsonRpcParameters<T>>();
             return dser != null ? dser.Parameters : default;
         }
 
@@ -231,7 +210,7 @@
                 return (T)result;
             }
 
-            var dser = Deserialize<JsonRpcResponse<T>>();
+            var dser = Deserialize<JsonRpcResult<T>>();
             if (dser?.Error != null)
             {
                 throw new RpcException(dser.Error.Code, dser.Error.Message, dser.Error.Data?.ToString());

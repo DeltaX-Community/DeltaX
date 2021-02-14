@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public interface IRpcConnection
@@ -11,6 +12,8 @@
         event EventHandler<IMessage> OnReceive;
         
         event EventHandler<bool> OnConnectionChange;
+
+        public Task ConnectAsync(CancellationToken? cancellationToken = null);
 
         bool IsConnected();
 

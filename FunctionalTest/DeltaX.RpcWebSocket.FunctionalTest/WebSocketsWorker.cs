@@ -2,54 +2,45 @@
 
 namespace DeltaX.RpcWebSocket.FunctionalTest
 {
-    using DeltaX.CommonExtensions;
-    using DeltaX.Connections.WebSocket;
-    using DeltaX.Rpc.JsonRpc.WebSocketConnection;
+    using DeltaX.RealTime.Interfaces;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class WebSocketsWorker : BackgroundService
+    public class RealTimeWebSocketBridgeWorker : BackgroundService
     {
         private readonly ILogger logger;
-        private readonly WebSocketHandlerHub hub;
-        private readonly RealTimeRpcWebSocketMiddleware rtWs;
         private readonly Rpc.JsonRpc.Rpc rpc;
+        private readonly IRtConnector connector;
 
-        public WebSocketsWorker(ILogger<WebSocketsWorker> logger, WebSocketHandlerHub hub, RealTimeRpcWebSocketMiddleware rtWs, Rpc.JsonRpc.Rpc rpc)
+        public RealTimeWebSocketBridgeWorker(
+            ILogger<RealTimeWebSocketBridgeWorker> logger,
+            Rpc.JsonRpc.Rpc rpc,
+            IRtConnector connector)
         {
             this.logger = logger;
-            this.hub = hub;
-            this.rtWs = rtWs;
             this.rpc = rpc;
-            IExampleService service = new ExampleService(rpc);
-            this.rpc.Dispatcher.RegisterService(service);
-            this.rpc.UpdateRegisteredMethods(); 
+            this.connector = connector;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            return Task.Run(async () =>
-            { 
-
-                logger.LogWarning("Execution Started: {time}", DateTimeOffset.Now);
-                 
-                while (!stoppingToken.IsCancellationRequested )
+        {  
+            return rpc.Connection
+                .ConnectAsync(stoppingToken)
+                .ContinueWith((t) =>
                 {
-                    logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                    logger.LogInformation("clients {clients}", hub.GetClients().Count());
-
-
-                    rtWs.ForceRefreshTags();
-                    await Task.Delay(1000, stoppingToken);
-                }
-            }).ContinueWith((t) =>
-            {
-                logger.LogWarning("Execution Stoped: {time}", DateTimeOffset.Now); 
-            }); 
+                    if (t.IsFaulted)
+                    {
+                        logger.LogError("Execution RealTimeWebSocketBridgeWorker Stoped: {time} {error}", DateTimeOffset.Now, t.Exception);
+                        Environment.Exit(-1);
+                    }
+                    else
+                    {
+                        logger.LogWarning("Execution RealTimeWebSocketBridgeWorker Stoped: {time}", DateTimeOffset.Now);
+                    }
+                });
         }
     }
 }

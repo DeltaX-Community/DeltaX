@@ -10,18 +10,15 @@
     {
         private IRtTag[] ArgumentsTags;
         private Expression expression;
+        private static string patternAddressRegex = @"\{[^{} ]+\}";
+        private static Regex rgx = new Regex(patternAddressRegex, RegexOptions.IgnoreCase);
 
-        public RtTagExpression(IRtConnector creator, string expresionFull, IRtTagOptions options = null)
-        { 
-            string patternAddressRegex = @"\{[^{} ]+\}"; 
-            string expresion = expresionFull.Trim().TrimStart('=');
-            TagName = expresionFull;
-
-            Regex rgx = new Regex(patternAddressRegex, RegexOptions.IgnoreCase);
-            MatchCollection matches = rgx.Matches(expresionFull);
-
+        public static IRtTag AddExpression(IRtConnector creator, string expresionFull, IRtTagOptions options = null)
+        {  
+            MatchCollection matches = rgx.Matches(expresionFull); 
             if (matches.Count > 0)
             {
+                string expresion = expresionFull;
                 int i = 0;
                 var argumentsTags = new IRtTag[matches.Count];
                 foreach (Match match in matches)
@@ -31,17 +28,27 @@
                     expresion = expresion.Replace(match.Value, $"arg{i}");
                     i++;
                 }
-                Initialize(expresion, argumentsTags);
+                return new RtTagExpression(expresion, argumentsTags);
+            }
+            else if (expresionFull.StartsWith("="))
+            {
+                return new RtTagExpression(expresionFull, null);
             }
             else
             {
-                Initialize(expresion, null);
+                return creator.AddTag(expresionFull, options);
             }
+        }
+
+        public static bool IsExpression(string expresionFull)
+        {
+            return rgx.IsMatch(expresionFull) || expresionFull.StartsWith("=");
         }
 
         public RtTagExpression(string expresionString, IRtTag[] argumentsTags)
         {
-            Initialize(expresionString, argumentsTags);
+            TagName = expresionString;
+            Initialize(expresionString.TrimStart('='), argumentsTags);
         }
 
         private void Initialize(string expresionString, IRtTag[] argumentsTags)
@@ -71,7 +78,13 @@
             foreach (var atag in ArgumentsTags)
             {
                 atag.ValueUpdated += TagArgumentOnUpdatedValue;
+                atag.StatusChanged += TagArgumentStatusChanged;
             }
+        }
+
+        private void TagArgumentStatusChanged(object sender, IRtTag e)
+        {
+            // Eval();
         }
 
         private void DettachEventsTagArguments()
@@ -79,12 +92,13 @@
             foreach (var atag in ArgumentsTags)
             {
                 atag.ValueUpdated -= TagArgumentOnUpdatedValue;
+                atag.StatusChanged -= TagArgumentStatusChanged;
             }
         }
 
         private void TagArgumentOnUpdatedValue(object sender, IRtTag e)
         {
-            if (HasNewValue())
+            if (HasNewValue() || HasNewStatus())
             {
                 Eval();
             }
@@ -100,27 +114,29 @@
             return false;
         }
 
+        private bool HasNewStatus()
+        {
+            return _status != GetStatus();
+        }
+
+        private bool GetStatus()
+        {
+            return ArgumentsTags.Count() == 0 || ArgumentsTags.All(t => t.Status);
+        }
 
         public IRtValue Eval()
         {
             try
             {
-                DateTime? _updated = null;
-                bool st = true;
+                DateTime? _updated = null; 
                 foreach (var e in ArgumentsTags.Select((tag, index) => (tag, index)))
-                {
-                    if (e.tag.Status == false || double.IsNaN(e.tag.Value.Numeric))
-                    {
-                        st = false;
-                    }
-
-                    expression.getArgument(e.index).setArgumentValue(e.tag.Value.Numeric);
-
+                {  
+                    expression.getArgument(e.index).setArgumentValue(e.tag.Value.Numeric); 
                     _updated = !_updated.HasValue || e.tag.Updated > _updated ? e.tag.Updated : _updated;
                 }
 
                 var value = expression.calculate();
-                RaiseOnUpdatedValue(this, RtValue.Create(value), _updated ?? DateTime.Now, st);
+                RaiseOnUpdatedValue(this, RtValue.Create(value), _updated ?? DateTime.Now, GetStatus());
                 return base.Value;
             }
             catch
@@ -164,7 +180,7 @@
         {
             get
             {
-                if (HasNewValue())
+                if (HasNewValue() || HasNewStatus())
                 {
                     Eval();
                 }
@@ -176,7 +192,7 @@
         {
             get
             {
-                if (HasNewValue())
+                if (HasNewValue() || HasNewStatus())
                 {
                     Eval();
                 }
@@ -188,7 +204,7 @@
         {
             get
             {
-                if (HasNewValue())
+                if (HasNewValue() || HasNewStatus())
                 {
                     Eval();
                 }

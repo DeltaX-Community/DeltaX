@@ -23,13 +23,14 @@
         public async Task ReceiveAsync(int bufferSize = 1024 * 4)
         {
             OnConnect?.Invoke(this, ws.State == WebSocketState.Open);
+            var buffer = new byte[bufferSize];
 
             try
             {
                 while (true)
-                {
-                    var buffer = new byte[bufferSize];
-                    var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                { 
+                    var array = new ArraySegment<byte>(buffer); 
+                    var result = await ws.ReceiveAsync(array, CancellationToken.None);
 
                     // FIXME result.CloseStatus or !result.CloseStatus
                     // if (result.MessageType == WebSocketMessageType.Close || !result.CloseStatus.HasValue)
@@ -37,11 +38,14 @@
                     {
                         break;
                     }
-
-                    OnMessageReceive?.Invoke(this, new Message { Client = this, MessageType = result.MessageType, Data = buffer });
+                    var data = array.Slice(0, result.Count).ToArray();
+                    OnMessageReceive?.Invoke(this, new Message { Client = this, MessageType = result.MessageType, Data = data});
                 }
             }
-            catch { }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
             Close();
         }
@@ -53,7 +57,7 @@
         }
 
         public async Task SendAsync(byte[] buffer, WebSocketMessageType messageType = WebSocketMessageType.Text)
-        {
+        { 
             var t = ws.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), messageType, true, CancellationToken.None);
             await t.ContinueWith((task) =>
             {

@@ -11,6 +11,7 @@
         public abstract bool IsConnected { get; }
 
         public abstract IEnumerable<string> TagNames { get; }
+        public abstract IEnumerable<string> KnownTopics { get; }
 
         public event EventHandler<IRtTag> ValueUpdated;
         public event EventHandler<IRtTag> ValueSetted;

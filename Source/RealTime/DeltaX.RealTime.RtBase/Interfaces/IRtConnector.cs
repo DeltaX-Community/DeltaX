@@ -8,6 +8,7 @@
     public interface IRtConnector : IDisposable
     { 
         public IEnumerable<string> TagNames { get; }
+        public IEnumerable<string> KnownTopics { get; }
 
         public Task ConnectAsync(CancellationToken? cancellationToken =null);
 
@@ -28,7 +29,7 @@
         /// <param name="tagName"></param>
         /// <returns></returns>
         IRtTag GetTag(string tagName);
-
+         
         /// <summary>
         /// Indica si esta conectado con el servidor
         /// </summary>

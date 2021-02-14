@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Connections\DeltaX.Connections.MqttClientHelper\DeltaX.Connections.MqttClientHelper.csproj" />
     <ProjectReference Include="..\DeltaX.Rpc.JsonRpc\DeltaX.Rpc.JsonRpc.csproj" />
   </ItemGroup>
 
