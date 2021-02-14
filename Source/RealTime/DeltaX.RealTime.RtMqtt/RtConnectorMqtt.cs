@@ -140,7 +140,11 @@
         {
             get
             {
-                lock (rtTags) return extraTopics.Union(rtTags.Select(t => t.Topic)).ToHashSet();
+                var prefixLen = string.IsNullOrEmpty(prefix) ? 0 : prefix.Length;
+                lock (rtTags) return extraTopics
+                        .Union(rtTags.Select(t => t.Topic))
+                        .Select(t => prefixLen > 0 && t.StartsWith(prefix) ? t.Substring(prefixLen) : t)
+                        .ToHashSet();
             }
         }
 
@@ -210,6 +214,8 @@
 
             if (extraTopicsSbscribe.Any())
             {
+                logger?.LogDebug("SubscribeAll ExtraTopicsSbscribe Count:{0} Topics:[{1}]", 
+                    extraTopicsSbscribe.Count(), string.Join(", ", extraTopicsSbscribe));
                 qosLevel = extraTopicsSbscribe.Select(t => (byte)RtMqttMsgQosLevels.QOS_LEVEL_AT_MOST_ONCE).ToArray();
                 mqttClient.Client.Subscribe(extraTopicsSbscribe, qosLevel);
             }

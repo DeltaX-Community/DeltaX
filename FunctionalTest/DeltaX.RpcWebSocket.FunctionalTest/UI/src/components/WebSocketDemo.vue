@@ -1,19 +1,40 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br />
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener"
-        >vue-cli documentation</a
-      >.
-    </p>
+    <h1>RtView</h1>
+    <form>
+      <label for="topicWrite">Topic Write:</label>
+      <input id="topicWrite" type="text" v-model="topicWrite" />
+      <label for="valueWrite">Value:</label>
+      <input id="valueWrite" type="text" v-model="valueWrite" />
+      <button @click.prevent="SetTag()">Set Tag</button>
+    </form>
+    <form>
+      <label for="topicSubscribe">Topic Subscribe (Expression):</label>
+      <input id="topicSubscribe" type="text" v-model="topicSubscribe" /> 
+      <button @click.prevent="SubscribeTopic()">Subscribe Topic</button>
+    </form>
+    <table style="width: 100%">
+      <thead>
+        <th>Tag Name</th>
+        <th>Status</th>
+        <th>Value</th>
+        <th>Updated</th>
+      </thead>
+      <tbody v-if="topics">
+        <tr v-for="t in topics" :key="t.tagName">
+          <td>{{ t.tagName }}</td>
+          <td>{{ t.status }}</td>
+          <td>{{ t.value }}</td>
+          <td>{{ t.updated }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-const connectionUrl = "ws://127.0.0.1:5050/ws";
+// const connectionUrl = "ws://127.0.0.1:5050/ws";
 //// const client = new WebSocket(connectionUrl);
 //// 
 //// client.onerror = function (event) {
@@ -41,57 +62,27 @@ const connectionUrl = "ws://127.0.0.1:5050/ws";
 ////   );
 //// }
 
-import { Client } from "rpc-websockets";
+// import { Client } from "rpc-websockets";
+import RtWs from "./RtWs";
 
-const ws = new Client(connectionUrl)
+const ws = RtWs;
 
-ws.on('open', function () {
-
-  // subscribe to receive an event
-  // ws.subscribe('feedUpdated')
-  // ws.on('feedUpdated', function (result) {
-  //   console.log("feedUpdated", result);
-  // });
-
-  setTimeout(() => {
-    console.log('call rpc.rt.set_value')
-    ws.call('rpc.rt.set_value', [
-      { topic: "feedUpdated", value: 123456 },
-      { topic: "powerTag", value: 5454 }
-    ], 10000).then(function (result) {
-      console.log("Sum result", result);
-    })
-  }, 5000);
-
-  ws.on('rt.notify.tags', function (result) {
-    console.log("rt.notify.tags result:", result);
-  });
-
-  ws.call('rpc.rt.subscribe', ["{feedUpdated}", "{powerTag}"], 10000)
-    .then(function (result) {
-      console.log("rpc.rt.subscribe result", result);
-    })
-    .catch(function (error) {
-      console.log("rpc.rt.subscribe error", error);
-    });
-
-  ws.call('rpc.rt.get_topics', [], 10000)
-    .then(function (result) {
-      console.log("rpc.rt.get_topics result", result);
-    })
-    .catch(function (error) {
-      console.log("rpc.rt.get_topics error", error);
-    });
-
-  // ws.call('Sum', [5, 3], 10000)
-  //   .then(function (result) {
-  //     console.log("Sum result", result);
-  //   })
-  //   .catch(function (error) {
-  //     console.log("Sum error", error);
-  //   });
-
+ws.on('rt.connected', function () {
+  console.log("open from vue (rt.connected)");
+  ws.RtSubscribe(ws.KnownTopics);
 });
+
+
+setTimeout(() => {
+  console.log('call RtSetValues')
+  ws.RtSetValues([
+    { topic: "feedUpdated", value: 123456 },
+    { topic: "powerTag", value: 5454 },
+    { topic: "setFromVue2", value: new Date() }
+  ]).then(function (result) {
+    console.log("Sum result", result);
+  })
+}, 2000);
 
 
 @Options({
@@ -101,6 +92,20 @@ ws.on('open', function () {
 })
 export default class HelloWorld extends Vue {
   msg!: string
+  topics = RtWs.Topics
+  topicWrite = ""
+  valueWrite = ""
+  topicSubscribe = ""
+
+  SetTag() {
+    RtWs.RtSetValues([{ topic: this.topicWrite, value: this.valueWrite }])
+    this.valueWrite = ""
+  }
+
+  SubscribeTopic() {
+    RtWs.RtAddSubscribe([this.topicSubscribe])
+    this.topicSubscribe = "";
+  }
 }
 </script>
 

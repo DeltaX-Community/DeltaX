@@ -5,12 +5,9 @@
     using Microsoft.Extensions.Logging;
     using System.Linq;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
-    using System.Threading.Tasks;
+    using System; 
     using DeltaX.Rpc.JsonRpc.WebSocketConnection;
-    using DeltaX.Rpc.JsonRpc.Interfaces;
-    using DeltaX.RealTime;
-    using Microsoft.Extensions.Configuration;
+    using DeltaX.Rpc.JsonRpc.Interfaces; 
     using DeltaX.RealTime.Interfaces;
 
     public static class RtWebSocketBridgeExtenssion
@@ -28,16 +25,13 @@
                 return new RealTimeRpcWebSocketMiddleware(conn, hub, logFactory, refreshInterval);
             }); 
             services.AddSingleton<IRpcConnection, JsonRpcWebSocketConnection>();
-            services.AddSingleton<Rpc.JsonRpc.Rpc>();
 
             return services;
         }
 
         public static IApplicationBuilder UseRealTimeWebSocketBridge(this IApplicationBuilder app, string mapPrefix = "/rt")
         {
-            var hub = app.ApplicationServices.GetService<WebSocketHandlerHub>();  
-            // Force instance Singleton RPC 
-            _ = app.ApplicationServices.GetService<Rpc.JsonRpc.Rpc>();  
+            var hub = app.ApplicationServices.GetService<WebSocketHandlerHub>();
 
             return app 
                 .Map(mapPrefix, app =>

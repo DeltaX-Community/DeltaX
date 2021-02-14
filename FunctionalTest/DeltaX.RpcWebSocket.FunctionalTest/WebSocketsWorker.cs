@@ -3,6 +3,7 @@
 namespace DeltaX.RpcWebSocket.FunctionalTest
 {
     using DeltaX.RealTime.Interfaces;
+    using DeltaX.Rpc.JsonRpc.Interfaces;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using System;
@@ -12,22 +13,22 @@ namespace DeltaX.RpcWebSocket.FunctionalTest
     public class RealTimeWebSocketBridgeWorker : BackgroundService
     {
         private readonly ILogger logger;
-        private readonly Rpc.JsonRpc.Rpc rpc;
+        private readonly IRpcConnection rpcConnection;
         private readonly IRtConnector connector;
 
         public RealTimeWebSocketBridgeWorker(
             ILogger<RealTimeWebSocketBridgeWorker> logger,
-            Rpc.JsonRpc.Rpc rpc,
+            IRpcConnection rpcConnection,
             IRtConnector connector)
         {
             this.logger = logger;
-            this.rpc = rpc;
+            this.rpcConnection = rpcConnection;
             this.connector = connector;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {  
-            return rpc.Connection
+            return rpcConnection
                 .ConnectAsync(stoppingToken)
                 .ContinueWith((t) =>
                 {

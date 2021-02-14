@@ -20,7 +20,8 @@
                 {
                     confBuilder.AddJsonFile(CommonSettings.CommonConfigName, optional: true);
                     confBuilder.AddJsonFile("appsettings.json", optional: true);
-                    confBuilder.AddJsonFile(CommonSettings.GetProcesConfigName(), optional: true);
+                    var processConfigName = CommonSettings.GetProcesConfigName();
+                    confBuilder.AddJsonFile(CommonSettings.GetPathConfigFile(processConfigName) ?? processConfigName, optional: true);
 
                     if (jsonFiles != null)
                     {

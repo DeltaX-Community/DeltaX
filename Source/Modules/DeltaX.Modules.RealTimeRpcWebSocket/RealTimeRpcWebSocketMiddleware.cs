@@ -89,7 +89,13 @@
 
             return new
             {
-                tags = wsTags[ws].Select(t => new { t.TagName, t.Status, t.Updated, Value = t.ValueObject }).ToArray()
+                tags = wsTags[ws].Select(t => new
+                {
+                    tagName = t.TagName,
+                    status = t.Status,
+                    updated = t.Updated,
+                    value = t.ValueObject
+                }).ToArray()
             };
         }
 
@@ -114,7 +120,7 @@
                 return false;
             }
 
-            logger.LogInformation("RtSetValue {@toSets}", toSets);
+            logger.LogInformation("RtSetValue {@toSets}", System.Text.Json.JsonSerializer.Serialize(toSets));
 
             return toSets.All(t =>
             {
@@ -149,7 +155,13 @@
                 method = "rt.notify.tags",
                 @params = new
                 {
-                    tags = tags.Select(t => new { t.TagName, t.Status, t.Updated, Value = t.ValueObject }).ToArray()
+                    tags = tags.Select(t => new
+                    {
+                        tagName = t.TagName,
+                        status = t.Status,
+                        updated = t.Updated,
+                        value = t.ValueObject
+                    }).ToArray()
                 }
             };
             byte[] msg = JsonSerializer.SerializeToUtf8Bytes(msgNotifyTags);
@@ -175,7 +187,7 @@
             {
                 while (true)
                 {
-                    logger.LogInformation("running at {time}. Clients connected:{clients}", DateTimeOffset.Now, hub.GetClients().Count());
+                    logger.LogDebug("running at {time}. Clients connected:{clients}", DateTimeOffset.Now, hub.GetClients().Count());
                     await Task.Delay(TimeSpan.FromSeconds(30));
                 }
             });

@@ -17,7 +17,7 @@
                 var t = cacheTags.FirstOrDefault(t => t.TagName == tagExpression);
                 if (t == null)
                 {
-                    var tag = (RtTagExpression)RtTagExpression.AddExpression(connector, tagExpression);
+                    var tag = RtTagExpression.AddExpression(connector, tagExpression);
                     t = new TagChangeTracker(tag, tagExpression);
                     cacheTags.Add(t);
                 }
@@ -30,14 +30,14 @@
             return cacheTags.Where(t => t.IsChanged()).ToArray();
         }
 
-        private TagChangeTracker(RtTagExpression tag, string tagName)
+        private TagChangeTracker(IRtTag tag, string tagName)
         {
             this.TagName = tagName;
             this.tag = tag;
             this.IsChanged();
         }
 
-        private RtTagExpression tag;
+        private IRtTag tag;
         public string TagName { get; private set; }
         public DateTime Updated { get; set; }
         public DateTime PrevUpdated { get; set; }

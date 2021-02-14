@@ -10,23 +10,26 @@
     public class ProcessHostBase
     {
         static Process process = Process.GetCurrentProcess();
-        static string processDirectory = Path.GetDirectoryName(process.MainModule.FileName);
+        public static string ProcessDirectory = Path.GetDirectoryName(process.MainModule.FileName);
 
         public static void ShowInstallHelper(bool pressKeyToContinue = true)
-        { 
-            string servName = process.ProcessName;
-            string binPath = process.MainModule.FileName;
-            string description = "Real Time Tag Rule Executor";
-
-            Console.WriteLine("Running {0} in Console Mode...", process.ProcessName);
-            Console.WriteLine("\nHelp for install on cmd as Administrator:");
-            Console.WriteLine($" - install service:     \n    sc create {servName} binpath=\"{binPath}\" ");
-            Console.WriteLine($" - uninstall service:   \n    sc delete {servName} ");
-            Console.WriteLine($" - description service: \n    sc description {servName} \"{description}\"");
-            if (pressKeyToContinue)
+        {
+            if (Environment.UserInteractive && CommonSettings.IsWindowsOs)
             {
-                Console.WriteLine("\nPress key to continue");
-                Console.ReadLine();
+                string servName = process.ProcessName;
+                string binPath = process.MainModule.FileName;
+                string description = "Real Time Tag Rule Executor";
+
+                Console.WriteLine("Running {0} in Console Mode...", process.ProcessName);
+                Console.WriteLine("\nHelp for install on cmd as Administrator:");
+                Console.WriteLine($" - install service:     \n    sc create {servName} binpath=\"{binPath}\" ");
+                Console.WriteLine($" - uninstall service:   \n    sc delete {servName} ");
+                Console.WriteLine($" - description service: \n    sc description {servName} \"{description}\"");
+                if (pressKeyToContinue)
+                {
+                    Console.WriteLine("\nPress key to continue");
+                    Console.ReadLine();
+                }
             }
         }
 
@@ -36,19 +39,19 @@
             bool pressKeyToContinue = true,
             bool showInstallHelper = true)
         {
-            if (showInstallHelper && Environment.UserInteractive && CommonSettings.IsWindowsOs)
+            if (showInstallHelper)
             {
                 ShowInstallHelper(pressKeyToContinue);
             }
 
-            Directory.SetCurrentDirectory(processDirectory);
+            Directory.SetCurrentDirectory(ProcessDirectory);
             CommonSettings.BasePath = @"D:\DEV\repos\DeltaX-Community\DeltaX";
 
             return Host.CreateDefaultBuilder(args) 
                 .UseAppConfiguration(jsonFiles)
                 .UseSerilog()
                 .UseWindowsService()
-                .UseContentRoot(processDirectory);
+                .UseContentRoot(ProcessDirectory);
         }
     }
 }

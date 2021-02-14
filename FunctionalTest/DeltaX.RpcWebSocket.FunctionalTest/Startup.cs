@@ -33,7 +33,7 @@ namespace DeltaX.RpcWebSocket.FunctionalTest
                 return conn;
             });
 
-            services.AddRealTimeWebSocketServices(TimeSpan.FromMilliseconds(2000));
+            services.AddRealTimeWebSocketServices(TimeSpan.FromMilliseconds(200));
 
             services.AddControllers();
 
@@ -73,7 +73,7 @@ namespace DeltaX.RpcWebSocket.FunctionalTest
             });
 
             app.UseWebSockets();
-            app.UseRealTimeWebSocketBridge("/ws");
+            app.UseRealTimeWebSocketBridge("/rt");
         }
     }
 }
