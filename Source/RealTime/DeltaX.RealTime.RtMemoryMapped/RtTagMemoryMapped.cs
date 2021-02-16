@@ -1,5 +1,6 @@
 ﻿namespace DeltaX.RealTime.RtMemoryMapped
 {
+    using DeltaX.CommonExtensions;
     using DeltaX.RealTime.Interfaces;
     using System;
 
@@ -20,7 +21,7 @@
         {
             get
             {
-                ConnectorMM.ReadAndRaiseTagOnUpdated(this, base.Updated);
+                ConnectorMM.ReadAndRaiseTagOnUpdated(this, base.Updated.ToUnixTimestamp());
                 return base.Value;
             } 
         }
@@ -29,12 +30,7 @@
         {
             get
             {
-                ConnectorMM.ReadAndRaiseTagOnUpdated(this, base.Updated);
-                // var updated = ConnectorMM.ReadTagUpdated(Topic);
-                // if (updated.HasValue && base.Updated != updated.Value)
-                // {
-                //     base.RaiseOnUpdatedValue(this, ConnectorMM.ReadTagValue(Topic), updated, true);
-                // }
+                ConnectorMM.ReadAndRaiseTagOnUpdated(this, base.Updated.ToUnixTimestamp());
                 return base.Updated;
             }
         }

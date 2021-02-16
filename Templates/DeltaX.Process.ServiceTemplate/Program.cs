@@ -10,6 +10,7 @@ using Serilog;
 using System.Diagnostics;
 
 
+
 ProcessHostBase
     .CreateHostBuilder(args, args, false)
     .UseAppConfiguration()

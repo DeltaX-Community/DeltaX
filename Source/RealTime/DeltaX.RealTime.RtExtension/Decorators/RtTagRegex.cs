@@ -4,34 +4,23 @@
     using DeltaX.RealTime.Interfaces;
     using System;
     using System.Text.Json;
+    using System.Text.RegularExpressions;
 
-    public class RtTagUltraLight : RtTagDecoratorBase
+    public class RtTagRegex : RtTagDecoratorBase, IRtTag
     {
         private DateTime parsedTime;
-        private string ulField;
-        private string ulCommand;
-        private string ulDevice;
         private IRtValue currentValueParsed = valueNull;
         private bool status = false;
+        private Regex regex;
 
-        public RtTagUltraLight(IRtTag tag, string ultraLightValuePattern) : base(tag)
+        public RtTagRegex(IRtTag tag, string regexPattern) : base(tag)
         {
-            if(string.IsNullOrEmpty(ultraLightValuePattern))
-            {
-                throw new ArgumentNullException(nameof(ultraLightValuePattern));
-            }
-
-            if(!ultraLightValuePattern.TryUltraLightParse(out ulDevice, out ulCommand, out ulField))
-            {
-                throw new ArgumentException("Bad UltraLight expression", nameof(ultraLightValuePattern));
-            }
-
+            TagRegexValuePattern = regexPattern; 
             currentValueParsed = TryParseValue(tag.Value.Text);
             parsedTime = Updated;
         }
          
-        public string TagJsonValuePattern { get; protected set; }
-
+        public string TagRegexValuePattern { get; protected set; }
 
         public override bool Status
         {
@@ -47,7 +36,7 @@
 
             protected set
             {
-                if (status != value)
+                if(status !=value)
                 {
                     status = value;
                     OnStatusChanged(this, this);
@@ -73,10 +62,22 @@
             lock (this)
             {
                 try
-                {                    
-                    var parsed = value.UltraLightGetValue(ulField, ulCommand, ulDevice);
-                    Status = true;
-                    return RtValue.Create(parsed);
+                {   
+                    regex ??= new Regex(TagRegexValuePattern);
+
+                    var match =  regex.Match(value); 
+                    if(match.Success)
+                    {
+                        // TODO FIXME: hay que ver si es el grupo uno por defecto. y de agregar un name el agrupo
+                        var parsed = match.Groups[1].Value;
+                        Status = base.Status;
+                        return RtValue.Create(parsed);
+                    }
+                    else
+                    {
+                        Status = false;
+                        return RtValue.Create(string.Empty);
+                    }
                 }
                 catch
                 {
@@ -88,7 +89,7 @@
 
         public override bool Set(IRtValue value)
         {
-            throw new InvalidOperationException($"Tag {TagName} is type UltraLight, Write is not supported!");
+            throw new InvalidOperationException($"Tag {TagName} is type JSON field, Write is not supported!");
         }
     }
 }

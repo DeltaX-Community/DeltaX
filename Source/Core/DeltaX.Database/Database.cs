@@ -37,5 +37,17 @@
         {
             return base.Run((dbConn) => method((T)dbConn));
         }
+
+        public TResult RunTransaction<TResult>(Func<T, IDbTransaction, TResult> method)
+        {
+            return base.Run((dbConn) => {
+                using (var transaction = dbConn.BeginTransaction())
+                {
+                    var result = method((T)dbConn, transaction);
+                    transaction.Commit();
+                    return result;
+                }
+            });
+        }
     }
 }

@@ -5,7 +5,7 @@
     public static class DateTimeExtensions
     { 
         public static double ToUnixTimestamp(this DateTime date, bool toUtc = true)
-        {
+        { 
             if (toUtc)
                 date = date.ToUniversalTime();
             else

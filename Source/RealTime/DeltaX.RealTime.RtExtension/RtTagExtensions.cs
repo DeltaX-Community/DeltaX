@@ -21,16 +21,16 @@
         /// <param name="defaultDate"></param> 
         /// <param name="dateFormat"></param>
         /// <returns></returns>
-        public static DateTime GetDateTime(this IRtTag tag, DateTime? defaultDate = null, string dateFormat = null)
+        public static DateTimeOffset GetDateTime(this IRtTag tag, DateTimeOffset? defaultDate = null, string dateFormat = null)
         {
             try
             {
-                return DateTime.ParseExact(tag.Value.Text, dateFormat ?? DefaultDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture);
+                return DateTimeOffset.ParseExact(tag.Value.Text, dateFormat ?? DefaultDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture);
             }
             catch (Exception e)
             {
-                DateTime result;
-                if (string.IsNullOrEmpty(dateFormat) && DateTime.TryParse(tag.Value.Text, out result))
+                DateTimeOffset result;
+                if (string.IsNullOrEmpty(dateFormat) && DateTimeOffset.TryParse(tag.Value.Text, out result))
                 {
                     return result;
                 }
@@ -46,7 +46,7 @@
         /// <param name="date"></param>
         /// <param name="dateFormat"></param>
         /// <returns></returns>
-        public static bool SetDateTime(this IRtTag tag, DateTime date, string dateFormat = null)
+        public static bool SetDateTime(this IRtTag tag, DateTimeOffset date, string dateFormat = null)
         {
             return tag.SetText(date.ToString(dateFormat ?? DefaultDateTimeFormat));
         }

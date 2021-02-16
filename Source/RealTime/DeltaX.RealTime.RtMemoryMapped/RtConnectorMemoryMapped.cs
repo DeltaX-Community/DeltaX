@@ -98,7 +98,13 @@
         public override bool IsConnected => keyValueMemory != null;
 
         public override IRtTag AddTag(string tagName, string topic, IRtTagOptions options)
-        {  
+        {
+            var tag = GetTag(tagName);
+            if (tag != null)
+            {
+                return tag;
+            }
+
             RtTagMemoryMapped t = new RtTagMemoryMapped(this, tagName, topic, options);
             lock (rtTags)
             {
@@ -148,14 +154,14 @@
             logger?.LogDebug("RemoveTag TagName:{0}", tag.TagName);
         }
 
-        internal void ReadAndRaiseTagOnUpdated(RtTagMemoryMapped tag, DateTime lastUpdated)
+        internal void ReadAndRaiseTagOnUpdated(RtTagMemoryMapped tag, double lastUpdated)
         {
             var updated = ReadTagUpdated(tag.Topic);
-            if (updated.HasValue && lastUpdated != updated.Value)
+            if (updated.HasValue && Math.Abs(lastUpdated - updated.Value) > 0.0001)
             {
-                tag.RaiseOnUpdatedValue(ReadTagValue(tag.Topic), updated, true); 
+                tag.RaiseOnUpdatedValue(ReadTagValue(tag.Topic), updated.Value.FromUnixTimestamp(), true);
                 RaiseOnUpdatedValue(tag);
-            } 
+            }
         }
 
         internal void ReadAndRaiseTagStatusChanged(RtTagMemoryMapped tag, bool lastStatus)
@@ -173,10 +179,9 @@
             return value != null ? RtValue.Create(value) : null;
         }
 
-        internal DateTime? ReadTagUpdated(string topic)
+        internal double? ReadTagUpdated(string topic)
         {
-            var updated = keyValueMemory?.GetUpdated(topic);
-            return updated > 1 ? updated?.FromUnixTimestamp() : null;
+            return keyValueMemory?.GetUpdated(topic); 
         }
 
         internal bool ReadTagStatus(string topic)

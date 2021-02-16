@@ -67,7 +67,13 @@
                 }
                 else if (tagDefinitionPattern.StartsWith("RGX:"))
                 {
-                    // var regexPattern = tagDefinitionPattern.Remove(0, 4); 
+                    var regexPattern = tagDefinitionPattern.Remove(0, 4);
+                    return new RtTagRegex(tag, regexPattern);
+                }  
+                else if (tagDefinitionPattern.StartsWith("DT:"))
+                {
+                    var dateTimePattern = tagDefinitionPattern.Remove(0, 3);
+                    return new RtTagDateTime(tag, dateTimePattern);
                 }
                 else if (tagDefinitionPattern.StartsWith("UL:"))
                 {
