@@ -67,7 +67,6 @@ export class RealTimeWebSocket extends Client {
         console.log("rt on open:", result);
         reactive.IsConnected = true;
         await this.RtGetTopics()
-        // await this.RtSubscribe(this.KnownTopics)
         this.emit("rt.connected");
     }
 
@@ -80,7 +79,6 @@ export class RealTimeWebSocket extends Client {
     }
 
     private RtOnNotifyTags(result: { tags: Array<TopicDto> }) {
-        // console.log("rt notify.tags result.tags:", result.tags);  
         result.tags.forEach(tag => {
             tag.updated = new Date(tag.updated);
             Vue.set(reactive.Topics, tag.tagName, tag);
@@ -88,8 +86,6 @@ export class RealTimeWebSocket extends Client {
     }
 
     public async RtSubscribe(topics: Array<string>) {
-        // : Promise<unknown>         
-
         console.log("rpc.rt.subscribe topics", topics);
         const resultTags = await this.call('rpc.rt.subscribe', topics, this.timeout) as { tags: Array<TopicDto> };
         console.log("rpc.rt.subscribe resultTags", resultTags);
@@ -98,7 +94,6 @@ export class RealTimeWebSocket extends Client {
     }
 
     public async RtAddSubscribe(topics: Array<string>) {
-
         // si todos los tags a agregar estan subscritos no invoco el comando
         if (topics.findIndex(t => this.TopicsName.findIndex(tag => tag == t) < 0) < 0) {
             return;
@@ -122,16 +117,14 @@ export class RealTimeWebSocket extends Client {
         this.RtAddSubscribe(toSubscribe);
         return result;
     }
-
 }
 
 const scheme = document.location.protocol === "https:" ? "wss" : "ws";
 const port = document.location.port ? ":" + document.location.port : "";
 const connectionUrl = process.env.NODE_ENV === 'development'
-    ? "ws://localhost:5011/rt"
+    ? "ws://localhost:5012/rt"
     : scheme + "://" + document.location.hostname + port + "/rt";
 
-// const connectionUrl = "ws://127.0.0.1:5050/ws";
 const RtWs = new RealTimeWebSocket(connectionUrl);
 
 export default RtWs;

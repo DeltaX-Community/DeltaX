@@ -113,11 +113,48 @@ public class TagRuleToSqlService
 
     public void LoadTagsToCache()
     {
-        cacheTags = settings.Rules.Select(r => r.TagExpression)
+        var skipTags = new[] { "TagExpression", "PrevValue", "Value", "UpdatedUnixTimestamp" };
+
+        cacheTags = settings.Rules
+            .Select(r => r.TagExpression)
             .Union(settings.Rules.SelectMany(r => r.WriteSql.ReadTags))
-            .ToList()
+            .Except(skipTags)
+            .ToHashSet()
             .ToDictionary(tagExpression => tagExpression, tagExpression => RtTagExpression.AddExpression(connector, tagExpression));
-    } 
+    }
+
+    public Task WaitTagsStatusAsync(CancellationToken stoppingToken)
+    {
+        var tags = settings.Rules
+            .Select(r => r.TagExpression)
+            .Select(t => GetTag(t)).ToList();
+
+        return Task.Run(async () =>
+        {
+            logger.LogInformation("Wait for read all tags status");
+
+            await Task.Delay(200);
+            var tagsNoOk = tags.Where(t => !t.Status).ToList();
+            var countNoOk = 0;
+
+            while (!stoppingToken.IsCancellationRequested && tagsNoOk.Any())
+            {
+                if (countNoOk != tagsNoOk.Count())
+                {
+                    countNoOk = tagsNoOk.Count();
+                    foreach (var tag in tagsNoOk)
+                    {
+                        logger.LogWarning("Waiting for Tag:{tag} Status:{status}", tag.TagName, tag.Status);
+                    }
+                }
+
+                tagsNoOk = tags.Where(t => !t.Status).ToList();
+                await Task.Delay(1000, stoppingToken);
+            }
+
+            logger.LogInformation("All Tags with status true has been read.");
+        });
+    }
 
     public IRtTag GetTag(string expresionString)
     { 
@@ -137,6 +174,7 @@ public class TagRuleToSqlService
 
         LoadTagsToCache();
         LoadRules();
+        WaitTagsStatusAsync().Wait();
 
         var tagNow = connector.AddTag(settings.TagNowName);
 

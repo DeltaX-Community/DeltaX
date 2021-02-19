@@ -68,7 +68,7 @@
         :search="searchTag"
         :headers="headers"
         sort-by="updated"
-        sort-desc="true"
+        sort-desc
         :items="Topics"
         :items-per-page="30"
         @select="onClickCell"
