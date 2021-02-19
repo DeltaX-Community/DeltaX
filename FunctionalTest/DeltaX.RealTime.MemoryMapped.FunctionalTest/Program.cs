@@ -46,7 +46,7 @@
 
         static void Main(string[] args)
         {
-            CommonSettings.BasePath = AppDomain.CurrentDomain.BaseDirectory;
+            // CommonSettings.BasePath = AppDomain.CurrentDomain.BaseDirectory;
             Configuration.SetDefaultLogger();
 
             string memoryName = "DemoMemory";

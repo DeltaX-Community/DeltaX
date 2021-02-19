@@ -41,7 +41,7 @@
 
         public List<HistoricTagRecord> GetInsertTags(IEnumerable<string> tagsToAdd)
         {
-            return dbHistory.RunTransaction((conn, transaction) =>
+            lock (dbHistory) return dbHistory.RunTransaction((conn, transaction) =>
             {
                 var existentTag = conn
                     .Query<HistoricTagRecord>(QueriesSqlite.sqlSelectHistoricTag)
@@ -66,7 +66,7 @@
 
         public int SaveHistoricTagValues(List<HistoricTagValueRecord> tagsValues)
         {
-            return dbHistory.RunTransaction((conn, transaction) =>
+            lock (dbHistory) return dbHistory.RunTransaction((conn, transaction) =>
             {
                 try
                 {
@@ -91,7 +91,7 @@
 
         public int CreateTables()
         {
-            return dbHistory.Run((conn) =>
+            lock (dbHistory) return dbHistory.Run((conn) =>
             {
                 logger.LogInformation("Executing CreateTables if not exist...");
 
@@ -197,7 +197,7 @@
 
         public int DeleteOldsHistoricTagValues(int daysPresistence)
         {
-            return dbHistory.RunTransaction((conn, transaction) =>
+            lock (dbHistory) return dbHistory.RunTransaction((conn, transaction) =>
             {
                 int ret = -1;
                 try

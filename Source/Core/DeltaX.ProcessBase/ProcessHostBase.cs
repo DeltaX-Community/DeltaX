@@ -39,19 +39,8 @@
             bool pressKeyToContinue = true,
             bool showInstallHelper = true)
         {
-            if (showInstallHelper)
-            {
-                ShowInstallHelper(pressKeyToContinue);
-            }
-
-            Directory.SetCurrentDirectory(ProcessDirectory);
-            CommonSettings.BasePath = @"D:\DEV\repos\DeltaX-Community\DeltaX";
-
-            return Host.CreateDefaultBuilder(args) 
-                .UseAppConfiguration(jsonFiles)
-                .UseSerilog()
-                .UseWindowsService()
-                .UseContentRoot(ProcessDirectory);
+            return Host.CreateDefaultBuilder(args)
+                .UseDefaultHostBuilder(args);
         }
     }
 }

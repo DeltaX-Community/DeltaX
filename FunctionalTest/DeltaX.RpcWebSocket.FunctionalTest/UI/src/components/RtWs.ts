@@ -114,7 +114,7 @@ export class RealTimeWebSocket extends Client {
 const scheme = document.location.protocol === "https:" ? "wss" : "ws";
 const port = document.location.port ? ":" + document.location.port : "";
 const connectionUrl = process.env.NODE_ENV === 'development'
-    ? "ws://localhost:5050/rt"
+    ? "ws://localhost:5011/rt"
     : scheme + "://" + document.location.hostname + port + "/rt";
 
 // const connectionUrl = "ws://127.0.0.1:5050/ws";

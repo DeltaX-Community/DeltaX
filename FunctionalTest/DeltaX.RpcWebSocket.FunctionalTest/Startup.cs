@@ -38,7 +38,7 @@ namespace DeltaX.RpcWebSocket.FunctionalTest
             services.AddControllers();
 
             services.AddCors(options =>
-            {
+            { 
                 options.AddPolicy("DefaultVueCors", builder =>
                 {
                     builder

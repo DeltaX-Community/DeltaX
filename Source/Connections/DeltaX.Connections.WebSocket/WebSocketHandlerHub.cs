@@ -29,12 +29,12 @@
         public WebSocketHandler RegisterWebSocket(WebSocket ws)
         {
             var client = new WebSocketHandler(ws);
-            Clients.Add(client); 
+            Clients.Add(client);
 
             client.OnClose += WshOnClose;
             client.OnConnect += WshOnConnect;
             client.OnMessageReceive += WshOnMessageReceive;
-            client.OnMessageSend += WshOnMessageSend; 
+            client.OnMessageSend += WshOnMessageSend;
 
             return client;
         }
@@ -71,16 +71,11 @@
             Clients.Clear();
         }
 
-        public async Task SendAllAsync(byte[] buffer, WebSocketMessageType messageType = WebSocketMessageType.Text)
+        public Task SendAllAsync(byte[] buffer, WebSocketMessageType messageType = WebSocketMessageType.Text)
         {
-            foreach (var client in Clients.ToArray())
-            {
-                try
-                {
-                    client.SendAsync(buffer);
-                }
-                catch { }
-            } 
+            return Task.WhenAll(Clients
+                .Select(client => client.SendAsync(buffer))
+                .ToArray());
         }
     }
 }

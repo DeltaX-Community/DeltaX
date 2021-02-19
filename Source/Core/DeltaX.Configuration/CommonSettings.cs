@@ -15,7 +15,7 @@
     public class CommonSettings
     {
         private static IConfiguration commonConfiguration;
-        private static string basePath = BasePathDefault;
+        private static string basePath;
 
         public static bool IsWindowsOs
         {
@@ -25,27 +25,29 @@
             }
         }
 
-        /// <summary>
-        /// Base Path para el scada
-        /// </summary>
-        private static string BasePathDefault
+        private static string GetBasePathDefault()
         {
-            /// FIXME, usar variable de entorno
-            get
+            var projectName = "DeltaX";
+            projectName = $"{Path.DirectorySeparatorChar}{projectName}{Path.DirectorySeparatorChar}";
+            var idx = ProcessDirectory.IndexOf(projectName, 0, System.StringComparison.InvariantCultureIgnoreCase);
+            if (idx > 0)
             {
-                if (IsWindowsOs)
-                {
-                    return @"C:\DeltaX";
-                }
-                return "/home/deltax";
+                return ProcessDirectory.Substring(0, idx + projectName.Length);
             }
-        }      
+
+            if (IsWindowsOs)
+            {
+                return @"D:\DEV\repos\DeltaX-Community\DeltaX\";
+            }
+            return "/home/deltax/";
+        }
 
 
         public static string BasePath
         {
             get
             {
+                basePath ??= GetBasePathDefault();
                 return basePath;
             }
             set
@@ -66,7 +68,8 @@
         public static string CommonConfigName => Path.Combine(BasePathConfig, "common.json");
 
         public static string DefaultDateTimeFormat { get; set; } = "o";// "yyyy/MM/dd HH:mm:ss.fff";
-             
+        
+        public static string ProcessDirectory { get => Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName); } 
 
         public static IConfiguration CommonConfiguration
         {
@@ -99,17 +102,13 @@
         }
 
         public static void SetCurrentDirectoryFromExecutable()
-        {
-            var process = Process.GetCurrentProcess();
-            var processDirectory = Path.GetDirectoryName(process.MainModule.FileName);
-            Directory.SetCurrentDirectory(processDirectory);
+        { 
+            Directory.SetCurrentDirectory(ProcessDirectory);
         }
         
         public static void SetBasePathFromExecutable()
-        {
-            var process = Process.GetCurrentProcess();
-            var processDirectory = Path.GetDirectoryName(process.MainModule.FileName);
-            BasePath = processDirectory;
+        { 
+            BasePath = ProcessDirectory;
         }
         
         public static string GetProcesConfigName()

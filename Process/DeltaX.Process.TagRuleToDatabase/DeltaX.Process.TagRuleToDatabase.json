@@ -1,0 +1,46 @@
+{
+  "RealTimeConnectorSectionName": "DefaultRealTimeConnector",
+
+  "TagRuleChange": {
+    "LoopEvaluateIntervalMilliseconds": 1000,
+    "DefaultTolerance": 0.01,
+    "TagNowName": "date/toDb/evalutaion",
+    "Rules": [
+      {
+        "CheckType": "ChangeValue",
+        "TagExpression": "if({date/toDb/evalutaion@DT:UnixTimeSeconds} -10 > {date/prueba@DT:UnixTimeSeconds}, {date/toDb/evalutaion@DT:UnixTimeSeconds}, 0 )",
+        "WriteSql": {
+          "connectionFactory": "DatabaseSqlite_1",
+          "CommandType": "Text",
+          "ReadTags": [
+            "date/toDb/evalutaion",
+            "{date/prueba@DT:UnixTimeSeconds}"
+          ],
+          "FormatSql": [
+            "insert into Prueba ",
+            "(TagName, Status, Updated, Value, ValueNumeric)",
+            "Values ",
+            "(@tag_0_name,@tag_0_status , @tag_0_updated, @tag_0, @tag_0_numeric), ",
+            "(@tag_1_name, @tag_1_status , @tag_1_updated, @tag_1, @tag_1_numeric) "
+          ]
+        }
+      }
+    ]
+  },
+
+  "DatabaseSqlite_1": {
+    "Type": "Microsoft.Data.Sqlite.dll; Microsoft.Data.Sqlite.SqliteConnection",
+    "ConnectionString": "Filename=D:/DEV/repos/DeltaX-Community/DeltaX/Process/DeltaX.Process.RealTimeHistoricDB/bin/Debug/net5.0/RealTimeHistoryDB.sqlite3"
+  },
+
+  "DatabaseMySql_1": {
+    "Type": "MySqlConnector.dll; MySqlConnector.MySqlConnection",
+    "ConnectionString": "server=127.0.0.1;user=root;password=;database=test"
+  },
+
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Debug"
+    }
+  }
+}

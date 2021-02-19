@@ -147,7 +147,7 @@
             }
         }
 
-        private void NotifyTags(WebSocketHandler ws, IEnumerable<TagChangeTracker> tags)
+        private Task NotifyTagsAsync(WebSocketHandler ws, IEnumerable<TagChangeTracker> tags)
         {
             var msgNotifyTags = new
             {
@@ -161,24 +161,25 @@
                         status = t.Status,
                         updated = t.Updated,
                         value = t.ValueObject
-                    }).ToArray()
+                    }).ToList()
                 }
             };
             byte[] msg = JsonSerializer.SerializeToUtf8Bytes(msgNotifyTags);
-            ws.SendAsync(msg);
+            return ws.SendAsync(msg);
         }
 
 
-        private void NotifyTagChange(TagChangeTracker[] tagsChanged)
+        private Task NotifyTagChangeAsync(TagChangeTracker[] tagsChanged)
         {
-            foreach (var wst in wsTags)
-            {
-                var tags = tagsChanged.Where(t => wst.Value.Contains(t)).ToArray();
-                if (tags.Any())
+            lock (wsTags) return Task.WhenAll(wsTags.ToList()
+                .Select(wst =>
                 {
-                    NotifyTags(wst.Key, tags);
-                }
-            }
+                    var tags = tagsChanged.Where(t => wst.Value.Contains(t)).ToList();
+                    return new { ws = wst.Key, tags };
+                })
+                .Where(e => e.tags.Any())
+                .Select(e => NotifyTagsAsync(e.ws, e.tags))
+                .ToList());
         }
 
         public override Task RunAsync(CancellationToken? cancellationToken = null)
@@ -203,7 +204,7 @@
                     if (tagsChanged.Any())
                     {
                         logger.LogDebug("tagsChanged: {tagsChanged}", tagsChanged.Count());
-                        NotifyTagChange(tagsChanged);
+                        await NotifyTagChangeAsync(tagsChanged);
                     }
                     await Task.Delay(refreshInterval);
                 }

@@ -1,9 +1,11 @@
 ﻿namespace Microsoft.Extensions.Hosting
 {
     using DeltaX.Configuration;
+    using DeltaX.ProcessBase;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging; 
+    using Microsoft.Extensions.Logging;
+    using Serilog;
     using System;
     using System.Diagnostics;
     using System.IO;
@@ -12,11 +14,11 @@
     {
         static Process process = Process.GetCurrentProcess();
 
-        public static IHostBuilder UseAppConfiguration(this IHostBuilder hostBuilder, string[] jsonFiles = null)
+        public static IHostBuilder UseAppConfiguration(
+            this IHostBuilder builder, 
+            string[] jsonFiles = null)
         {
-            CommonSettings.BasePath = @"D:\DEV\repos\DeltaX-Community\DeltaX";
-
-            return hostBuilder.ConfigureAppConfiguration(confBuilder =>
+            return builder.ConfigureAppConfiguration(confBuilder =>
                 {
                     confBuilder.AddJsonFile(CommonSettings.CommonConfigName, optional: true);
                     confBuilder.AddJsonFile("appsettings.json", optional: true);
@@ -37,7 +39,8 @@
                 });
         }
 
-        public static void RunApp(this IHost host)
+        public static void RunApp(
+            this IHost host)
         {
             var configuration = host.Services.GetService<IConfiguration>();
             Configuration.SetDefaultLogger(configuration);
@@ -52,6 +55,26 @@
             {
                 logger.LogInformation("Process Finished {process}", process.MainModule.FileName);
             }
+        }
+
+        public static IHostBuilder UseDefaultHostBuilder(
+            this IHostBuilder builder, 
+            string[] jsonFiles = null,
+            bool pressKeyToContinue = true,
+            bool showInstallHelper = true)
+        {
+            if (showInstallHelper)
+            {
+                ProcessHostBase.ShowInstallHelper(pressKeyToContinue);
+            }
+
+            Directory.SetCurrentDirectory(ProcessHostBase.ProcessDirectory);
+
+            return builder
+                .UseAppConfiguration(jsonFiles)
+                .UseSerilog()
+                .UseWindowsService()
+                .UseContentRoot(ProcessHostBase.ProcessDirectory);
         }
     }
 }

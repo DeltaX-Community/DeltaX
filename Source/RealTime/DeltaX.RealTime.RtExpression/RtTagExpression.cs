@@ -28,11 +28,11 @@
                     expresion = expresion.Replace(match.Value, $"arg{i}");
                     i++;
                 }
-                return new RtTagExpression(expresion, argumentsTags);
+                return new RtTagExpression(expresionFull, expresion, argumentsTags);
             }
             else if (expresionFull.StartsWith("="))
             {
-                return new RtTagExpression(expresionFull, null);
+                return new RtTagExpression(expresionFull, expresionFull, null);
             }
             else
             {
@@ -45,9 +45,9 @@
             return rgx.IsMatch(expresionFull) || expresionFull.StartsWith("=");
         }
 
-        public RtTagExpression(string expresionString, IRtTag[] argumentsTags)
+        public RtTagExpression(string tagName, string expresionString, IRtTag[] argumentsTags)
         {
-            TagName = expresionString;
+            TagName = tagName;
             Initialize(expresionString.TrimStart('='), argumentsTags);
         }
 
@@ -77,30 +77,28 @@
         {
             foreach (var atag in ArgumentsTags)
             {
-                atag.ValueUpdated += TagArgumentOnUpdatedValue;
-                atag.StatusChanged += TagArgumentStatusChanged;
+                // atag.ValueUpdated -= TagArgumentOnUpdatedValue; 
+                // atag.ValueUpdated += TagArgumentOnUpdatedValue; 
             }
         }
-
-        private void TagArgumentStatusChanged(object sender, IRtTag e)
-        {
-            // Eval();
-        }
+         
 
         private void DettachEventsTagArguments()
         {
             foreach (var atag in ArgumentsTags)
             {
-                atag.ValueUpdated -= TagArgumentOnUpdatedValue;
-                atag.StatusChanged -= TagArgumentStatusChanged;
+                atag.ValueUpdated -= TagArgumentOnUpdatedValue; 
             }
         }
 
         private void TagArgumentOnUpdatedValue(object sender, IRtTag e)
         {
-            if (HasNewValue() || HasNewStatus())
+            lock (this)
             {
-                Eval();
+                if (HasNewValue() || HasNewStatus())
+                {
+                    Eval();
+                }
             }
         }
 
@@ -126,23 +124,27 @@
 
         public IRtValue Eval()
         {
-            try
+            lock (this)
             {
-                DateTime? _updated = null; 
-                foreach (var e in ArgumentsTags.Select((tag, index) => (tag, index)))
-                {  
-                    expression.getArgument(e.index).setArgumentValue(e.tag.Value.Numeric); 
-                    _updated = !_updated.HasValue || e.tag.Updated > _updated ? e.tag.Updated : _updated;
-                }
+                try
+                {
+                    DateTime? _updated = null;
+                    foreach (var e in ArgumentsTags.Select((tag, index) => (tag, index)))
+                    {
+                        expression.getArgument(e.index).setArgumentValue(e.tag.Value.Numeric);
+                        _updated = !_updated.HasValue || e.tag.Updated > _updated ? e.tag.Updated : _updated;
+                    }
 
-                var value = expression.calculate();
-                RaiseOnUpdatedValue(this, RtValue.Create(value), _updated ?? DateTime.Now, GetStatus());
-                return base.Value;
-            }
-            catch
-            {
-                RaiseOnUpdatedValue(this, RtValue.Create(double.NaN), DateTime.Now, false);
-                return base.Value;
+                    var value = expression.calculate();
+                    RaiseOnUpdatedValue(this, RtValue.Create(value), _updated ?? DateTime.Now, GetStatus());
+                    return base.Value;
+                }
+                catch (Exception e)
+                {
+                    var msg = e.Message;
+                    RaiseOnUpdatedValue(this, RtValue.Create(double.NaN), DateTime.Now, false);
+                    return base.Value;
+                }
             }
         }
 
@@ -153,36 +155,45 @@
 
         public string GetExpresionFull()
         {
-            string expFull = expression.getExpressionString();
-
-            foreach (var e in ArgumentsTags.Select((tag, idx) => (tag, idx)))
+            lock (this)
             {
-                expFull = expFull.Replace($"arg{e.idx}", $"{{{e.tag}}}");
-            }
+                string expFull = expression.getExpressionString();
 
-            return expFull;
+                foreach (var e in ArgumentsTags.Select((tag, idx) => (tag, idx)))
+                {
+                    expFull = expFull.Replace($"arg{e.idx}", $"{{{e.tag}}}");
+                }
+
+                return expFull;
+            }
         }
 
 
         private string GetExpresionTopic()
         {
-            string expFull = expression.getExpressionString();
-
-            foreach (var e in ArgumentsTags.Select((tag, idx) => (tag.Topic, idx)))
+            lock (this)
             {
-                expFull = expFull.Replace($"arg{e.idx}", $"{{{e.Topic}}}");
-            }
+                string expFull = expression.getExpressionString();
 
-            return expFull;
+                foreach (var e in ArgumentsTags.Select((tag, idx) => (tag.Topic, idx)))
+                {
+                    expFull = expFull.Replace($"arg{e.idx}", $"{{{e.Topic}}}");
+                }
+
+                return expFull;
+            }
         }
 
         public override IRtValue Value
         {
             get
             {
-                if (HasNewValue() || HasNewStatus())
+                lock (this)
                 {
-                    Eval();
+                    if (HasNewValue() || HasNewStatus())
+                    {
+                        Eval();
+                    }
                 }
                 return base.Value;
             }
@@ -192,9 +203,12 @@
         {
             get
             {
-                if (HasNewValue() || HasNewStatus())
+                lock (this)
                 {
-                    Eval();
+                    if (HasNewValue() || HasNewStatus())
+                    {
+                        Eval();
+                    }
                 }
                 return _status;
             }
@@ -204,9 +218,12 @@
         {
             get
             {
-                if (HasNewValue() || HasNewStatus())
+                lock (this)
                 {
-                    Eval();
+                    if (HasNewValue() || HasNewStatus())
+                    {
+                        Eval();
+                    }
                 }
                 return base.Updated;
             }

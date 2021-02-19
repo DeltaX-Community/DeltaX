@@ -180,6 +180,8 @@
                 }
 
                 lastCommit = DateTime.Now;
+
+                GC.Collect();
             }
         }
 

@@ -1,12 +1,10 @@
-﻿using DeltaX.RealTime.Interfaces;
-using DeltaX.RealTime.RtMemoryMapped;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Reflection;
-
-namespace DeltaX.RealTime
+﻿namespace DeltaX.RealTime
 {
+    using DeltaX.ActivatorFactory;
+    using DeltaX.RealTime.Interfaces;
+    using DeltaX.RealTime.RtMemoryMapped;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     public class RealTimeConnectorSection
     {  
@@ -37,19 +35,10 @@ namespace DeltaX.RealTime
                     return RtConnectorMemoryMapped.BuildFromFactory(configurationSection, loggerFactory);
                 default:
                     string[] assembyAndClass = connectorSection.Type.Split(";");
-                    return Build(assembyAndClass[0].Trim(), assembyAndClass[1].Trim(), new object[] { configurationSection, loggerFactory });
+
+                    return InstanceCreator.CreateFromStatic<IRtConnector>("BuildFromFactory",
+                        assembyAndClass[0].Trim(), assembyAndClass[1].Trim(), new object[] { configurationSection, loggerFactory });
             }
-        }
-
-
-        IRtConnector Build(string assemmblyName, string className, params object[] parameters)
-        { 
-            Assembly a = Assembly.Load(assemmblyName); 
-            Type myType = a.GetType(className);
-             
-            MethodInfo methodBuild = myType.GetMethod("BuildFromFactory", BindingFlags.Public | BindingFlags.Static);
-
-            return (IRtConnector)methodBuild.Invoke(null, parameters);
         }
     }
 }

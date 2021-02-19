@@ -1,11 +1,11 @@
 {
-  "RealTimeConnectorSectionName": "DefaultRealTimeConnector",
+  "RealTimeConnectorSectionName": "DefaultRealTimeConnector", 
   
   "DefaultRealTimeConnector": {
     "Type": "DeltaX.RealTime.RtMemoryMapped; DeltaX.RealTime.RtMemoryMapped.RtConnectorMemoryMapped",
     "SectionName": "MemoryMappedConnector"
   },
-  
+   
   "RtMqttConnector": {
     "Type": "DeltaX.RealTime.RtMqtt; DeltaX.RealTime.RtMqtt.RtConnectorMqtt",
     "SectionName": "MqttConnector"
@@ -24,7 +24,8 @@
     "Port": 1883,
     "Username": "sima",
     "Password": "sima",
-    "Prefix": "Demo/"
+    "Prefix": "Demo/",
+	"ExtraTopicsSbscribe": [ "Demo/#" ]
   },
   
   "Serilog": {

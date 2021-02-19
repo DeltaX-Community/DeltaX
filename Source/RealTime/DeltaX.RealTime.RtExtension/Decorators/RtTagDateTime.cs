@@ -22,6 +22,8 @@
 
         public string TagDateTimeValuePattern { get; protected set; }
 
+        public override string TagName => $"{tag.TagName}@DT:{TagDateTimeValuePattern}";
+
         public override bool Status
         {
             get

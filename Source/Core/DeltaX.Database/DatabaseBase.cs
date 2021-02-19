@@ -11,10 +11,8 @@
 
         private object _locker = new object();
         private ILogger logger;
-        private Exception lastException;
-        private string[] connectionStrings;
-        private Type dbConnectionType;
-        private string currentConnectionString;
+        private DbConnectionFactory dbConnFactory;
+        private Exception lastException; 
 
         public static DatabaseBase Build<T>(string[] connectionStrings, ILoggerFactory loggerFactory = null) 
             where T : IDbConnection, new()
@@ -43,10 +41,9 @@
         protected DatabaseBase(Type dbConnectionType, string[] connectionStrings, ILoggerFactory loggerFactory = null)
         {
             loggerFactory ??= Configuration.DefaultLoggerFactory;
-            this.logger = loggerFactory.CreateLogger($"{nameof(DatabaseBase)}"); 
-            
-            this.dbConnectionType = dbConnectionType;
-            this.connectionStrings = connectionStrings;                        
+            this.logger = loggerFactory.CreateLogger($"{nameof(DatabaseBase)}");
+
+            this.dbConnFactory = new DbConnectionFactory(dbConnectionType, connectionStrings, logger); 
         }
 
 
@@ -131,19 +128,21 @@
             lock (_locker)
             {
                 // Try connect with CurrentConnectionString
-                if (!string.IsNullOrEmpty(currentConnectionString) && TryConnect(currentConnectionString))
+                if (!string.IsNullOrEmpty(DbConnection?.ConnectionString))
                 {
-                    return true;
+                    try
+                    {
+                        DbConnection = dbConnFactory.Connect(DbConnection.ConnectionString);
+                        return true;
+                    }
+                    catch { }                      
                 }
 
-                for (int idx = 0; idx < connectionStrings.Length; idx++)
+                try
                 {
-                    currentConnectionString = connectionStrings[idx];
-                    if (TryConnect(currentConnectionString))
-                    {
-                        break;
-                    }
+                    DbConnection = dbConnFactory.GetConnection(); 
                 }
+                catch { }
             }
 
             return IsConnected;
@@ -156,68 +155,8 @@
         /// <returns></returns>
         public IDbConnection GetConnection()
         {
-            Exception exception = new ArgumentNullException("ConnectionStrings List Error");
-            foreach (string connectionString in connectionStrings)
-            {
-                try
-                {
-                    var dbConn = Connect(connectionString);
-                    if (dbConn.State.HasFlag(ConnectionState.Open))
-                        return dbConn;
-
-                    // Close if not openned!
-                    dbConn.Close();
-                }
-                catch (Exception e) { exception = e; }
-            }
-
-            throw exception;
-        }
-
-        private bool TryConnect(string connectionString)
-        {
-            // Close and Dispose previous connection if pending
-            Close();
-
-            try
-            {
-                DbConnection = Connect(connectionString);
-            }
-            catch (Exception ex)
-            {
-                lastException = ex;
-            }
-
-            return IsConnected;
-        }
-
-
-        private IDbConnection Connect(string connectionString)
-        {
-            try
-            {
-                logger?.LogDebug("Database try ConnectionString: {0}", connectionString);
-
-                IDbConnection dbConn = (IDbConnection)Activator.CreateInstance(dbConnectionType);
-
-                dbConn.ConnectionString = connectionString;
-                dbConn.Open();
-
-                logger?.LogDebug("Database State: {0}", dbConn.State);
-
-                if (dbConn.State.HasFlag(ConnectionState.Open))
-                {
-                    logger?.LogDebug("Database Connected ConnectionString: {0}", connectionString);
-                }
-
-                return dbConn;
-            }
-            catch (Exception ex)
-            {
-                logger?.LogError(ex, "Database Connect excepcion");
-                throw;
-            }
-        }
+            return dbConnFactory.GetConnection();
+        } 
 
 
         bool prev_connected = false;
@@ -237,9 +176,9 @@
                         try
                         {
                             if (connected)
-                                OnConnect?.Invoke(this, currentConnectionString);
+                                OnConnect?.Invoke(this, DbConnection.ConnectionString);
                             else
-                                OnDisconnect?.Invoke(this, currentConnectionString);
+                                OnDisconnect?.Invoke(this, DbConnection.ConnectionString);
                         }
                         catch { }
                     }
@@ -259,10 +198,10 @@
             {
                 if (DbConnection != null)
                 {
+                    OnDisconnect?.Invoke(this, DbConnection.ConnectionString);
                     DbConnection.Close();
                     DbConnection.Dispose();
-                    DbConnection = null;
-                    OnDisconnect?.Invoke(this, currentConnectionString);
+                    DbConnection = null;                    
                 }
                 prev_connected = false;
             }

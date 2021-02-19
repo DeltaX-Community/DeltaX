@@ -40,7 +40,7 @@
             protected set { }
         }
    
-        public string TagName
+        public virtual string TagName
         {
             get { return tag.TagName; }
             protected set { }

@@ -49,7 +49,9 @@
             Updated = TagExpression.Updated;
             Status = TagExpression.Status;
 
-            return Status && Updated > PrevUpdated;
+            return Status 
+                && Updated > PrevUpdated 
+                && Math.Abs(DiscardValue - Value) > tolerance;
         }
 
         private bool HasValueChanged()
@@ -82,6 +84,9 @@
                     change = HasUpdatedChanged(); 
                     break;
             }
+
+            // logger?.LogDebug("Event: [{0}] {1} TagName:[{2}] Expresion:[{3}] PrevValue:{4} Value:{5} Updated:{6} change:{7}",
+            //            EventId, RuleCheckType, TagExpression.TagName, TagExpression, PrevValue, Value, Updated, change);
 
             if (change)
             {

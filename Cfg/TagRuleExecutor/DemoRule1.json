@@ -1,0 +1,57 @@
+{ 
+  "RealTimeConnectorSectionName": "RtMqttConnector",
+
+  "TagRuleChange": {
+    "LoopEvaluateIntervalMilliseconds": 100,
+    "DefaultTolerance": 0.01,
+    "TagNowName": "date/evaluation",
+    "Rules": [
+      {
+        "CheckType": "ChangeValue",
+        "TagExpression": "if({date/evaluation@DT:UnixTimeSeconds} -10 > {date/prueba@DT:UnixTimeSeconds}, {date/evaluation@DT:UnixTimeSeconds}, 0 )",
+        "WriteTags": [
+          {
+            "Tag": "date/prueba",
+            "Value": "date/evaluation"
+          },
+          {
+            "Tag": "result/prueba",
+            "Value": "=1"
+          },
+          {
+            "Tag": "result/prueba2",
+            "Value": "{date/evaluation@DT:UnixTimeSeconds} /10 "
+          }
+        ]
+      },
+      {
+        "CheckType": "ChangeUpdated",
+        "TagExpression": "({tag1} - {tag2/Task.CurrentId}) / 2",
+        "WriteTags": [
+          {
+            "Tag": "powerTag",
+            "Value": "TagExpression"
+          }
+        ]
+      }
+    ]
+  },
+
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information"
+    },
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "default.log",
+          "restrictedToMinimumLevel": "Information",
+          "fileSizeLimitBytes": "2000000",
+          "retainedFileCountLimit": 4,
+          "rollOnFileSizeLimit": true
+        }
+      }
+    ]
+  }
+}

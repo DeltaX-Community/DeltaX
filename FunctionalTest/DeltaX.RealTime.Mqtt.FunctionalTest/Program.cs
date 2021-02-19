@@ -44,7 +44,7 @@
             var pruebaJsonCounter = conn.AddTagDefinition("pruebaJson@JSON:arrayInteger[1]");
 
             var pruebaCount2 = conn.AddTag("pruebaCount2");
-            var pruebaExpression = new RtTagExpression("arg0 + arg1", new[] { pruebaJsonCounter, pruebaCount2 }); 
+            var pruebaExpression = new RtTagExpression("arg0 + arg1", "arg0 + arg1", new[] { pruebaJsonCounter, pruebaCount2 }); 
             var pruebaExpression2 = RtTagExpression.AddExpression(conn, "{pruebaCount2} + 1000");  
 
             {

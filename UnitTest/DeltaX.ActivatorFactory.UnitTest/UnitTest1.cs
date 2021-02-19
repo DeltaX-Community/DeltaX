@@ -1,0 +1,23 @@
+using NUnit.Framework;
+
+namespace DeltaX.ActivatorFactory.UnitTest
+{
+    
+
+
+
+
+    public class Tests
+    {
+        [SetUp]
+        public void Setup()
+        {
+        }
+
+        [Test]
+        public void Test1()
+        {
+            Assert.Pass();
+        }
+    }
+}

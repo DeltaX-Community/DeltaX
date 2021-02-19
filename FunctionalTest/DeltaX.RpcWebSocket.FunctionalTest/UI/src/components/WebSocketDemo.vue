@@ -1,34 +1,40 @@
 <template>
-  <div class="hello">
-    <h1>RtView</h1>
-    <form>
-      <label for="topicWrite">Topic Write:</label>
-      <input id="topicWrite" type="text" v-model="topicWrite" />
-      <label for="valueWrite">Value:</label>
-      <input id="valueWrite" type="text" v-model="valueWrite" />
-      <button @click.prevent="SetTag()">Set Tag</button>
-    </form>
-    <form>
-      <label for="topicSubscribe">Topic Subscribe (Expression):</label>
-      <input id="topicSubscribe" type="text" v-model="topicSubscribe" /> 
-      <button @click.prevent="SubscribeTopic()">Subscribe Topic</button>
-    </form>
-    <table style="width: 100%">
+  <div class="block  m-6 p-0 rounded-xl border-4 border-green-900"> 
+      <div class="  grid justify-center rounded-lg rounded-b-none">
+        <h1 class="text-4xl font-extrabold m-4">RtView</h1>
+      </div> 
+    <div class="p-3  bg-red-700 rounded-xl rounded-t-none">
+    <div class="grid">    
+      <form class="my-1 grid-cols-4 bg-green-50 p-1 text-sm rounded-lg items-center grid-flow-row">
+        <label class="" for="topicWrite">Topic:</label>
+        <input class=" mx-1 p-1" id="topicWrite" type="text" v-model="topicWrite" />
+        <label class="" for="valueWrite">Value:</label>
+        <input class=" mx-1 p-1" id="valueWrite" type="text" v-model="valueWrite" />
+        <button class="w-1/8 mx-1 p-1 px-4 text-white focus:to-blue-500 bg-blue-700 rounded-full"  @click.prevent="SetTag()">Set Tag</button>      
+      </form>
+      <form class="my-1 bg-green-50 p-1 text-sm rounded-lg items-center grid-flow-row">
+        <label class="" for="topicSubscribe">Topic Subscribe (Expression):</label>
+        <input class=" mx-1 p-1" id="topicSubscribe" type="text" v-model="topicSubscribe" /> 
+        <button class="w-1/8 mx-1 p-1 px-4 text-white focus:to-blue-500 bg-blue-700 rounded-full" @click.prevent="SubscribeTopic()">Subscribe Topic</button>
+      </form>
+    </div>
+    <table class="table-auto">
       <thead>
-        <th>Tag Name</th>
-        <th>Status</th>
-        <th>Value</th>
-        <th>Updated</th>
+        <th class="font-black  text-green-900 rounded text-left">Tag Name</th>
+        <th class="font-black  text-green-900 rounded text-left">Status</th>
+        <th class="font-black  text-green-900 rounded text-left">Value</th>
+        <th class="font-black  text-green-900 rounded text-left">Updated</th>
       </thead>
       <tbody v-if="topics">
         <tr v-for="t in topics" :key="t.tagName">
-          <td>{{ t.tagName }}</td>
-          <td>{{ t.status }}</td>
-          <td>{{ t.value }}</td>
-          <td>{{ t.updated }}</td>
+          <td class="text-left font-bold">{{ t.tagName }}</td>
+          <td class="text-left">{{ t.status }}</td>
+          <td class="text-right">{{ t.value }}</td>
+          <td class="text-right">{{ t.updated }}</td>
         </tr>
       </tbody>
     </table>
+      </div>
   </div>
 </template>
 
@@ -108,21 +114,4 @@ export default class HelloWorld extends Vue {
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
+ 

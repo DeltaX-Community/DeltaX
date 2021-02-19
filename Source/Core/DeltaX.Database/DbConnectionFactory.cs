@@ -4,14 +4,15 @@
     using System;
     using System.Data;
 
-    public class DbConnectionFactory<TDbConnection> 
-        where TDbConnection : IDbConnection, new()
+    public class DbConnectionFactory
     {
         private readonly ILogger logger;
+        private readonly Type dbConnectionType;
         private readonly string[] connectionStrings;
 
-        public DbConnectionFactory(string[] connectionStrings, ILogger logger = null)
+        public DbConnectionFactory(Type dbConnectionType, string[] connectionStrings, ILogger logger = null)
         {
+            this.dbConnectionType = dbConnectionType;
             this.connectionStrings = connectionStrings;
             this.logger = logger;
         }
@@ -20,7 +21,7 @@
         /// Get a new connection based on connectionStrings array
         /// </summary>
         /// <returns></returns>
-        public TDbConnection GetConnection()
+        public IDbConnection GetConnection()
         {
             Exception exception = null;
             foreach (string conStr in connectionStrings)
@@ -50,13 +51,13 @@
         /// </summary>
         /// <param name="connectionString"></param>
         /// <returns>a new DbConnection</returns>
-        public TDbConnection Connect(string connectionString)
+        public IDbConnection Connect(string connectionString)
         {
             try
             {
                 logger?.LogDebug("Database try ConnectionString: {0}", connectionString);
 
-                TDbConnection dbConn = Activator.CreateInstance<TDbConnection>();
+                IDbConnection dbConn = (IDbConnection)Activator.CreateInstance(dbConnectionType);
 
                 dbConn.ConnectionString = connectionString;
                 dbConn.Open();
@@ -74,6 +75,18 @@
             {
                 logger?.LogError(ex, "Database Connect excepcion");
                 throw;
+            }
+        }
+
+        public IDbConnection TryConnect(string connectionString)
+        {
+            try
+            {
+                return Connect(connectionString);
+            }
+            catch
+            {
+                return default;
             }
         }
     }

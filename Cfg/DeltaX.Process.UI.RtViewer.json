@@ -1,0 +1,30 @@
+{
+  "RealTimeConnectorSectionName": "RtMqttConnector",
+
+  "MqttConnector": {
+    "ExtraTopicsSbscribe": [ "Demo/#" ]
+  },
+
+  "AllowedHosts": "*",
+
+  "Kestrel": {
+    "EndPoints": {
+      "Http": {
+        "Url": "http://0.0.0.0:5012"
+      }
+    }
+  },
+  
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information", 
+    },
+    "WriteTo": [
+      { 
+        "Args": {
+          "path": "D:\\DEV\\repos\\DeltaX-Community\\DeltaX\\Logs\\RtViewer.log",
+          }
+      }
+    ]
+  }
+}

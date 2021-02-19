@@ -9,13 +9,9 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Diagnostics;
 
-
-
-ProcessHostBase
-    .CreateHostBuilder(args, args, false)
-    .UseAppConfiguration()
-    .UseSerilog() 
-    .UseWindowsService()
+ 
+Host.CreateDefaultBuilder(args)
+    .UseDefaultHostBuilder(args, args, false) 
     .ConfigureServices((hostContext, services) =>
     {
         services.AddHostedService<ServiceTemplateWorker>();

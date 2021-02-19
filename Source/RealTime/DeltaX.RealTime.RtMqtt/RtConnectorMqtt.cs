@@ -254,7 +254,7 @@
 
                         RaiseOnSetValue(tag);
 
-                        logger?.LogDebug("WriteValue TagName:{0} return:{1}", tag.TagName, true);
+                        logger?.LogDebug("WriteValue TagName:{0} Value:{1} return:{2}", tag.TagName, tag.Value.Text, true);
                         return true;
                     }
                 }
