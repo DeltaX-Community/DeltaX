@@ -1,19 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Platforms>AnyCPU;x64</Platforms>
-
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="M2MqttDotnetCore" Version="1.1.0" />
+    <PackageReference Include="M2MqttDotnetCore" Version="1.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
-  </ItemGroup>
- 
+  </ItemGroup> 
 
 </Project>

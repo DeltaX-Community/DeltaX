@@ -3,8 +3,7 @@
     using System.IO;
     using System.Runtime.InteropServices;
     using System.Diagnostics;
-    using Microsoft.Extensions.Configuration;
-    using System;
+    using Microsoft.Extensions.Configuration; 
 
     /// <summary>
     /// BaseConfig, es una configuracion base para derivar otras configuraciones
@@ -48,7 +47,7 @@
         {
             get
             {
-                basePath ??= GetBasePathDefault();
+                basePath = basePath ?? GetBasePathDefault();
                 return basePath;
             }
             set
@@ -69,8 +68,8 @@
         public static string CommonConfigName => Path.Combine(BasePathConfig, "common.json");
 
         public static string DefaultDateTimeFormat { get; set; } = "o";// "yyyy/MM/dd HH:mm:ss.fff";
-        
-        public static string ProcessDirectory { get => Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName); } 
+
+        public static string ProcessDirectory { get => Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName); }
 
         public static IConfiguration CommonConfiguration
         {
@@ -103,15 +102,15 @@
         }
 
         public static void SetCurrentDirectoryFromExecutable()
-        { 
+        {
             Directory.SetCurrentDirectory(ProcessDirectory);
         }
-        
+
         public static void SetBasePathFromExecutable()
-        { 
+        {
             BasePath = ProcessDirectory;
         }
-        
+
         public static string GetProcesConfigName()
         {
             var process = Process.GetCurrentProcess();
@@ -119,36 +118,36 @@
         }
 
         public static string GetPathConfigFile(string configFileName = "common.json")
-        { 
+        {
             if (File.Exists(configFileName))
             {
                 return configFileName;
-            } 
+            }
 
             var process = Process.GetCurrentProcess();
             var processDirectory = Path.GetDirectoryName(process.MainModule.FileName);
-            
+
             // Busca junto con el path del proceso
-            var commonConfig = Path.Combine(processDirectory, configFileName); 
+            var commonConfig = Path.Combine(processDirectory, configFileName);
             if (File.Exists(commonConfig))
             {
                 return commonConfig;
             }
-            
+
             // Busca en el directorio Cfg en el path del proceso
-            commonConfig = Path.Combine(processDirectory, "Cfg", configFileName); 
+            commonConfig = Path.Combine(processDirectory, "Cfg", configFileName);
             if (File.Exists(commonConfig))
             {
                 return commonConfig;
             }
 
             // Busca en el path comun de configuracion
-            commonConfig = Path.Combine(BasePathConfig, configFileName); 
+            commonConfig = Path.Combine(BasePathConfig, configFileName);
             if (File.Exists(commonConfig))
             {
                 return commonConfig;
             }
-             
+
             return null;
         }
 

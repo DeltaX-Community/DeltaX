@@ -12,7 +12,7 @@
             base.Options = options ?? new RtTagMqttOptions();
         }
 
-        public override RtTagMqttOptions Options => base.Options as RtTagMqttOptions;
+        public new RtTagMqttOptions Options => (RtTagMqttOptions)base.Options;
 
         internal void RaiseOnSetValue(IRtValue value)
         {

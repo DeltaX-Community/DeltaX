@@ -15,7 +15,7 @@
         static Process process = Process.GetCurrentProcess();
 
         public static IHostBuilder UseAppConfiguration(
-            this IHostBuilder builder, 
+            this IHostBuilder builder,
             string[] jsonFiles = null)
         {
             return builder.ConfigureAppConfiguration(confBuilder =>
@@ -29,10 +29,11 @@
                     {
                         foreach (var fileName in jsonFiles)
                         {
-                            if (File.Exists(fileName))
+                            if (Path.GetExtension(fileName).Equals(".json", StringComparison.InvariantCultureIgnoreCase))
                             {
-                                Console.WriteLine("AddJsonFile: {0}", fileName);
-                                confBuilder.AddJsonFile(fileName, optional: true);
+                                var fileConfig = CommonSettings.GetPathConfigFile(fileName) ?? fileName;
+                                Console.WriteLine("AddJsonFile: {0}", fileConfig);
+                                confBuilder.AddJsonFile(fileConfig, optional: true);
                             }
                         }
                     }

@@ -1,23 +1,13 @@
 ﻿using DeltaX.ActivatorFactory;
-using DeltaX.CommonExtensions;
 using DeltaX.Database;
-using DeltaX.MemoryMappedRecord;
-using DeltaX.Modules.TagRuleEvaluator;
-using DeltaX.RealTime;
-using DeltaX.RealTime.Interfaces;
-using DeltaX.RealTime.RtExpression;
-using DeltaX.RealTime.RtMemoryMapped;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 
 
@@ -67,9 +57,7 @@ public class DatabaseManager : IDatabaseManager
         }
 
         return value ?? DBNull.Value;
-    }
-
-
+    }     
 
     public int SaveToDb(string connectionFactory, string commandText, CommandType commandType, Dictionary<string, object> parameters)
     {  

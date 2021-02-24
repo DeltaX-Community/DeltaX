@@ -1,7 +1,7 @@
 ﻿namespace DeltaX.Configuration
 {
-    using Microsoft.Extensions.Configuration; 
-    using Microsoft.Extensions.Logging; 
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using DeltaX.Configuration.Serilog;
 
     public class Configuration
@@ -31,7 +31,7 @@
         {
             get
             {
-                defaultLoggerFactory ??= LoggerConfiguration.GetSerilogLoggerFactory();
+                defaultLoggerFactory = defaultLoggerFactory ?? LoggerConfiguration.GetSerilogLoggerFactory();
                 return defaultLoggerFactory;
             }
             set
@@ -44,7 +44,7 @@
         {
             get
             {
-                defaultLogger ??= DefaultLoggerFactory.CreateLogger("");
+                defaultLogger = defaultLogger ?? DefaultLoggerFactory.CreateLogger("");
                 return defaultLogger;
             }
             set

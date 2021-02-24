@@ -122,10 +122,14 @@
             }
             else if (IsResponse())
             {
-                object msg = error == null
-                    ? new { jsonrpc = Jsonrpc, id = Id, result = result }
-                    : new { jsonrpc = Jsonrpc, id = Id, error = error };
-                return JsonSerializer.Serialize(msg);
+                if (error == null)
+                {
+                    return JsonSerializer.Serialize(new { jsonrpc = Jsonrpc, id = Id, result = result });
+                }
+                else
+                {
+                    return JsonSerializer.Serialize(new { jsonrpc = Jsonrpc, id = Id, error = error });
+                }
             }
 
             return JsonSerializer.Serialize(this, jsonOptions);
@@ -145,10 +149,14 @@
             }
             else if (IsResponse())
             {
-                object msg = error == null
-                    ? new { jsonrpc = Jsonrpc, id = Id, result = result }
-                    : new { jsonrpc = Jsonrpc, id = Id, error = error };
-                return JsonSerializer.SerializeToUtf8Bytes(msg);
+                if (error == null)
+                {
+                    return JsonSerializer.SerializeToUtf8Bytes(new { jsonrpc = Jsonrpc, id = Id, result = result });
+                }
+                else
+                {
+                    return JsonSerializer.SerializeToUtf8Bytes(new { jsonrpc = Jsonrpc, id = Id, error = error });
+                }
             }
 
             return JsonSerializer.SerializeToUtf8Bytes(this, jsonOptions);
