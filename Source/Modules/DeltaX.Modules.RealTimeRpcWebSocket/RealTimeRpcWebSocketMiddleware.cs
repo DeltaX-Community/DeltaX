@@ -22,6 +22,8 @@
         private ILogger logger;
         private IRtConnector connector;
         private WebSocketHandlerHub hub;
+        private readonly TagChangeTrackerManager trackerManager;
+        private readonly ProcessInfoStatistics processInfo;
         private ConcurrentDictionary<WebSocketHandler, List<TagChangeTracker>> wsTags;
         private TimeSpan refreshInterval;
 
@@ -37,38 +39,42 @@
         public RealTimeRpcWebSocketMiddleware(
             IRtConnector connector,
             WebSocketHandlerHub hub,
+            TagChangeTrackerManager trackerManager,
             ILoggerFactory loggerFactory,
+            ProcessInfoStatistics processInfo,
             TimeSpan? refreshInterval = default)
         {
             this.logger = loggerFactory.CreateLogger(nameof(RealTimeRpcWebSocketMiddleware));
             this.hub = hub;
+            this.trackerManager = trackerManager;
+            this.processInfo = processInfo;
             this.connector = connector;
             this.wsTags = new ConcurrentDictionary<WebSocketHandler, List<TagChangeTracker>>();
             this.refreshInterval = refreshInterval ?? TimeSpan.FromSeconds(1);
+
+            this.connector.Connected += (s, e) => { processInfo.ConnectedDateTime = DateTime.Now; };
         }
 
         public override IMessage ProcessMessage(WebSocketHandler ws, IMessage msg)
         {
             // RealTime Subscriber / Unsubscriber
-            if (msg.MethodName == "rpc.rt.subscribe")
+            switch (msg.MethodName)
             {
-                var result = RtSubscribe(ws, msg.GetParameters<string[]>());
-                return Rpc.JsonRpc.Message.CreateResponse(msg, result);
-            }
-            else if (msg.MethodName == "rpc.rt.unsubscribe")
-            {
-                var result = RtUnsubscribe(ws);
-                return Rpc.JsonRpc.Message.CreateResponse(msg, result);
-            }
-            else if (msg.MethodName == "rpc.rt.set_value")
-            {
-                var result = RtSetValue(msg.GetParameters<SetValueParam[]>());
-                return Rpc.JsonRpc.Message.CreateResponse(msg, result);
-            }
-            else if (msg.MethodName == "rpc.rt.get_topics")
-            {
-                var result = RtGetTopics();
-                return Rpc.JsonRpc.Message.CreateResponse(msg, result);
+                case "rpc.rt.subscribe":
+                    object result = RtSubscribe(ws, msg.GetParameters<string[]>());
+                    return Rpc.JsonRpc.Message.CreateResponse(msg, result);
+
+                case "rpc.rt.unsubscribe":
+                    result = RtUnsubscribe(ws);
+                    return Rpc.JsonRpc.Message.CreateResponse(msg, result);
+
+                case "rpc.rt.set_value":
+                    result = RtSetValue(msg.GetParameters<SetValueParam[]>());
+                    return Rpc.JsonRpc.Message.CreateResponse(msg, result);
+
+                case "rpc.rt.get_topics":
+                    result = RtGetTopics();
+                    return Rpc.JsonRpc.Message.CreateResponse(msg, result);
             }
             return base.ProcessMessage(ws, msg);
         }
@@ -83,7 +89,7 @@
             lock (wsTags)
             {
                 wsTags[ws] = expressions
-                    .Select(expression => TagChangeTracker.GetOrAdd(connector, expression))
+                    .Select(expression => trackerManager.GetOrAdd(connector, expression))
                     .ToList();
             }
 
@@ -169,52 +175,49 @@
         }
 
 
-        private Task NotifyTagChangeAsync(TagChangeTracker[] tagsChanged)
+        private void NotifyTagChange(List<TagChangeTracker> tagsChanged)
         {
-            lock (wsTags) return Task.WhenAll(wsTags.ToList()
-                .Select(wst =>
+            processInfo.TagsCount = trackerManager.GetTagsCount();
+            processInfo.TagsChanged += tagsChanged.Count;
+
+            var elements = wsTags
+                .Select(wst => new
                 {
-                    var tags = tagsChanged.Where(t => wst.Value.Contains(t)).ToList();
-                    return new { ws = wst.Key, tags };
+                    ws = wst.Key,
+                    wsTagsChanged = tagsChanged.Where(t => wst.Value.Contains(t)).ToList()
                 })
-                .Where(e => e.tags.Any())
-                .Select(e => NotifyTagsAsync(e.ws, e.tags))
-                .ToList());
+                .Where(e => e.wsTagsChanged.Any());
+
+            foreach (var e in elements)
+            {
+                NotifyTagsAsync(e.ws, e.wsTagsChanged);
+            } 
         }
 
         public override Task RunAsync(CancellationToken? cancellationToken = null)
         {
-            var tLogger = Task.Run(async () =>
-            {
-                while (true)
-                {
-                    logger.LogDebug("running at {time}. Clients connected:{clients}", DateTimeOffset.Now, hub.GetClients().Count());
-                    await Task.Delay(TimeSpan.FromSeconds(30));
-                }
-            });
+            processInfo.LoopPublishStatistics(TimeSpan.FromSeconds(10), cancellationToken);
 
-
-            var tWorker = Task.Run(async () =>
+            return Task.Run(async () =>
             {
                 logger.LogWarning("Execution Started: {time}", DateTimeOffset.Now);
 
                 while (true)
                 {
-                    var tagsChanged = TagChangeTracker.GetTagsChanged();
+                    processInfo.RunningDateTime = DateTime.Now;
+                    processInfo.ConnectedClients = wsTags.Keys.Count();
+                    var tagsChanged = trackerManager.GetTagsChanged();
                     if (tagsChanged.Any())
                     {
                         logger.LogDebug("tagsChanged: {tagsChanged}", tagsChanged.Count());
-                        await NotifyTagChangeAsync(tagsChanged);
+                        NotifyTagChange(tagsChanged);
                     }
                     await Task.Delay(refreshInterval);
                 }
+            }).ContinueWith((t) =>
+            {
+                logger.LogWarning("Execution Stoped: {time}", DateTimeOffset.Now);
             });
-
-            return Task.WhenAny(tLogger, tWorker)
-                .ContinueWith((t) =>
-                {
-                    logger.LogWarning("Execution Stoped: {time}", DateTimeOffset.Now);
-                });
         }
     }
 }

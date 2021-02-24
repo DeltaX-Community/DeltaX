@@ -25,6 +25,7 @@
             this.requestPending = new ConcurrentDictionary<string, TaskCompletionSource<IMessage>>(); 
             this.ClientId = clientId ?? Guid.NewGuid().ToString("N");
             this.wsMiddleware = wsMiddleware ?? new RpcWebSocketMiddleware();
+            this.registeredMethods = new string[0];
 
             this.serverHub.OnMessageReceive += Hub_OnMessageReceive; 
         }

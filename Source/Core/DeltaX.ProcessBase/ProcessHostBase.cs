@@ -18,7 +18,7 @@
             {
                 string servName = process.ProcessName;
                 string binPath = process.MainModule.FileName;
-                string description = "Real Time Tag Rule Executor";
+                string description = "DeltaX Description Here!";
 
                 Console.WriteLine("Running {0} in Console Mode...", process.ProcessName);
                 Console.WriteLine("\nHelp for install on cmd as Administrator:");
@@ -40,7 +40,7 @@
             bool showInstallHelper = true)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseDefaultHostBuilder(args);
+                .UseDefaultHostBuilder(jsonFiles, pressKeyToContinue, showInstallHelper);
         }
     }
 }

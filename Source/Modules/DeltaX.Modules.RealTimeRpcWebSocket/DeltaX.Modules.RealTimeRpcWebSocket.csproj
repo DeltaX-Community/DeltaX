@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework> 
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +14,8 @@
   <ItemGroup> 
     <ProjectReference Include="..\..\Connections\DeltaX.Connections.WebSocket\DeltaX.Connections.WebSocket.csproj" />
     <ProjectReference Include="..\..\Core\DeltaX.CommonExtensions\DeltaX.CommonExtensions.csproj" />
-    <ProjectReference Include="..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" /> 
+    <ProjectReference Include="..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
+    <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.ProcessInfo\DeltaX.RealTime.ProcessInfo.csproj" /> 
     <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" /> 
     <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj" /> 
     <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtExpression\DeltaX.RealTime.RtExpression.csproj" />

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Aviad Mizrachi</Authors>
+    <Company />
+    <Product>Modbus TCP implementation for .NET</Product>
+    <Description>Provides basic .NET implementation for Modbus TCP protocol</Description>
+    <Copyright>Aviad Mizrachi</Copyright>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/aviadmizrachi/ModbusTcp</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/aviadmizrachi/ModbusTcp/blob/master/Icons/modbus.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/aviadmizrachi/ModbusTcp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Modbus TCP c# .NET ModBus</PackageTags>
+    <PackageReleaseNotes>ModbusClient TCP calls are now time-bound via optional timeout parameter.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Exceptions\**" />
+    <EmbeddedResource Remove="Exceptions\**" />
+    <None Remove="Exceptions\**" />
+  </ItemGroup>
+
+</Project>

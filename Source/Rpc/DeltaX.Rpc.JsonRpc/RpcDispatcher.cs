@@ -59,6 +59,19 @@
             RegisterMethodInfo($"{methodsPrefix}{mtd.Name}", mtd, instance);
         }
 
+        public virtual void RegisterMethodAlias<T>(T instance, string methodAlias, string methodName, string methodsPrefix = null)
+           where T : class
+        {
+            var type = typeof(T);
+            instance = instance ?? throw new ArgumentNullException(nameof(instance));
+            methodName = methodName ?? throw new ArgumentNullException(nameof(methodName));
+            methodAlias = methodAlias ?? throw new ArgumentNullException(nameof(methodAlias));
+            methodsPrefix ??= "";
+
+            var mtd = type.GetMethod(methodName) ?? throw new ArgumentException($"Method {methodName} not found!"); ;
+
+            RegisterMethodInfo($"{methodsPrefix}{methodAlias}", mtd, instance);
+        }
 
         public virtual bool RegisterMethodInfo(string methodName, MethodInfo method, object instance)
         {
@@ -171,14 +184,17 @@
             foreach (var p in parameterInfo.OrderBy(p => p.Position))
             {
                 var parseArg = isArray ? $"{p.Position}" : isObject ? $"{p.Name}" : "";
-
-                var arg = json.JsonGetValue(parseArg, p.ParameterType, p.DefaultValue);
-                args.Add(arg);
+                try
+                {
+                    var arg = json.JsonGetValue(parseArg);
+                    args.Add(Convert.ChangeType(arg, p.ParameterType));
+                }
+                catch {
+                    args.Add(p.DefaultValue);
+                }
             }
 
             return args.ToArray();
         }
-
-        
     }
 }

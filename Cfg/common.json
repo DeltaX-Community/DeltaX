@@ -1,16 +1,13 @@
 {
-  "RealTimeConnectorSectionName": "DefaultRealTimeConnector", 
-  
+  "RealTimeConnectorSectionName": "RtMqttConnector",
   "DefaultRealTimeConnector": {
     "Type": "DeltaX.RealTime.RtMemoryMapped; DeltaX.RealTime.RtMemoryMapped.RtConnectorMemoryMapped",
     "SectionName": "MemoryMappedConnector"
   },
-   
   "RtMqttConnector": {
     "Type": "DeltaX.RealTime.RtMqtt; DeltaX.RealTime.RtMqtt.RtConnectorMqtt",
     "SectionName": "MqttConnector"
   },
-  
   "MemoryMappedConnector": {
     "MemoryName": "RtData",
     "IndexCapacity": 10000000,
@@ -18,16 +15,14 @@
     "Persistent": true,
     "SyncWithExistentTopics": true
   },
-  
   "MqttConnector": {
     "Host": "127.0.0.1",
     "Port": 1883,
     "Username": "sima",
     "Password": "sima",
-    "Prefix": "Demo/",
-	"ExtraTopicsSbscribe": [ "Demo/#" ]
+    "Prefix": "demo/",
+    "ExtraTopicsSbscribe": []
   },
-  
   "Serilog": {
     "MinimumLevel": {
       "Default": "Debug",

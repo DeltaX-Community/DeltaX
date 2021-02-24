@@ -1,8 +1,7 @@
 ﻿namespace DeltaX.RealTime
 {
     using DeltaX.ActivatorFactory;
-    using DeltaX.RealTime.Interfaces;
-    using DeltaX.RealTime.RtMemoryMapped;
+    using DeltaX.RealTime.Interfaces; 
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -31,8 +30,8 @@
 
             switch (connectorSection.Type)
             {
-                case "RtConnectorMemoryMapped":
-                    return RtConnectorMemoryMapped.BuildFromFactory(configurationSection, loggerFactory);
+                // case "RtConnectorMemoryMapped":
+                //     return RtConnectorMemoryMapped.BuildFromFactory(configurationSection, loggerFactory);
                 default:
                     string[] assembyAndClass = connectorSection.Type.Split(";");
 

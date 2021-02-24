@@ -11,10 +11,10 @@ using System.Diagnostics;
 
  
 Host.CreateDefaultBuilder(args)
-    .UseDefaultHostBuilder(args, args, false) 
+    .UseDefaultHostBuilder(args, false) 
     .ConfigureServices((hostContext, services) =>
     {
-        services.AddHostedService<ServiceTemplateWorker>();
+        services.AddHostedService<WorkerService>();
         services.AddSingleton<RtConnectorFactory>();
         services.AddSingleton<IRtConnector>(services => {
             var connFactory = services.GetService<RtConnectorFactory>();

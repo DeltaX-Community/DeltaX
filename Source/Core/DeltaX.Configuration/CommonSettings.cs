@@ -4,6 +4,7 @@
     using System.Runtime.InteropServices;
     using System.Diagnostics;
     using Microsoft.Extensions.Configuration;
+    using System;
 
     /// <summary>
     /// BaseConfig, es una configuracion base para derivar otras configuraciones
@@ -118,36 +119,36 @@
         }
 
         public static string GetPathConfigFile(string configFileName = "common.json")
-        {           
+        { 
             if (File.Exists(configFileName))
             {
                 return configFileName;
-            }
+            } 
 
             var process = Process.GetCurrentProcess();
             var processDirectory = Path.GetDirectoryName(process.MainModule.FileName);
-
+            
             // Busca junto con el path del proceso
-            var commonConfig = Path.Combine(processDirectory, configFileName);
+            var commonConfig = Path.Combine(processDirectory, configFileName); 
             if (File.Exists(commonConfig))
             {
                 return commonConfig;
             }
             
             // Busca en el directorio Cfg en el path del proceso
-            commonConfig = Path.Combine(processDirectory, "Cfg", configFileName);
+            commonConfig = Path.Combine(processDirectory, "Cfg", configFileName); 
             if (File.Exists(commonConfig))
             {
                 return commonConfig;
             }
 
             // Busca en el path comun de configuracion
-            commonConfig = Path.Combine(BasePathConfig, configFileName);
+            commonConfig = Path.Combine(BasePathConfig, configFileName); 
             if (File.Exists(commonConfig))
             {
                 return commonConfig;
             }
-
+             
             return null;
         }
 

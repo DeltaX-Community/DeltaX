@@ -22,6 +22,8 @@
         void RegisterService<TSharedInterface>(TSharedInterface instance, string methodsPrefix = null) where TSharedInterface : class;
 
         void RegisterMethod<T>(T instance, string methodName, string methodsPrefix = null) where T : class;
+
+        void RegisterMethodAlias<T>(T instance, string methodAlias, string methodName, string methodsPrefix = null) where T : class;
     }
 }
 

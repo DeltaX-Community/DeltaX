@@ -57,19 +57,17 @@
         }
 
         public async Task SendAsync(byte[] buffer, WebSocketMessageType messageType = WebSocketMessageType.Text)
-        { 
-            var t = ws.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), messageType, true, CancellationToken.None);
-            await t.ContinueWith((task) =>
+        {
+            try
             {
-                if (task.IsFaulted)
-                {
-                    Close();
-                }
-                else
-                {
-                    OnMessageSend?.Invoke(this, new Message { Client = this, MessageType = messageType, Data = buffer });
-                }
-            });
+                await ws.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), messageType, true, CancellationToken.None);
+                OnMessageSend?.Invoke(this, new Message { Client = this, MessageType = messageType, Data = buffer });
+            }
+            catch
+            {
+                Close();
+
+            }
         }
     }
 }

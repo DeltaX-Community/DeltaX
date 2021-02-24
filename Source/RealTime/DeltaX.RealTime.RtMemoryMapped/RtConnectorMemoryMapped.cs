@@ -219,5 +219,10 @@
         {
             return WriteValue(new RtTagMemoryMapped(this, topic, topic, options), value);
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(RtConnectorMemoryMapped)}-{keyValueMemory?.Configuration?.MemoryName}"; 
+        }
     }
 }

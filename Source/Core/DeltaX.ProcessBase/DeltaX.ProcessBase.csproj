@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework> 
+
   </PropertyGroup>
   
   <ItemGroup>
@@ -13,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
+    <ProjectReference Include="..\DeltaX.Configuration\DeltaX.Configuration.csproj" />
     <ProjectReference Include="..\DeltaX.Configuration.Serilog\DeltaX.Configuration.Serilog.csproj" /> 
   </ItemGroup>
   

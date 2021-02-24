@@ -6,11 +6,11 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    class TagChangeTracker
+    public class TagChangeTrackerManager
     {
-        static List<TagChangeTracker> cacheTags = new List<TagChangeTracker>();
+        List<TagChangeTracker> cacheTags = new List<TagChangeTracker>();
 
-        public static TagChangeTracker GetOrAdd(IRtConnector connector, string tagExpression)
+        public TagChangeTracker GetOrAdd(IRtConnector connector, string tagExpression)
         {
             lock (cacheTags)
             {
@@ -25,12 +25,21 @@
             }
         }
 
-        public static TagChangeTracker[] GetTagsChanged()
+        public int GetTagsCount()
         {
-            return cacheTags.Where(t => t.IsChanged()).ToArray();
+            return cacheTags.Count();
         }
 
-        private TagChangeTracker(IRtTag tag, string tagName)
+        public List<TagChangeTracker> GetTagsChanged()
+        {
+            return cacheTags.Where(t => t.IsChanged()).ToList();
+        }
+    }
+
+
+    public class TagChangeTracker
+    { 
+        internal TagChangeTracker(IRtTag tag, string tagName)
         {
             this.TagName = tagName;
             this.tag = tag;

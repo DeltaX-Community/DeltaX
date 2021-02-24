@@ -5,26 +5,7 @@
     using System.Text.Json;
 
     public static class JsonExtensions
-    {
-
-        public static object JsonGetValue(this JsonElement element, string patternParser, Type type, object? defaultValue = null)
-        {
-            var arg = element.JsonGetValue(patternParser);
-
-            if (arg == null)
-            {
-                return Convert.ChangeType(defaultValue, type);
-            }
-
-            if (arg is JsonElement)
-            { 
-                var json = JsonSerializer.Serialize(arg);
-                return JsonSerializer.Deserialize(json, type);
-            }
-
-            return Convert.ChangeType(arg, type);
-        }
-
+    { 
         public static object JsonGetValue(this JsonElement source, string patternParser)
         {
             var element = source;

@@ -61,7 +61,7 @@
         private KeyValueMemory(KeyValueMemoryConfiguration configuration, ILoggerFactory loggerFactory = null)
         {
             this.configuration = configuration;
-            loggerFactory ??= Configuration.Configuration.DefaultLoggerFactory;
+            loggerFactory ??= DeltaX.Configuration.Configuration.DefaultLoggerFactory;
             this.logger = loggerFactory.CreateLogger($"KVM_{configuration.MemoryName}");
 
             string indexName = $"{configuration.MemoryName}.index";
@@ -109,7 +109,9 @@
             {
                 return nextPosition < mmIndex.HeaderSize;
             }
-        } 
+        }
+
+        public KeyValueMemoryConfiguration Configuration => configuration;
 
         private string GetKey(int position)
         {

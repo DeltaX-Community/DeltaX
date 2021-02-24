@@ -3,6 +3,7 @@ namespace DeltaX.ActivatorFactory
 {
     using Microsoft.Extensions.Logging;
     using System;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
 
@@ -15,7 +16,8 @@ namespace DeltaX.ActivatorFactory
             string className,
             params object[] parameters)
         {
-            Assembly assembly = Assembly.Load(assemblyString);
+            var asl = new AssemblyLoader(Path.GetDirectoryName(assemblyString));
+            var assembly = asl.LoadFromAssemblyName(Path.GetFileName(assemblyString));
 
             var type = assembly.GetType(className);
 
@@ -42,9 +44,8 @@ namespace DeltaX.ActivatorFactory
             string assemblyString,
             string className)
         {
-            Assembly assembly = assemblyString.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)
-                ? Assembly.LoadFrom(assemblyString)
-                : Assembly.Load(assemblyString);
+            var asl = new AssemblyLoader(Path.GetDirectoryName(assemblyString));
+            var assembly = asl.LoadFromAssemblyName(Path.GetFileName(assemblyString));
 
             var type = assembly.GetType(className);
 
@@ -61,7 +62,8 @@ namespace DeltaX.ActivatorFactory
             string className,
             params object[] parameters)
         {
-            Assembly assembly = Assembly.Load(assemblyString);
+            var asl = new AssemblyLoader(Path.GetDirectoryName(assemblyString));
+            var assembly = asl.LoadFromAssemblyName(Path.GetFileName(assemblyString));
 
             var type = assembly.GetType(className);
 
@@ -84,7 +86,8 @@ namespace DeltaX.ActivatorFactory
             string assemblyString,
             params object[] parameters)
         {
-            Assembly assembly = Assembly.Load(assemblyString);
+            var asl = new AssemblyLoader(Path.GetDirectoryName(assemblyString));
+            var assembly = asl.LoadFromAssemblyName(Path.GetFileName(assemblyString));
 
             foreach (var type in assembly.GetTypes())
             {

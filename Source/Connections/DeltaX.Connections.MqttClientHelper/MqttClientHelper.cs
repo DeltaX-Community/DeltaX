@@ -98,7 +98,12 @@
                     isDisconnectedEvent.Set();
                 }
             }
-              
+
+            if (Client != null)
+            {
+                Client.ConnectionClosed -= OnConnectionClosed;
+                Client.Disconnect();
+            }
             logger.LogInformation($"MqttClientHelper ClientId:{Config.ClientId} Connection Closed!");
             OnConnectionChange?.Invoke(this, IsConnected);
         }
@@ -138,14 +143,21 @@
 
         public void Disconnect()
         {
-            Client.ConnectionClosed -= OnConnectionClosed;
-            IsRunning = false;
-            Client?.Disconnect();
-            isConnectedEvent.Reset();
-            isDisconnectedEvent.Set();
-
-            reconnectTask?.Wait(5000);
-            reconnectTask = null;
+            try
+            {
+                IsRunning = false;
+                Client.ConnectionClosed -= OnConnectionClosed;
+                Client?.Disconnect();
+            }
+            catch { }
+            finally
+            {
+                isConnectedEvent.Reset();
+                isDisconnectedEvent.Set();
+                reconnectTask?.Wait(5000);
+                reconnectTask = null;
+                Client = null;
+            }
         }
     }
 

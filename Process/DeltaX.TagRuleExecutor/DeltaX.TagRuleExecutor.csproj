@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework> 
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="5.0.1" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="3.1.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\Core\DeltaX.CommonExtensions\DeltaX.CommonExtensions.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.ProcessBase\DeltaX.ProcessBase.csproj" />
+    <ProjectReference Include="..\..\Source\Modules\DeltaX.Modules.TagRuleEvaluator\DeltaX.Modules.TagRuleEvaluator.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.ProcessInfo\DeltaX.RealTime.ProcessInfo.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExpression\DeltaX.RealTime.RtExpression.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExtension\DeltaX.RealTime.RtExtension.csproj" /> 
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DeltaX.TagRuleExecutor-bkp.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

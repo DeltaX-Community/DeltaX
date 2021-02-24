@@ -62,6 +62,6 @@
         /// <summary>
         /// Estado del tag: false representa una falla de sincronismo con el servidor
         /// </summary>
-        bool Status { get; }
+        bool Status { get; } 
     }
 }

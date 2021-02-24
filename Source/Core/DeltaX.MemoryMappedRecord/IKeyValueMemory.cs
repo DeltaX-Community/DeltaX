@@ -7,6 +7,7 @@
     {
         int Count { get; } 
         List<string> Keys { get; }
+        KeyValueMemoryConfiguration Configuration { get; }
 
         event EventHandler<List<string>> KeysChanged;
 

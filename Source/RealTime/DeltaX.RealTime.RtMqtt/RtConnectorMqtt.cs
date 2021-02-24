@@ -273,7 +273,12 @@
         {
             Disconnect();
             base.Dispose();
-        }  
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(RtConnectorMqtt)}-{mqttClient?.Config?.Host}:{mqttClient?.Config?.Port}";
+        }
     }
 }
 

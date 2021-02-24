@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Modbus.Net.Tcp</id>
+    <version>1.0.0</version>
+    <title>Modbus TCP implemntation in .NET core</title>
+    <authors>Aviad Mizrachi</authors>
+    <owners>Aviad Mizrachi</owners>
+    <licenseUrl>https://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/aviadmizrachi/ModbusTcp</projectUrl>
+    <iconUrl>https://github.com/aviadmizrachi/ModbusTcp/blob/master/Icons/modbus.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Modbus TCP implemntation in .NET core.</description>
+    <releaseNotes>Support read registers</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>.NET Modbus TCP Registers Holding C# Network</tags>
+  </metadata>
+</package>

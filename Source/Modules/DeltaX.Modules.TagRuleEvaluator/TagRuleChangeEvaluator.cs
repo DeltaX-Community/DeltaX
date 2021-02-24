@@ -1,7 +1,6 @@
 ﻿namespace DeltaX.Modules.TagRuleEvaluator
 {
-    using DeltaX.RealTime.Interfaces;
-    using DeltaX.RealTime.RtExpression;
+    using DeltaX.RealTime.Interfaces; 
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
