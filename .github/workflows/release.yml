@@ -25,16 +25,13 @@ jobs:
 
     - name: Dotnet Nuget Pack DeltaX.Configuration.Serilog
       working-directory: Source/Core/DeltaX.Configuration.Serilog
-      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output .
-      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
+      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output . ; dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
 
     - name: Dotnet Nuget Pack DeltaX.Configuration
       working-directory: Source/Core/DeltaX.Configuration
-      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output .
-      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
+      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output . ; dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
 
     - name: Dotnet Nuget Pack DeltaX.ActivatorFactory
       working-directory: Source/Core/DeltaX.ActivatorFactory
-      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output .
-      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
+      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output . ; dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
       
