@@ -45,5 +45,5 @@ jobs:
 
     - name: Dotnet PUBLISH Nugets
       working-directory: ${{runner.temp}}/.nuget
-      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
+      run: for f in $(ls *.nupkg) ; do dotnet nuget push $f -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate ; done
       
