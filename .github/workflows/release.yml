@@ -37,7 +37,7 @@ jobs:
 
     - name: Dotnet Nuget Pack DeltaX.Database
       working-directory: Source/Core/DeltaX.Database
-      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output ${runner.temp} 
+      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output ${{runner.temp}} 
 
     - name: Dotnet PUBLISH Nugets
       working-directory: ${{runner.temp}}
