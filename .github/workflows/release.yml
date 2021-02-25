@@ -39,9 +39,9 @@ jobs:
       working-directory: Source/Core/DeltaX.Database
       run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output ${{runner.temp}}/.nuget
 
-    - name: Dotnet Nuget Pack DeltaX.Domain.Common
-      working-directory: Source/Core/DeltaX.Domain.Common
-      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output ${{runner.temp}}/.nuget
+    - name: Dotnet Nuget Pack ALL DeltaX/Core
+      working-directory: Source/Core
+      run: for f in $(ls -D) ; do cd $f; dotnet pack -c Release -p:Version=0.0.1-alpha --output  ${{runner.temp}}/.nuget ; cd .. ; done
 
     - name: Dotnet PUBLISH Nugets
       working-directory: ${{runner.temp}}/.nuget

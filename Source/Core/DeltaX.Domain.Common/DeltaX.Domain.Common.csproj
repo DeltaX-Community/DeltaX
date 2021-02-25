@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>DeltaX_Domain_Common</PackageId>
     <Authors>DeltaX-Community</Authors>
     <Company>DeltaX-Community</Company>
