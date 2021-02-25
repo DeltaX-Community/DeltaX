@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/DeltaX-Community/DeltaX</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DeltaX-Community/DeltaX</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>DeltaX Configuration Serilog</PackageTags>
+    <PackageTags>DeltaX Activator</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

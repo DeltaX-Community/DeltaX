@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>DeltaX_Database</PackageId>
+    <Authors>DeltaX-Community</Authors>
+    <Company>DeltaX-Community</Company>
+    <Product>DeltaX</Product>
+    <PackageProjectUrl>https://github.com/DeltaX-Community/DeltaX</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DeltaX-Community/DeltaX</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>DeltaX Database</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
