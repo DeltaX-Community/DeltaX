@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 
 namespace DeltaX.ActivatorFactory.UnitTest
 {
@@ -19,14 +20,10 @@ namespace DeltaX.ActivatorFactory.UnitTest
 
         public string GetUnitTestBasePath()
         {
-            var projectName = "DeltaX";
-            projectName = $"{Path.DirectorySeparatorChar}{projectName}{Path.DirectorySeparatorChar}";
-            var idx = AppDomain.CurrentDomain.BaseDirectory.IndexOf(projectName, 0, System.StringComparison.InvariantCultureIgnoreCase);
-            if (idx > 0)
-            {
-                return AppDomain.CurrentDomain.BaseDirectory.Substring(0, idx + projectName.Length);
-            }
-            return "";
+            var projectName = $"{Path.DirectorySeparatorChar}DeltaX{Path.DirectorySeparatorChar}";
+            var path = AppDomain.CurrentDomain.BaseDirectory;
+            var ps = path.Split(projectName);
+            return ps.Length > 1 ? Path.Combine(string.Join(projectName, ps.Take(ps.Length - 1)), "DeltaX") : "";
         }
 
         [Test]

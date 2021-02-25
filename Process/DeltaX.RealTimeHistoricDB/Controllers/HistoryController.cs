@@ -31,6 +31,7 @@ public class HistoryController : ControllerBase
         [FromQuery] bool strictMode = false
         )
     {
+        tagName = tagName.Replace("%2F", "/");
         if (!endDateTime.HasValue)
         {
             endDateTime = DateTime.Now;

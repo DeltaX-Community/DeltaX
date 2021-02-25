@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 public class TagRuleToDatabaseService
 {
-    private TagRuleChangeConfiguration settings;
+    private TagRuleToDatabaseConfiguration settings;
      
 
     private TagRuleChangeEvaluator<string> tagRuleChangeEvaluator;
@@ -29,7 +29,7 @@ public class TagRuleToDatabaseService
     private static readonly Regex regParameters = new Regex(@"@\w+", RegexOptions.Compiled);
 
     public TagRuleToDatabaseService(
-        IOptions<TagRuleChangeConfiguration> settings,
+        IOptions<TagRuleToDatabaseConfiguration> settings,
         IDatabaseManager database,
         ILogger<TagRuleToDatabaseService> logger,
         ProcessInfoStatistics processInfo,

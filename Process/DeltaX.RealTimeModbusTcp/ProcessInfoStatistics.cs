@@ -5,7 +5,7 @@ using System;
 
 public class ProcessInfoStatistics : ProcessInfoStatisticsBase
 {
-    public ProcessInfoStatistics(IRtConnector connector, IOptions<ModbusReadConfiguration> options)
+    public ProcessInfoStatistics(IRtConnector connector, IOptions<RealTimeModbusTcpConfiguration> options)
         : base(connector, options?.Value?.ProcessInfoName)
     {
     }

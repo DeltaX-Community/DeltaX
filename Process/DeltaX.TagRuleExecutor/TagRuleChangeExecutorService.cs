@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 public class TagRuleChangeExecutorService
 {
-    private TagRuleChangeConfiguration settings;
+    private TagRuleExecutorConfiguration settings;
     private TagRuleChangeEvaluator<string> tagRuleChangeEvaluator;
     private readonly ILogger logger;
     private readonly ProcessInfoStatistics processInfo;
@@ -23,7 +23,7 @@ public class TagRuleChangeExecutorService
     private Dictionary<string, IRtTag> cacheTags;
 
     public TagRuleChangeExecutorService(
-        IOptions<TagRuleChangeConfiguration> settings,
+        IOptions<TagRuleExecutorConfiguration> settings,
         ILogger<TagRuleChangeExecutorService> logger,
         ProcessInfoStatistics statistics,
         IRtConnector connector)

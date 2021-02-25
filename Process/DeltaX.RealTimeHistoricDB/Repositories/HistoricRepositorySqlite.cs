@@ -12,11 +12,11 @@ using System.Linq;
 
 class HistoricRepositorySqlite : IHistoricRepository
 {
-    private RealTimeHistoryDBConfiguration configuration;
+    private RealTimeHistoricDBConfiguration configuration;
     private Database<SqliteConnection> dbHistory;
     private ILogger logger;
 
-    public HistoricRepositorySqlite(IOptions<RealTimeHistoryDBConfiguration> options, ILoggerFactory loggerFactory)
+    public HistoricRepositorySqlite(IOptions<RealTimeHistoricDBConfiguration> options, ILoggerFactory loggerFactory)
     {
         this.configuration = options.Value;
         this.logger = loggerFactory.CreateLogger(nameof(HistoricRepositorySqlite));

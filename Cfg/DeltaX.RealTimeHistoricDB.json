@@ -4,8 +4,8 @@
       "demo/#"
     ]
   },
-  "RealTimeHistoryDB": {
-    "ConnectionString": "Filename=..\\..\\Data\\RealTimeHistoryDB.sqlite3",
+  "RealTimeHistoricDB": {
+    "ConnectionString": "Filename=..\\..\\Data\\RealTimeHistoricDB.sqlite3",
     "CheckTagChangeIntervalMilliseconds": 200,
     "SaveChangeIntervalSeconds": 30,
     "DaysPresistence": 20,

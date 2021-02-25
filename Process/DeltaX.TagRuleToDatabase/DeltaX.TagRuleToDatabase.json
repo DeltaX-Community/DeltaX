@@ -1,43 +1,45 @@
 {
-  "RealTimeConnectorSectionName": "DefaultRealTimeConnector",
-
-  "TagRuleChange": {
-    "LoopEvaluateIntervalMilliseconds": 1000,
+  "TagRuleToDatabase": {
+    "LoopEvaluateIntervalMilliseconds": 500,
     "DefaultTolerance": 0.01,
-    "TagDateTimeNow": "date/toDb/evalutaion",
+    "TagDateTimeNow": "Tracking/DB/nowDt",
     "Rules": [
       {
         "CheckType": "ChangeValue",
-        "TagExpression": "if({date/toDb/evalutaion@DT:UnixTimeSeconds} -10 > {date/prueba@DT:UnixTimeSeconds}, {date/toDb/evalutaion@DT:UnixTimeSeconds}, 0 )",
+        "DiscardValue": 0,
+        "TagExpression": "Tracking/ProcessStatus",
         "WriteSql": {
           "connectionFactory": "DatabaseSqlite_1",
           "CommandType": "Text",
           "ReadTags": [
-            "date/toDb/evalutaion",
-            "{date/prueba@DT:UnixTimeSeconds}"
+            "Tracking/DB/nowDt",
+            "Tracking/ProcessStatus",
+            "Tracking/ProcessStatusStr",
+            "Tracking/ProcessStartDt",
+            "Tracking/ProcessStopDt"
           ],
           "FormatSql": [
-            "insert into Prueba ",
+            "INSERT INTO TagRuleEventLog ",
             "(TagName, Status, Updated, Value, ValueNumeric)",
-            "Values ",
-            "(@tag_0_name,@tag_0_status , @tag_0_updated, @tag_0, @tag_0_numeric), ",
-            "(@tag_1_name, @tag_1_status , @tag_1_updated, @tag_1, @tag_1_numeric) "
+            "VALUES ",
+            "(@tag_0_name, @tag_0_status , @tag_0_updated, @tag_0, @tag_0_numeric), ",
+            "(@tag_1_name, @tag_1_status , @tag_1_updated, @tag_1, @tag_1_numeric), ",
+            "(@tag_2_name, @tag_2_status , @tag_2_updated, @tag_2, @tag_2_numeric), ",
+            "(@tag_3_name, @tag_3_status , @tag_3_updated, @tag_3, @tag_3_numeric), ",
+            "(@tag_4_name, @tag_4_status , @tag_4_updated, @tag_4, @tag_4_numeric) "
           ]
         }
       }
     ]
   },
-
   "DatabaseSqlite_1": {
     "Type": "Microsoft.Data.Sqlite.dll; Microsoft.Data.Sqlite.SqliteConnection",
-    "ConnectionString": "Filename=D:/DEV/repos/DeltaX-Community/DeltaX/Data/RealTimeHistoryDB.sqlite3"
+    "ConnectionString": "Filename=D:/DeltaX-Community-Productivo/DeltaX/Data/TagRuleToDatabase.sqlite3"
   },
-
   "DatabaseMySql_1": {
     "Type": "MySqlConnector.dll; MySqlConnector.MySqlConnection",
     "ConnectionString": "server=127.0.0.1;user=root;password=;database=test"
   },
-
   "Serilog": {
     "MinimumLevel": {
       "Default": "Debug"

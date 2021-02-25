@@ -29,7 +29,7 @@ public class RealTimeHistoricDbService
         IHistoricRepository repository,
         ILoggerFactory loggerFactory,
         ProcessInfoStatistics processInfo,
-        IOptions<RealTimeHistoryDBConfiguration> options)
+        IOptions<RealTimeHistoricDBConfiguration> options)
     {
         this.logger = loggerFactory.CreateLogger(nameof(WorkerService));
         this.connector = connector;
@@ -72,7 +72,7 @@ public class RealTimeHistoricDbService
         {
             AddTagsFromKnownTopics();
             tag = tagChangeManager.GetFirst(tagName)
-                ?? throw new ArgumentException("TagName not found!");
+                ?? throw new ArgumentException($"TagName '{tagName}' not found!");
         }
 
         var memValues = tag.GetHistoricTagValues()

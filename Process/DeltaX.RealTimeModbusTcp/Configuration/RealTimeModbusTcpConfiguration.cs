@@ -1,4 +1,4 @@
-﻿public class ModbusReadConfiguration
+﻿public class RealTimeModbusTcpConfiguration
 {
     public string ProcessInfoName { get; set; } 
     public string IpAddress { get; set; } = "127.0.0.1";

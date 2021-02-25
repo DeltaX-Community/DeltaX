@@ -3,7 +3,8 @@
     using System.IO;
     using System.Runtime.InteropServices;
     using System.Diagnostics;
-    using Microsoft.Extensions.Configuration; 
+    using Microsoft.Extensions.Configuration;
+    using System.Linq;
 
     /// <summary>
     /// BaseConfig, es una configuracion base para derivar otras configuraciones
@@ -27,12 +28,12 @@
 
         private static string GetBasePathDefault()
         {
-            var projectName = "DeltaX";
-            projectName = $"{Path.DirectorySeparatorChar}{projectName}{Path.DirectorySeparatorChar}";
-            var idx = ProcessDirectory.IndexOf(projectName, 0, System.StringComparison.InvariantCultureIgnoreCase);
-            if (idx > 0)
+            var projectName = $"{Path.DirectorySeparatorChar}DeltaX{Path.DirectorySeparatorChar}";
+            var path = ProcessDirectory;
+            var ps = path.Split(projectName);
+            if (ps.Length > 1)
             {
-                return ProcessDirectory.Substring(0, idx + projectName.Length);
+                return Path.Combine(string.Join(projectName, ps.Take(ps.Length - 1)), "DeltaX");
             }
 
             if (IsWindowsOs)

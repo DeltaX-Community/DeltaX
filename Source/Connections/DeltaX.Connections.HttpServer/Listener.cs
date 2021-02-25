@@ -20,20 +20,22 @@
         public string[] UriPrefixes { get; private set; }
 
 
-        public Listener(int port = 8080, string interfaceHost = "localhost")
+        public Listener(int port = 8080, string interfaceHost = "localhost", ILogger logger = null)
             : this(new string[] { string.Format("http://{1}:{0}/", port, interfaceHost) })
         {
+            this.logger = logger;
         }
 
-        public Listener(string[] uriPrefixes)
+        public Listener(string[] uriPrefixes, ILogger logger = null)
         {
-            UriPrefixes = uriPrefixes ?? throw new ArgumentNullException(nameof(uriPrefixes)); 
-            HttpListener = new HttpListener(); 
+            UriPrefixes = uriPrefixes ?? throw new ArgumentNullException(nameof(uriPrefixes));
+            this.logger = logger;
+            HttpListener = new HttpListener();
 
             foreach (string urip in uriPrefixes)
             {
                 HttpListener.Prefixes.Add(urip);
-            }
+            } 
         }
 
 

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 public class ModbusTcpClientService
 {
     private readonly ModbusClient modbusClient;
-    private readonly ModbusReadConfiguration settings;
+    private readonly RealTimeModbusTcpConfiguration settings;
     private readonly IRtConnector connector;
     private readonly ProcessInfoStatistics processInfo;
     private readonly ILogger logger;
@@ -22,7 +22,7 @@ public class ModbusTcpClientService
         IRtConnector connector,
         ILoggerFactory loggerFactory,
         ProcessInfoStatistics processInfo,
-        IOptions<ModbusReadConfiguration> settings)
+        IOptions<RealTimeModbusTcpConfiguration> settings)
     {
         this.settings = settings.Value;
         this.modbusClient = new ModbusClient(this.settings.IpAddress, this.settings.Port, this.settings.TimeoutSeconds * 1000);

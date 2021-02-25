@@ -23,8 +23,8 @@ Host.CreateDefaultBuilder(args)
             return connFactory.GetConnector(configuration.GetValue<string>("RealTimeConnectorSectionName"));
         });
 
-        services.Configure<TagRuleChangeConfiguration>(options =>
-            hostContext.Configuration.GetSection("TagRuleChange").Bind(options));
+        services.Configure<TagRuleToDatabaseConfiguration>(options =>
+            hostContext.Configuration.GetSection("TagRuleToDatabase").Bind(options));
     })
     .Build()
     .RunApp();

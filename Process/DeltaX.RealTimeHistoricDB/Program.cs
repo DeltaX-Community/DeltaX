@@ -28,8 +28,8 @@ Host
         services.AddSingleton<IHistoricRepository,HistoricRepositorySqlite>();
         services.AddSingleton<RealTimeHistoricDbService>();
 
-        services.Configure<RealTimeHistoryDBConfiguration>(options =>
-            hostContext.Configuration.GetSection("RealTimeHistoryDB").Bind(options));
+        services.Configure<RealTimeHistoricDBConfiguration>(options =>
+            hostContext.Configuration.GetSection("RealTimeHistoricDB").Bind(options));
 
         services.AddControllers();
 

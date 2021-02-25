@@ -27,7 +27,7 @@
 
         public JsonRcpHttpConnection(Listener listener, string prefix = null)
         {
-            this.listener = listener ?? new Listener();
+            this.listener = listener ?? new Listener(); 
             this.listener.OnRequest += OnRequest;
             this.prefix = prefix ?? "";
         }
@@ -42,7 +42,7 @@
                     var recipient = subscriptions[0];
                     subscriptions.RemoveAt(0);
 
-                    recipient.response.CloseAsync(HttpStatusCode.RequestTimeout);
+                    _ = recipient.response.CloseAsync(HttpStatusCode.RequestTimeout);
                 }
 
                 subscriptions.Add((request.Endpoint, response));
@@ -83,7 +83,7 @@
             foreach (var recipient in recipients)
             {
                 json ??= message.Serialize();
-                recipient.response.SendAsync(json, "application/json");
+                _ = recipient.response.SendAsync(json, "application/json");
                 subscriptions.Remove(recipient);
             }
 
@@ -125,7 +125,12 @@
 
         public Task ConnectAsync(CancellationToken? cancellationToken = null)
         {
-            return listener.StartAsync();
+            this.connected = true;
+            return listener.StartAsync()
+                .ContinueWith((t) =>
+                {
+                    this.connected = false;
+                });
         }
     }
 }

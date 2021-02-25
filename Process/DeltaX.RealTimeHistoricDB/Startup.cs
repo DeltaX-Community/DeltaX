@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 public class Startup
 {
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RealTimeHistoryDBConfiguration> options)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RealTimeHistoricDBConfiguration> options)
     {  
         if (env.IsDevelopment())
         {

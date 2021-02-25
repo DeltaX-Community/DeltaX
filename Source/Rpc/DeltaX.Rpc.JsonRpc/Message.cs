@@ -65,7 +65,7 @@
         private string rawDataStr;
         private byte[] rawData;
         private static int msgCount = 1;
-        private MethodInfo? methodGetResult;
+        private MethodInfo methodGetResult;
 
         private static string GenerateId(string clientId)
         {

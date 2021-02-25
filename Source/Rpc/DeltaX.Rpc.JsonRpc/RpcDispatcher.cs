@@ -23,9 +23,10 @@
         private string methodPrefix;
         private Dictionary<string, MethodInfoInvoke> methods = new Dictionary<string, MethodInfoInvoke>();
 
-        public RpcDispatcher(string methodPrefix = null)
+        public RpcDispatcher(string methodPrefix = null, ILogger logger = null)
         {
             this.methodPrefix = methodPrefix ?? "";
+            this.logger = logger;
         }
         public IEnumerable<string> GetMethods()
         {

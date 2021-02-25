@@ -1,4 +1,4 @@
-﻿public class RealTimeHistoryDBConfiguration
+﻿public class RealTimeHistoricDBConfiguration
 {
     public string ConnectionString { get; set; }
     public int? CheckTagChangeIntervalMilliseconds { get; set; }

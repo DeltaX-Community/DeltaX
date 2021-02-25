@@ -1,4 +1,4 @@
-﻿public class TagRuleChangeConfiguration
+﻿public class TagRuleExecutorConfiguration
 {
     public string TagDateTimeNow { get; set; } = "now";
     public double LoopEvaluateIntervalMilliseconds { get; set; }

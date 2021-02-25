@@ -1,5 +1,5 @@
 {
-  "ModbusRead": {
+  "RealTimeModbusTcp": {
     "ProcessInfoName": "RealTimeModbusTcp-Test",
     "IpAddress": "127.0.0.1",
     "Port": 502,

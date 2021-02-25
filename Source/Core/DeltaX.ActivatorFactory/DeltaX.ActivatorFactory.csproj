@@ -2,12 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>DeltaX_ActivatorFactory</PackageId>
+    <Authors>DeltaX-Community</Authors>
+    <Company>DeltaX-Community</Company>
+    <Product>DeltaX</Product>
+    <PackageProjectUrl>https://github.com/DeltaX-Community/DeltaX</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DeltaX-Community/DeltaX</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>DeltaX Configuration Serilog</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
- 
+
   <ItemGroup>
     <ProjectReference Include="..\DeltaX.Configuration\DeltaX.Configuration.csproj" />
   </ItemGroup>

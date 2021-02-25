@@ -1,0 +1,40 @@
+name: .NET
+
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10  
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal 
+
+    - name: Dotnet Nuget Pack DeltaX.Configuration.Serilog
+      working-directory: Source/Core/DeltaX.Configuration.Serilog
+      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output .
+      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
+
+    - name: Dotnet Nuget Pack DeltaX.Configuration
+      working-directory: Source/Core/DeltaX.Configuration
+      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output .
+      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
+
+    - name: Dotnet Nuget Pack DeltaX.ActivatorFactory
+      working-directory: Source/Core/DeltaX.ActivatorFactory
+      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output .
+      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
+      

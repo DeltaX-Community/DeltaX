@@ -21,8 +21,8 @@ Host.CreateDefaultBuilder(args)
             return connFactory.GetConnector(configuration.GetValue<string>("RealTimeConnectorSectionName"));
         });
 
-        services.Configure<ModbusReadConfiguration>(options =>
-            hostContext.Configuration.GetSection("ModbusRead").Bind(options));
+        services.Configure<RealTimeModbusTcpConfiguration>(options =>
+            hostContext.Configuration.GetSection("RealTimeModbusTcp").Bind(options));
     })
     .Build()
     .RunApp();
