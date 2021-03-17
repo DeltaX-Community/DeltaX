@@ -9,7 +9,14 @@
     "CheckTagChangeIntervalMilliseconds": 200,
     "SaveChangeIntervalSeconds": 30,
     "DaysPresistence": 20,
-    "UseSwagger": true
+    "UseSwagger": true,
+    "CorsUrls": [
+      "http://localhost:5055",
+      "http://127.0.0.1:5055",
+      "http://127.0.0.1:8080",
+      "https://127.0.0.1:8081",
+      "http://localhost:8080"
+    ]
   },
   "Serilog": {
     "MinimumLevel": {

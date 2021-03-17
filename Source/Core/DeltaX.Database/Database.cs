@@ -28,9 +28,9 @@
             return base.RunAsync((dbConn) => method((T)dbConn));
         }
 
-        public TResult Run<TResult>(Func<T, Task<TResult>> method)
+        public Task<TResult> RunTransactionAsync<TResult>(Func<T, IDbTransaction, Task<TResult>> method)
         {
-            return base.Run((dbConn) => method((T)dbConn));
+            return base.RunTransactionAsync((dbcon, trans) => method((T)dbcon, trans));
         }
 
         public TResult Run<TResult>(Func<T, TResult> method)
@@ -40,14 +40,7 @@
 
         public TResult RunTransaction<TResult>(Func<T, IDbTransaction, TResult> method)
         {
-            return base.Run((dbConn) => {
-                using (var transaction = dbConn.BeginTransaction())
-                {
-                    var result = method((T)dbConn, transaction);
-                    transaction.Commit();
-                    return result;
-                }
-            });
+            return base.RunTransaction((dbcon, trans) => method((T)dbcon, trans));
         }
     }
 }

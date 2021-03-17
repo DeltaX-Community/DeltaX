@@ -35,7 +35,7 @@ public class WorkerService : BackgroundService
 
             _logger.LogWarning("Execution Started: {time}", DateTimeOffset.Now);
 
-            int count = 10;
+            int count = 1000;
             while (!stoppingToken.IsCancellationRequested && count-- > 0)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);

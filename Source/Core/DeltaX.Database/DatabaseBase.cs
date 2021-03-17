@@ -6,6 +6,7 @@
     using System.Data;
     using System.Threading.Tasks;
 
+
     public class DatabaseBase : IDatabaseBase
     {
 
@@ -18,6 +19,11 @@
             where T : IDbConnection, new()
         {
             return new DatabaseBase(typeof(T), connectionStrings, loggerFactory);
+        }
+
+        public static DatabaseBase Build(Type dbConnectionType, string[] connectionStrings, ILoggerFactory loggerFactory = null) 
+        {
+            return new DatabaseBase(dbConnectionType, connectionStrings, loggerFactory);
         }
 
         /// <summary>
@@ -83,6 +89,19 @@
             }
         }
 
+        public async Task<TResult> RunTransactionAsync<TResult>(Func<IDbConnection, IDbTransaction, Task<TResult>> method)
+        {
+            using (var dbConn = GetConnection())
+            {  
+                using (var transaction = dbConn.BeginTransaction())
+                {
+                    var result = await method(dbConn, transaction);
+                    transaction.Commit();
+                    return result;
+                }
+            }
+        }
+
         /// <summary>
         /// Execute Action with New DbConnection and release on finish
         /// </summary>
@@ -97,21 +116,18 @@
             }
         }
 
-
-        /// <summary>
-        /// Execute async Task Action with New DbConnection and release on finish
-        /// </summary>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="method"></param>
-        /// <returns>TResult</returns>
-        public TResult Run<TResult>(Func<IDbConnection, Task<TResult>> method)
+        public TResult RunTransaction<TResult>(Func<IDbConnection, IDbTransaction, TResult> method)
         {
-            var t = RunAsync(method);
-            t.Wait();
-            return t.Result;
-        }
-
-
+            using (var dbConn = GetConnection())
+            {
+                using (var transaction = dbConn.BeginTransaction())
+                {
+                    var result = method(dbConn, transaction);
+                    transaction.Commit();
+                    return result;
+                }
+            } 
+        }  
 
         /// <summary>
         /// Re-Connect to db

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="DeltaX.ExampleRt.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="DeltaX.ExampleRt.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.ProcessBase\DeltaX.ProcessBase.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExtension\DeltaX.RealTime.RtExtension.csproj" />
+  </ItemGroup>
+
+</Project>

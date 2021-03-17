@@ -1,5 +1,26 @@
 <template>
   <div>
+    <v-card class="row pa-2 ma-0" color="red">
+      <div class="pa-2 col-md-4 col-lg-2 col-12">Flex X 1</div>
+      <div class="pa-2 col-md-4 col-lg-2 col-12">Flex X 2</div>
+      <div class="pa-2 col-md-4 col-lg-2 col-12">Flex X 3</div>
+      <div class="pa-2 col-md-4 col-lg-2 col-12">
+        <v-text-field
+          v-model="searchTag"
+          dense
+          append-icon="mdi-magnify"
+          label="Filter"
+          single-line
+          hide-details
+        ></v-text-field>
+      </div>
+      <v-col sm="6" md="4">
+        <v-card class="pa-2" outlined tile> Flex item 1 </v-card>
+        <v-card class="pa-2" outlined tile> Flex item 2 </v-card>
+        <v-spacer></v-spacer>
+        <v-card class="pa-2" outlined tile> Flex item 3 </v-card>
+      </v-col>
+    </v-card>
     <v-card>
       <v-card-title>
         Real Time Viewer
@@ -12,7 +33,7 @@
           v-model="searchTag"
           dense
           append-icon="mdi-magnify"
-          label="Search"
+          label="Filter"
           single-line
           hide-details
         ></v-text-field>

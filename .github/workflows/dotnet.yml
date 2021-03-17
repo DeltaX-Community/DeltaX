@@ -23,3 +23,8 @@ jobs:
       run: dotnet build --no-restore
     # - name: Test
     #   run: dotnet test --no-build --verbosity normal
+
+    - name: Dotnet Nuget Pack ALL DeltaX/Core
+      working-directory: Source/Core
+      run: for f in $(ls -D) ; do cd $f; dotnet pack -c Release -p:Version=0.0.1-alpha --output  ${{runner.temp}}/.nuget ; cd .. ; done
+    

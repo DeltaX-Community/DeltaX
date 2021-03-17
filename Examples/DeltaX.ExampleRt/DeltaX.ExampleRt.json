@@ -1,0 +1,9 @@
+{
+  "RealTimeConnectorSectionName": "DefaultRealTimeConnector",
+
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information"     
+    } 
+  }
+}

@@ -39,6 +39,17 @@
           }
         ]
       }
+    ],
+
+    "WriteBlocks": [
+      {
+        "TagName": "command/PruebaWriteModbusInt16",
+        "ValueOnSucces": 0,
+        "ValueOnError": -1,
+        "Format": "!h",
+        "Function": 6,
+        "Address": 0
+      } 
     ]
   }
 }

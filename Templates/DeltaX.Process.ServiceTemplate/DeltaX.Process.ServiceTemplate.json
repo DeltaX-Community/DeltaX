@@ -3,7 +3,7 @@
 
   "Serilog": {
     "MinimumLevel": {
-      "Default": "Information"
+      "Default": "Debug"
     }
   }
 }
