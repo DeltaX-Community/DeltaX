@@ -23,25 +23,9 @@ jobs:
     # - name: Test
     #   run: dotnet test --no-build --verbosity normal 
 
-    - name: Dotnet Nuget Pack DeltaX.Configuration.Serilog
-      working-directory: Source/Core/DeltaX.Configuration.Serilog
-      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output ${{runner.temp}}/.nuget
-
-    - name: Dotnet Nuget Pack DeltaX.Configuration
-      working-directory: Source/Core/DeltaX.Configuration
-      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output ${{runner.temp}}/.nuget
-
-    - name: Dotnet Nuget Pack DeltaX.ActivatorFactory
-      working-directory: Source/Core/DeltaX.ActivatorFactory
-      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output ${{runner.temp}}/.nuget
-
-    - name: Dotnet Nuget Pack DeltaX.Database
-      working-directory: Source/Core/DeltaX.Database
-      run: dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output ${{runner.temp}}/.nuget
-
     - name: Dotnet Nuget Pack ALL DeltaX/Core
       working-directory: Source/Core
-      run: for f in $(ls -D) ; do cd $f; dotnet pack -c Release -p:Version=0.0.1-alpha --output  ${{runner.temp}}/.nuget ; cd .. ; done
+      run: for f in $(ls -D) ; do cd $f; dotnet pack -c Release -p:Version=${GITHUB_REF##*/v} --output  ${{runner.temp}}/.nuget ; cd .. ; done
 
     - name: Dotnet PUBLISH Nugets
       working-directory: ${{runner.temp}}/.nuget
