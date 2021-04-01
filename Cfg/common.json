@@ -1,5 +1,5 @@
 {
-  "RealTimeConnectorSectionName": "RtMqttConnector",
+  "RealTimeConnectorSectionName": "DefaultRealTimeConnector",
   "DefaultRealTimeConnector": {
     "Type": "DeltaX.RealTime.RtMemoryMapped; DeltaX.RealTime.RtMemoryMapped.RtConnectorMemoryMapped",
     "SectionName": "MemoryMappedConnector"

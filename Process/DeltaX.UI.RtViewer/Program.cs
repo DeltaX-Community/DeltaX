@@ -18,6 +18,7 @@ Host
         webBuilder.UseStartup<Startup>();
     })
     .UseWindowsService()
+    .UseRealTimeWebSocketServices()
     .ConfigureServices((hostContext, services) =>
     {
         services.AddHostedService<WorkerService>();
@@ -35,12 +36,7 @@ Host
         });
 
         services.Configure<RtViewConfiguration>(options =>
-            hostContext.Configuration.GetSection("RtView").Bind(options));
-
-        services.Configure<RtWebSocketBridgeConfiguration>(options =>
-            hostContext.Configuration.GetSection("RtView").Bind(options));
-
-        services.AddRealTimeWebSocketServices();
+            hostContext.Configuration.GetSection("RtView").Bind(options));  
 
         services.AddControllers();
     })

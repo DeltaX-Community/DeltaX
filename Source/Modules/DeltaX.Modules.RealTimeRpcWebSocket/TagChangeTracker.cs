@@ -55,8 +55,8 @@
         public bool Status { get; set; }
         public bool PrevStatus { get; set; }
         public object ValueObject => double.IsNaN(Value.Numeric) || double.IsInfinity(Value.Numeric)
-            ? Value.Text
-            : Value.Numeric;
+            ? (object)Value.Text
+            : (object)Value.Numeric;
 
         public bool IsChanged()
         {

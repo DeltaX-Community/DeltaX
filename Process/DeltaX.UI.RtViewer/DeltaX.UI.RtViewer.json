@@ -4,8 +4,10 @@
       "http://127.0.0.1:8080",
       "http://127.0.0.1:8081"
     ],
-    "RtWebSocketRefreshIntervalMs": 200,
     "RealTimeHistoryBasePath": "http://127.0.0.1:5010"
+  },
+  "RtWebSocketBridge": {
+    "RtWebSocketRefreshIntervalMs": 352
   },
   "MqttConnector": {
     "ExtraTopicsSbscribe": [
@@ -15,7 +17,7 @@
   "Kestrel": {
     "EndPoints": {
       "Http": {
-        "Url": "http://0.0.0.0:5011"
+        "Url": "http://0.0.0.0:5013"
       }
     }
   },

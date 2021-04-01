@@ -1,0 +1,57 @@
+{
+  "Shfit": {
+    "Shifts": [
+      {
+        "Name": "Mañana",
+        "Start": "06:00:00",
+        "End": "12:00:00"
+      },
+      {
+        "Name": "Tarde",
+        "Start": "12:00:00",
+        "End": "18:00:00"
+      },
+      {
+        "Name": "Noche",
+        "Start": "18:00:00",
+        "End": "00:00:00"
+      }
+    ],
+    "crews": [
+      {
+        "Name": "A",
+        "Profile": "profile1",
+        "Start": "2021-01-04T06:00:00-03:00",
+        "End": "2030-01-01T06:00:00-03:00"
+      },
+      {
+        "Name": "B",
+        "Profile": "profile1",
+        "Start": "2021-01-04T12:00:00-03:00",
+        "End": "2030-01-01T06:00:00-03:00"
+      },
+      {
+        "Name": "C",
+        "Profile": "profile1",
+        "Start": "2021-01-04T18:00:00-03:00",
+        "End": "2030-01-01T06:00:00-03:00"
+      }
+    ],
+    "Holidays": [
+      {
+        "Name": "Dia de la memoria por la verdad y la justicia",
+        "IsHoliday": true,
+        "Start": "2021-03-24T00:00:00-03:00",
+        "End": "2021-03-25T00:00:00-03:00"
+      }
+    ],
+    "CrewProfiles": {
+      "profile1": {
+        "Name": "5x7",
+        "MinutesByShift": 360,
+        "workDays": 5,
+        "freeDays": 2
+      }
+    }
+  }
+}
