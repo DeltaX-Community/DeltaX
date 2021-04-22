@@ -1,4 +1,5 @@
 ﻿using DeltaX.RealTime;
+using DeltaX.CommonExtensions;
 using DeltaX.RealTime.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,7 +37,7 @@ public class ModbusTcpClientService
     {
         foreach (var tag in readBlock.Tags)
         {
-            var value = DataParser.Parser(tag.Format, data, tag.BlockIndex * RowSize);
+            var value = data.Parser(tag.Format, tag.BlockIndex * RowSize);
 
             if (value is string valStr)
             {

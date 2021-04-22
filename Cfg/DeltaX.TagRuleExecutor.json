@@ -1,71 +1,52 @@
 {
-  "MqttConnector": {
-    "Prefix": "demo/Tracking/"
-  },
-  "TagRuleChange": {
+  "RealTimeConnectorSectionName-bkp": "RtMqttConnector",
+
+  "TagRuleExecutor": {
     "LoopEvaluateIntervalMilliseconds": 100,
     "DefaultTolerance": 0.01,
-    "TagDateTimeNow": "nowDt",
+    "TagDateTimeNow": "date/evaluation",
     "Rules": [
       {
-        "Description": "Iniciar Proceso",
         "CheckType": "ChangeValue",
-        "DiscardValue": 0,
-        "TagExpression": "CommandStart",
+        "TagExpression": "(({tag1} - {tag2/Task.CurrentId}) / 2 > 2)",
         "WriteTags": [
           {
-            "Tag": "CommandStart",
-            "Value": "=0"
+            "Tag": "tagParaEscritura",
+            "Value": "=1"
+          }
+        ]
+      },
+      {
+        "CheckType": "ChangeValue",
+        "TagExpression": "if({date/evaluation@DT:UnixTimeSeconds} -10 > {date/prueba@DT:UnixTimeSeconds}, {date/evaluation@DT:UnixTimeSeconds}, 0 )",
+        "WriteTags": [
+          {
+            "Tag": "date/prueba",
+            "Value": "date/evaluation"
           },
           {
-            "Tag": "ProcessStatus",
+            "Tag": "result/prueba",
             "Value": "=1"
           },
           {
-            "Tag": "ProcessStatusStr",
-            "Value": "'Started'"
-          },
-          {
-            "Tag": "ProcessStartDt",
-            "Value": "nowDt"
+            "Tag": "result/prueba2",
+            "Value": "{date/evaluation@DT:UnixTimeSeconds} /10 "
           }
         ]
       },
       {
-        "Description": "Finalizar Proceso",
-        "CheckType": "ChangeValue",
-        "TagExpression": "CommandStop",
+        "CheckType": "ChangeUpdated",
+        "TagExpression": "({tag1} - {tag2/Task.CurrentId}) / 2",
         "WriteTags": [
           {
-            "Tag": "CommandStop",
-            "Value": "=0"
-          },
-          {
-            "Tag": "ProcessStatus",
-            "Value": "=2"
-          },
-          {
-            "Tag": "ProcessStatusStr",
-            "Value": "'Stopped'"
-          },
-          {
-            "Tag": "ProcessStopDt",
-            "Value": "nowDt"
-          }
-        ]
-      },
-      {
-        "CheckType": "ChangeValue",
-        "TagExpression": "if({ProcessStatus} = 1 && {nowDt@DT:UnixTimeSeconds} > {ProcessStartDt@DT:UnixTimeSeconds}, {nowDt@DT:UnixTimeSeconds} - {ProcessStartDt@DT:UnixTimeSeconds}, 0 )",
-        "WriteTags": [
-          {
-            "Tag": "ProcessTimeSeconds",
+            "Tag": "powerTag",
             "Value": "TagExpression"
           }
         ]
       }
     ]
   },
+
   "Serilog": {
     "MinimumLevel": {
       "Default": "Information"

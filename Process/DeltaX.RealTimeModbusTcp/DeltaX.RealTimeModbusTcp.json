@@ -11,6 +11,7 @@
         "AddressOffset": 0,
         "Count": 10,
         "ByteSwap": false,
+        "TagRaw": "PruebaModbusRaw", 
         "Tags": [
           {
             "TagName": "PruebaModbusInt16",
@@ -47,9 +48,17 @@
         "ValueOnSucces": 0,
         "ValueOnError": -1,
         "Format": "!h",
-        "Function": 6,
+        "Function": "WriteRegister",
         "Address": 0
-      } 
+      },
+      {
+        "TagName": "command/PruebaWriteModbusInt16Array",
+        "ValueOnSucces": 0,
+        "ValueOnError": -1,
+        "Format": "!h",
+        "Function": "WriteRegistersArray",
+        "Address": 0
+      }
     ]
   }
 }

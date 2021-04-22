@@ -1,9 +1,9 @@
-﻿using System;
-
-namespace DeltaX.Modules.Shift.Configuration
+﻿namespace DeltaX.Modules.Shift.Dtos
 {
-    public class Shfit
-    {
+    using System;
+
+    public class ShiftDto
+    { 
         public string Name { get; set; }
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }

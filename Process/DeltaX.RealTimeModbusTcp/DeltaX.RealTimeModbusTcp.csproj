@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Contrib\ModbusTcp\ModbusTcp.csproj" />
+    <ProjectReference Include="..\..\Source\Core\DeltaX.CommonExtensions\DeltaX.CommonExtensions.csproj" />
     <ProjectReference Include="..\..\Source\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
     <ProjectReference Include="..\..\Source\Core\DeltaX.ProcessBase\DeltaX.ProcessBase.csproj" />
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.ProcessInfo\DeltaX.RealTime.ProcessInfo.csproj" />

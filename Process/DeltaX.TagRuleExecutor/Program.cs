@@ -14,12 +14,7 @@ Host.CreateDefaultBuilder(args)
         services.AddSingleton<ProcessInfoStatistics>();
         services.AddSingleton<RtConnectorFactory>();
         services.AddSingleton<TagRuleChangeExecutorService>();
-
-        services.AddSingleton<IRtConnector>(services => {
-            var connFactory = services.GetService<RtConnectorFactory>();
-            var configuration = services.GetService<IConfiguration>();
-            return connFactory.GetConnector(configuration.GetValue<string>("RealTimeConnectorSectionName"));
-        });
+        services.AddSingleton<IRtConnector>(services => services.GetService<RtConnectorFactory>().GetDefaultConnector());
 
         services.Configure<TagRuleExecutorConfiguration>(options =>
             hostContext.Configuration.GetSection("TagRuleExecutor").Bind(options));

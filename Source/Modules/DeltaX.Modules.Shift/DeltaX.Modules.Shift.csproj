@@ -9,12 +9,16 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" /> 
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" /> 
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" /> 
-    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />  
+    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+    <PackageReference Include="MySqlConnector" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
     <ProjectReference Include="..\..\Core\DeltaX.Database\DeltaX.Database.csproj" />
+    <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
+    <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtExtension\DeltaX.RealTime.RtExtension.csproj" />
+    <ProjectReference Include="..\DeltaX.Modules.DapperRepository\DeltaX.Modules.DapperRepository.csproj" />
   </ItemGroup>
   
 </Project>

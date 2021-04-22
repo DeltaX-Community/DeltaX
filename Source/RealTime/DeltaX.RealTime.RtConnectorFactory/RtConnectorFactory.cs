@@ -22,6 +22,11 @@
             this.loggerFactory = loggerFactory;
         }
 
+        public IRtConnector GetDefaultConnector()
+        { 
+            return GetConnector(configuration.GetValue<string>("RealTimeConnectorSectionName"));
+        }
+
         public IRtConnector GetConnector(string realTimeConnectorSectionName = "DefaultRealTimeConnector")
         {
             var connectorSection = new RealTimeConnectorSection();

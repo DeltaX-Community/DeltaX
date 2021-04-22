@@ -1,117 +1,197 @@
-﻿using DeltaX.Modules.Shift.Configuration;
-using DeltaX.Modules.Shift.Repositories;
-using Microsoft.Extensions.Options;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿
 
 namespace DeltaX.Modules.Shift
 {
+    using DeltaX.Modules.Shift.Configuration;
+    using DeltaX.Modules.Shift.Dtos;
+    using DeltaX.Modules.Shift.Repositories;
+    using DeltaX.RealTime;
+    using DeltaX.RealTime.Interfaces;
+    using Microsoft.Extensions.Options;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks; 
 
-    public class ShiftService
+    class ShiftService : IShiftService
     {
-        private readonly ShfitConfiguration configuration;
+        private readonly ShiftConfiguration configuration;
         private readonly IShiftRepository repository;
-        private Shfit[] shifts;
+        private readonly IRtConnector connector;
+        private Dictionary<string, List<ShiftHistoryRecord>> cacheHistoryPatterns = new Dictionary<string, List<ShiftHistoryRecord>>();
+        private Dictionary<string, List<ShiftRecord>> cacheShifts = new Dictionary<string, List<ShiftRecord>>();
 
-        public ShiftService(IShiftRepository repository, IOptions<ShfitConfiguration> options)
+        public event EventHandler<ShiftCrewDto> PublishShiftCrew;
+
+        public ShiftService(IShiftRepository repository, IOptions<ShiftConfiguration> options, IRtConnector connector = null)
         {
             this.repository = repository;
             this.configuration = options.Value;
-            
-            ValidateShifts();
+            this.connector = connector;
         }
 
-        public Shfit GetShift(DateTime now)
+        private (DateTime start, DateTime end)? GetShiftDate(ShiftDto shift, DateTime now)
         {
-            return configuration.Shifts.FirstOrDefault(s =>
-            {
-                var start = now.Date + s.Start;
-                var end = now.Date + s.End;
+            var start = now.Date + shift.Start;
+            var end = now.Date + shift.End;
 
-                if (end < start)
-                {
-                    end = end.AddDays(1);
-                }
-                return start <= now && now < end;
-            });
-        }
-
-        public void ValidateShifts()
-        { 
-            var hours = configuration.Shifts.Sum(s =>
+            if (start > end && start <= now)
             {
-                if (s.End < s.Start)
-                {
-                    // turno de 18:00 a 02:00 ==>> 24 - (18 - 2) = 24 - 16 = 8 
-                    return 24 - (s.Start - s.End).TotalHours;
-                }
-                // turno de 12:00 a 18:00 => 18 - 12 = 6
-                return (s.End - s.Start).TotalHours;
-            });
-
-            if (Math.Abs(hours -24) > 0.1)
+                end = end.AddDays(1);
+            }
+            if (start > end && end > now)
             {
-                throw new Exception($"Shift bad configuration! total hours is {hours} > 24 HH");
-            } 
-        }
-
-        public Crew GetCrew(DateTime now)
-        {
-            var isHoliday = configuration.Holidays.Any(h => h.Start <= now && h.End > now);
-            if (isHoliday)
-            {
-                return null;
+                start = start.AddDays(-1);
             }
 
-            var crews = configuration.Crews
-                .Where(c => c.Start <= now && (c.End == null || c.End > now))
-                .OrderByDescending(c => c.Start)
-                .ToList();
-
-            return crews.FirstOrDefault(c =>
+            if (start <= now && now < end)
             {
-                var profile = configuration.CrewProfiles[c.Profile];
-
-                var totalDaysProfile = profile.WorkDays + profile.FreeDays;
-                var daysOfCurrentProfile = (now - c.Start).TotalDays % totalDaysProfile;
-
-                if (daysOfCurrentProfile > profile.WorkDays)
-                    return false;
-
-                var startShiftToday = now.AddDays(-daysOfCurrentProfile % 1);
-                var endShiftToday = startShiftToday.AddMinutes(profile.MinutesByShift);
-
-                return startShiftToday <= now && endShiftToday > now;
-            });
+                return (start, end);
+            }
+            return null;
         }
 
+        private void GenerateHistory(string profileName, DateTime begin, DateTime? end = null)
+        {
+            end ??= DateTime.Now;
+            var profile = GetShiftProfiles(profileName, begin, end);
+
+            if (!cacheHistoryPatterns.ContainsKey(profileName))
+            {
+                cacheHistoryPatterns[profileName] = repository.GetShiftHistory(profile.Name, 
+                    profile.Start.LocalDateTime, profile.Start.LocalDateTime.AddDays(profile.CycleDays));
+            }
+            if (!cacheShifts.ContainsKey(profileName))
+            {
+                cacheShifts[profileName] = repository.GetShifts(profileName, true).OrderByDescending(s => s.Start).ToList();
+            }
+
+            var shiftsToInsert = new List<ShiftHistoryRecord>();
+            var historyRecords = cacheHistoryPatterns[profileName];
+            var shiftsRecords = cacheShifts[profileName];
+            var now = begin;
+            while (now < end)
+            {
+                // El Turno (sifht) está dado por comparacion de horas en el día
+                var shift = profile.Shifts.FirstOrDefault(s => GetShiftDate(s, now) != null);
+                var shiftRecord = shiftsRecords.FirstOrDefault(s => s.Name == shift.Name);
+                if (shift == null || shiftRecord == null)
+                {
+                    now = now.AddMinutes(10);
+                    continue;
+                }
+
+                /// La escuadra (crew) se detecta mediante el patternHistory, que sería una parte 
+                /// del historico que fue cargada en base a la configuracion
+                var patternDay = (now - profile.Start).TotalDays % profile.CycleDays;
+                var historyDate = profile.Start.LocalDateTime.AddDays(patternDay);
+                var pattern = historyRecords.FirstOrDefault(h => h.Start <= historyDate && h.End > historyDate);
+
+                var shiftDate = GetShiftDate(shift, now).Value;
+                shiftsToInsert.Add(new ShiftHistoryRecord
+                {
+                    Start = shiftDate.start,
+                    End = shiftDate.end,
+                    IdCrew = pattern?.IdCrew,
+                    IdShift = shiftRecord.IdShift,
+                    IdShiftProfile = shiftRecord.IdShiftProfile
+                });
+
+                now = shiftDate.end;
+            }
+
+            lock (repository) repository.InsertShiftHistory(shiftsToInsert);
+        }
+
+        private void InsertShiftProfile(ShiftProfileDto profile)
+        {
+            lock (repository)
+            {
+                var profileRecord = repository.GetShiftProfile(profile.Name);
+                if (profileRecord == null || profileRecord.Start != profile.Start)
+                {
+                    repository.InsertShiftProfile(profile);
+                }
+
+                repository.InsertShiftHistoryFromPattern(profile.Name, profile.CrewPatterns);
+            }
+        }
+
+        public ShiftCrewDto GetShiftCrew(string profileName, DateTime now)
+        {
+            var result = repository.GetShiftCrew(profileName, now);
+
+            if (result == null)
+            {
+                UpdateShift();
+                result = repository.GetShiftCrew(profileName, now);
+            }
+            return result;
+        }
+
+        public ShiftProfileDto GetShiftProfiles(string profileName, DateTime? start = null, DateTime? end = null)
+        {
+            start ??= DateTime.Now;
+            end ??= DateTime.Now;
+            return configuration.ShiftProfiles
+                .Where(p => p.Name == profileName && p.Start <= start && p.End > end)
+                .OrderByDescending(p => p.Start)
+                .First();
+        }
+
+        private ShiftCrewDto currentShiftCrew;
 
         public void UpdateShift()
         {
-            var lastShift = repository.GetLastShiftHistory();
-            var lastShiftEnd = lastShift.End;
-
-            if (lastShiftEnd < DateTime.Now)
+            lock (this)
             {
-                var t = lastShiftEnd.AddSeconds(1);
-                var s = GetShift(t.DateTime);
-                // lastShiftEnd = s.End; 
+                var now = DateTime.Now;
+                foreach (var profile in configuration.ShiftProfiles.Where(p => p.Start <= now && p.End > now))
+                {
+                    var shiftCrew = repository.GetShiftCrew(profile.Name, now);
+                    if (shiftCrew == null)
+                    {
+                        var lastShift = repository.GetLastShiftHistory(profile.Name);
+                        if (lastShift == null)
+                        {
+                            InsertShiftProfile(profile);
+                            shiftCrew = repository.GetShiftCrew(profile.Name, now);
+                        }
+                    }
+
+                    var lastShiftEnd = shiftCrew?.End ?? profile.Start;
+                    if (lastShiftEnd < now)
+                    {
+                        GenerateHistory(profile.Name, lastShiftEnd.DateTime);
+                        shiftCrew = repository.GetShiftCrew(profile.Name, now);
+                    }
+
+                    if (currentShiftCrew == null || currentShiftCrew.Start != shiftCrew.Start)
+                    {
+                        currentShiftCrew = shiftCrew;
+                        if (connector != null && !string.IsNullOrWhiteSpace(profile.TagPublish))
+                        {
+                            connector.SetJson(profile.TagPublish, shiftCrew);
+                        }
+                        PublishShiftCrew?.Invoke(this, shiftCrew);
+                    }
+                }
             }
         }
-
+       
 
         public Task ExecuteAsync(CancellationToken? cancellation)
-        {  
+        {
             cancellation ??= CancellationToken.None;
             return Task.Run(async () =>
-            { 
+            {
                 while (!cancellation.Value.IsCancellationRequested)
                 {
                     UpdateShift();
-                    var t = TimeSpan.FromMinutes(10 - DateTime.Now.Minute % 10);                    
-                    await Task.Delay(t, cancellation.Value); 
+                    var interval = configuration.CheckShiftIntervalMinutes;
+                    var timeWait = TimeSpan.FromMinutes(interval - DateTime.Now.Minute % interval);
+                    await Task.Delay(timeWait, cancellation.Value);
                 }
             });
         }

@@ -13,6 +13,9 @@
     <ProjectReference Include="..\..\Source\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />
     <ProjectReference Include="..\..\Source\Core\DeltaX.ProcessBase\DeltaX.ProcessBase.csproj" />
     <ProjectReference Include="..\..\Source\Modules\DeltaX.Modules.Shift\DeltaX.Modules.Shift.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.ProcessInfo\DeltaX.RealTime.ProcessInfo.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj" />
   </ItemGroup>
 
   <ItemGroup>

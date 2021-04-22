@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 
 public class WorkerService : BackgroundService
-{ 
-    private readonly TagRuleChangeExecutorService service; 
+{
+    private readonly TagRuleChangeExecutorService service;
 
-    public WorkerService(  TagRuleChangeExecutorService service)
-    { 
-        this.service = service; 
+    public WorkerService(TagRuleChangeExecutorService service)
+    {
+        this.service = service;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)

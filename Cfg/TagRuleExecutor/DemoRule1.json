@@ -1,7 +1,7 @@
 { 
   "RealTimeConnectorSectionName": "RtMqttConnector",
 
-  "TagRuleChange": {
+  "TagRuleExecutor": {
     "LoopEvaluateIntervalMilliseconds": 100,
     "DefaultTolerance": 0.01,
     "TagNowName": "date/evaluation",

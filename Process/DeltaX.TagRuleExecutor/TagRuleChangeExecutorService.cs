@@ -160,6 +160,8 @@ public class TagRuleChangeExecutorService
 
     public Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _ = settings.Rules ?? throw new ArgumentNullException("Rules");
+
         var LoopEvaluateInterval = settings?.LoopEvaluateIntervalMilliseconds ?? 500;
         connector.Connected += (s, c) =>
         {

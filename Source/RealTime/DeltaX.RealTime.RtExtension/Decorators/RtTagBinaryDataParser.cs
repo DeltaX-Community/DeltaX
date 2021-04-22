@@ -1,28 +1,28 @@
 ﻿namespace DeltaX.RealTime.Decorators
 {
-    using DeltaX.RealTime; 
-    using DeltaX.CommonExtensions; 
+    using DeltaX.RealTime;
+    using DeltaX.CommonExtensions;
     using DeltaX.RealTime.Interfaces;
     using System;
     using System.Text.Json;
     using System.Text.RegularExpressions;
 
-    public class RtTagDateTime : RtTagDecoratorBase, IRtTag
+    public class RtTagBinaryDataParser : RtTagDecoratorBase, IRtTag
     {
         private DateTime parsedTime;
         private IRtValue currentValueParsed = valueNull;
         private bool status = false;
 
-        public RtTagDateTime(IRtTag tag, string dateTimePatter) : base(tag)
+        public RtTagBinaryDataParser(IRtTag tag, string dateTimePatter) : base(tag)
         {
-            TagDateTimeValuePattern = dateTimePatter;
+            TagBinaryDataParserPattern = dateTimePatter;
             currentValueParsed = TryParseValue(tag);
             parsedTime = Updated;
         }
 
-        public string TagDateTimeValuePattern { get; protected set; }
+        public string TagBinaryDataParserPattern { get; protected set; }
 
-        public override string TagName => $"{tag.TagName}@DT:{TagDateTimeValuePattern}";
+        public override string TagName => $"{tag.TagName}@BDP:{TagBinaryDataParserPattern}";
 
         public override bool Status
         {
@@ -65,27 +65,12 @@
             {
                 try
                 {
-                    DateTimeOffset dt = tag.GetDateTime();
-                    var parsed = string.Empty;
+                    var parsed = tag.Value.Binary.Parser(TagBinaryDataParserPattern);
+                    Status = parsed != null && base.Status;
 
-                    switch (TagDateTimeValuePattern.ToUpper())
-                    {
-                        case "UNIXTIMESTAMP":                              
-                            parsed = dt.LocalDateTime.ToUnixTimestamp().ToString();
-                            break;
-                        case "UNIXTIMEMILLISECONDS":
-                            parsed = dt.ToUnixTimeMilliseconds().ToString();
-                            break;
-                        case "UNIXTIMESECONDS":
-                            parsed = dt.ToUnixTimeSeconds().ToString();
-                            break;
-                        default:
-                            parsed = dt.ToString(TagDateTimeValuePattern);
-                            break;
-                    }
-
-                    Status = !string.IsNullOrEmpty(parsed) && base.Status;
-                    return RtValue.Create(parsed);
+                    return (parsed is string parserStr)
+                        ? RtValue.Create(parserStr)
+                        : RtValue.Create(Convert.ToDouble(parsed));
                 }
                 catch
                 {

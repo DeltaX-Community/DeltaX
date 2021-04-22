@@ -36,7 +36,7 @@
             }
             else
             {
-                return creator.AddTag(expresionFull, options);
+                return creator.AddTagDefinition(expresionFull, options); 
             }
         }
 

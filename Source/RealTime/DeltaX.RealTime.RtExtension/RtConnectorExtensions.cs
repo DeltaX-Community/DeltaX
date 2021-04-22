@@ -80,6 +80,11 @@
                     var ultraLightValuePattern = tagDefinitionPattern.Remove(0, 3);
                     return new RtTagUltraLight(tag, ultraLightValuePattern);
                 }
+                else if (tagDefinitionPattern.StartsWith("BDP:"))
+                {
+                    var dataParserPattern = tagDefinitionPattern.Remove(0, 4);
+                    return new RtTagBinaryDataParser(tag, dataParserPattern);
+                }
             }
 
             return conn.GetOrAddTag(topic, options);

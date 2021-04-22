@@ -13,15 +13,15 @@
         private object _locker = new object();
         private ILogger logger;
         private DbConnectionFactory dbConnFactory;
-        private Exception lastException; 
+        private Exception lastException;
 
-        public static DatabaseBase Build<T>(string[] connectionStrings, ILoggerFactory loggerFactory = null) 
+        public static DatabaseBase Build<T>(string[] connectionStrings, ILoggerFactory loggerFactory = null)
             where T : IDbConnection, new()
         {
             return new DatabaseBase(typeof(T), connectionStrings, loggerFactory);
         }
 
-        public static DatabaseBase Build(Type dbConnectionType, string[] connectionStrings, ILoggerFactory loggerFactory = null) 
+        public static DatabaseBase Build(Type dbConnectionType, string[] connectionStrings, ILoggerFactory loggerFactory = null)
         {
             return new DatabaseBase(dbConnectionType, connectionStrings, loggerFactory);
         }
@@ -49,7 +49,7 @@
             loggerFactory ??= Configuration.DefaultLoggerFactory;
             this.logger = loggerFactory.CreateLogger($"{nameof(DatabaseBase)}");
 
-            this.dbConnFactory = new DbConnectionFactory(dbConnectionType, connectionStrings, logger); 
+            this.dbConnFactory = new DbConnectionFactory(dbConnectionType, connectionStrings, logger);
         }
 
 
@@ -92,7 +92,7 @@
         public async Task<TResult> RunTransactionAsync<TResult>(Func<IDbConnection, IDbTransaction, Task<TResult>> method)
         {
             using (var dbConn = GetConnection())
-            {  
+            {
                 using (var transaction = dbConn.BeginTransaction())
                 {
                     var result = await method(dbConn, transaction);
@@ -126,8 +126,8 @@
                     transaction.Commit();
                     return result;
                 }
-            } 
-        }  
+            }
+        }
 
         /// <summary>
         /// Re-Connect to db
@@ -151,12 +151,12 @@
                         DbConnection = dbConnFactory.Connect(DbConnection.ConnectionString);
                         return true;
                     }
-                    catch { }                      
+                    catch { }
                 }
 
                 try
                 {
-                    DbConnection = dbConnFactory.GetConnection(); 
+                    DbConnection = dbConnFactory.GetConnection();
                 }
                 catch { }
             }
@@ -172,7 +172,7 @@
         public IDbConnection GetConnection()
         {
             return dbConnFactory.GetConnection();
-        } 
+        }
 
 
         bool prev_connected = false;
@@ -217,7 +217,7 @@
                     OnDisconnect?.Invoke(this, DbConnection.ConnectionString);
                     DbConnection.Close();
                     DbConnection.Dispose();
-                    DbConnection = null;                    
+                    DbConnection = null;
                 }
                 prev_connected = false;
             }
