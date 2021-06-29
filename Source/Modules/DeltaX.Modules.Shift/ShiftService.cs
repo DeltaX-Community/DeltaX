@@ -1,11 +1,8 @@
-﻿
-
-namespace DeltaX.Modules.Shift
+﻿namespace DeltaX.Modules.Shift
 {
     using DeltaX.Modules.Shift.Configuration;
-    using DeltaX.Modules.Shift.Dtos;
+    using DeltaX.Modules.Shift.Shared.Dtos;
     using Microsoft.Extensions.DependencyInjection;
-    using DeltaX.Modules.Shift.Repositories;
     using DeltaX.RealTime;
     using DeltaX.RealTime.Interfaces;
     using Microsoft.Extensions.Options;
@@ -15,13 +12,15 @@ namespace DeltaX.Modules.Shift
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using DeltaX.Modules.Shift.Shared;
 
-    class ShiftService : IShiftService
-    { 
+    public class ShiftService : IShiftService
+    {
         private ShiftCrewDto currentShiftCrew;
         private readonly ShiftConfiguration configuration;
         private readonly IServiceProvider serviceProvider;
         private readonly ILogger<ShiftService> logger;
+        private readonly IShiftNotification notification;
         private readonly IRtConnector connector;
         private Dictionary<string, List<ShiftHistoryRecord>> cacheHistoryPatterns = new Dictionary<string, List<ShiftHistoryRecord>>();
         private Dictionary<string, List<ShiftRecord>> cacheShifts = new Dictionary<string, List<ShiftRecord>>();
@@ -29,15 +28,17 @@ namespace DeltaX.Modules.Shift
         public event EventHandler<ShiftCrewDto> PublishShiftCrew;
 
         public ShiftService(
-            IOptions<ShiftConfiguration> options, 
-            IRtConnector connector = null, 
-            IServiceProvider serviceProvider = null, 
-            ILogger<ShiftService> logger = null)
+            IOptions<ShiftConfiguration> options,
+            IRtConnector connector = null,
+            IServiceProvider serviceProvider = null,
+            ILogger<ShiftService> logger = null,
+            IShiftNotification notification = null)
         {
             this.configuration = options.Value;
             this.connector = connector;
             this.serviceProvider = serviceProvider;
             this.logger = logger;
+            this.notification = notification;
         }
 
 
@@ -90,13 +91,13 @@ namespace DeltaX.Modules.Shift
         }
 
         private void GenerateHistory(IShiftRepository repository, string profileName, DateTime begin, DateTime? end = null)
-        { 
+        {
             end ??= DateTime.Now;
             var profile = GetShiftProfiles(profileName, begin, end);
 
             if (!cacheHistoryPatterns.ContainsKey(profileName))
             {
-                cacheHistoryPatterns[profileName] = repository.GetShiftHistory(profile.Name, 
+                cacheHistoryPatterns[profileName] = repository.GetShiftHistory(profile.Name,
                     profile.Start.LocalDateTime, profile.Start.LocalDateTime.AddDays(profile.CycleDays));
             }
             if (!cacheShifts.ContainsKey(profileName))
@@ -137,12 +138,12 @@ namespace DeltaX.Modules.Shift
 
                 now = shiftDate.end;
             }
-            
+
             repository.InsertShiftHistory(shiftsToInsert);
         }
 
         private void InsertShiftProfile(IShiftRepository repository, ShiftProfileDto profile)
-        { 
+        {
             var profileRecord = repository.GetShiftProfile(profile.Name);
             if (profileRecord == null || profileRecord.Start != profile.Start)
             {
@@ -159,7 +160,7 @@ namespace DeltaX.Modules.Shift
             {
                 var profileRecord = repository.GetShiftProfile(profile.Name);
                 if (profileRecord != null && profileRecord.Start != profile.Start)
-                { 
+                {
                     repository.DisableShiftProfile(profileRecord);
                     profileRecord = null;
                 }
@@ -171,7 +172,7 @@ namespace DeltaX.Modules.Shift
                 }
             }
         }
-         
+
         private void UpdateShift(IShiftRepository repository)
         {
             var now = DateTime.Now;
@@ -203,6 +204,7 @@ namespace DeltaX.Modules.Shift
                         connector.SetJson(profile.TagPublish, shiftCrew);
                     }
                     PublishShiftCrew?.Invoke(this, shiftCrew);
+                    notification?.OnUpdateShiftCrew(shiftCrew);
                 }
             }
         }
@@ -235,7 +237,7 @@ namespace DeltaX.Modules.Shift
                 while (!cancellation.Value.IsCancellationRequested)
                 {
                     Scoped((scope, repository) => UpdateShift(repository));
-                     
+
                     var interval = configuration.CheckShiftIntervalMinutes;
                     var timeWait = TimeSpan.FromMinutes(interval - DateTime.Now.Minute % interval);
                     await Task.Delay(timeWait, cancellation.Value);

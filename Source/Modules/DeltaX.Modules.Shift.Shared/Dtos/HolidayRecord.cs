@@ -1,12 +1,12 @@
-﻿namespace DeltaX.Modules.Shift.Dtos
+﻿namespace DeltaX.Modules.Shift.Shared.Dtos
 {
     using System;
 
-    public class ShiftProfileRecord
+    public class HolidayRecord
     {
+        public int IdHoliday { get; set; }
         public int IdShiftProfile { get; set; }
-        public string Name { get; set; } 
-        public int CycleDays { get; set; }
+        public string Name { get; set; }  
         public DateTimeOffset Start { get; set; }
         public DateTimeOffset End { get; set; }
         public bool Enable { get; set; }

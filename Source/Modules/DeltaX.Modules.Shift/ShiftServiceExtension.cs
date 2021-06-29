@@ -5,10 +5,8 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Configuration;
     using DeltaX.Modules.Shift.Repositories;
-    using DeltaX.Modules.DapperRepository;
-    using DeltaX.Database;
-    using Microsoft.Extensions.Options;
-    using MySqlConnector;
+    using DeltaX.Modules.DapperRepository; 
+    using DeltaX.Modules.Shift.Shared;
 
     public static class ShiftServiceExtension
     {
@@ -23,14 +21,6 @@
                 services.AddScoped<IShiftRepository, ShiftRepository>();
                 services.AddSingleton<IShiftService, ShiftService>();
                 services.Configure<ShiftConfiguration>(options => hostContext.Configuration.GetSection("Shift").Bind(options));
-           //   services.AddTransient<IShiftRepository>(srv =>
-           //   {
-           //       var options = srv.GetService<IOptions<ShiftConfiguration>>();
-           //       var dbFactory = new DbConnectionFactory(typeof(MySqlConnection), new[] { options.Value.ConnectionString });
-           //       var conn = dbFactory.GetConnection();
-           //
-           //       return new ShiftRepository();
-           //   });
             });
         }
     }

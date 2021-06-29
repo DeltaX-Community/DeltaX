@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.ProcessInfo\DeltaX.RealTime.ProcessInfo.csproj" />
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj" />
+    <ProjectReference Include="..\..\Source\Rpc\DeltaX.Rpc.JsonRpc\DeltaX.Rpc.JsonRpc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

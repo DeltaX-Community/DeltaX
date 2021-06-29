@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
     <ProjectReference Include="..\..\RealTime\DeltaX.RealTime.RtExtension\DeltaX.RealTime.RtExtension.csproj" />
     <ProjectReference Include="..\DeltaX.Modules.DapperRepository\DeltaX.Modules.DapperRepository.csproj" />
+    <ProjectReference Include="..\DeltaX.Modules.Shift.Shared\DeltaX.Modules.Shift.Shared.csproj" />
   </ItemGroup>
   
 </Project>

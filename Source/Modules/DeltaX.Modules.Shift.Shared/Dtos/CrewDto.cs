@@ -1,4 +1,4 @@
-﻿namespace DeltaX.Modules.Shift.Dtos
+﻿namespace DeltaX.Modules.Shift.Shared.Dtos
 {
     public class CrewDto
     {  

@@ -4,7 +4,8 @@
     using DeltaX.LinSql.Query;
     using DeltaX.Modules.DapperRepository;
     using DeltaX.Modules.Shift.Configuration;
-    using DeltaX.Modules.Shift.Dtos;
+    using DeltaX.Modules.Shift.Shared.Dtos;
+    using DeltaX.Modules.Shift.Shared;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using System;

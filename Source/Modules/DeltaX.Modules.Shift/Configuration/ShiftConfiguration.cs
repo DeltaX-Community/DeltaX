@@ -1,6 +1,6 @@
 ﻿namespace DeltaX.Modules.Shift.Configuration
 {
-    using DeltaX.Modules.Shift.Dtos;
+    using DeltaX.Modules.Shift.Shared.Dtos;
 
     public class ShiftConfiguration
     {

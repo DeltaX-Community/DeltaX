@@ -1,16 +1,15 @@
-﻿using DeltaX.Modules.Shift.Dtos;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
+﻿
 namespace DeltaX.Modules.Shift
 {
-    public interface IShiftService
+    using DeltaX.Modules.Shift.Shared.Dtos;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    public interface IShiftService : Shared.IShiftService
     {
         event EventHandler<ShiftCrewDto> PublishShiftCrew;
 
         Task ExecuteAsync(CancellationToken? cancellation); 
-        ShiftCrewDto GetShiftCrew(string profileName, DateTime now);
-        ShiftProfileDto GetShiftProfiles(string profileName, DateTime? start = null, DateTime? end = null); 
     }
 }

@@ -6,7 +6,7 @@
         "Name": "Profile1",
         "TagPublish": "shift/Profile1",
         "CycleDays": 7,
-        "Start": "2021-03-1T04:00:00-03:00",
+        "Start": "2021-06-28T04:00:00-03:00",
         "End": "2030-03-1T04:00:00-03:00",
 
         "Shifts": [
@@ -46,7 +46,7 @@
         ],
         "CrewPatterns": [
           {
-            "Crew": "A",
+            "Crew": "C",
             "Shift": "Mañana",
             "Day": 1
           },
@@ -56,27 +56,27 @@
             "Day": 1
           },
           {
-            "Crew": "C",
+            "Crew": "A",
             "Shift": "Noche",
             "Day": 1
           },
           {
-            "Crew": "A",
+            "Crew": "C",
             "Shift": "Mañana",
             "Day": 2
           },
           {
-            "Crew": "B",
+            "Crew": "A",
             "Shift": "Tarde",
             "Day": 2
           },
           {
-            "Crew": "C",
+            "Crew": "B",
             "Shift": "Noche",
             "Day": 2
           },
           {
-            "Crew": "A",
+            "Crew": "C",
             "Shift": "Mañana",
             "Day": 3
           },
@@ -86,12 +86,12 @@
             "Day": 3
           },
           {
-            "Crew": "C",
+            "Crew": "A",
             "Shift": "Noche",
             "Day": 3
           },
           {
-            "Crew": "A",
+            "Crew": "C",
             "Shift": "Mañana",
             "Day": 4
           },
@@ -101,7 +101,7 @@
             "Day": 4
           },
           {
-            "Crew": "C",
+            "Crew": "A",
             "Shift": "Noche",
             "Day": 4
           },

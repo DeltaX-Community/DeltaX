@@ -1,10 +1,9 @@
-﻿using DeltaX.Modules.Shift.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DeltaX.Modules.Shift.Repositories
+﻿namespace DeltaX.Modules.Shift.Shared
 {
+    using DeltaX.Modules.Shift.Shared.Dtos;
+    using System;
+    using System.Collections.Generic;
+
     public interface IShiftRepository
     {
         List<ShiftHistoryRecord> GetShiftHistory(string profileName, DateTime begin, DateTime? end);
@@ -12,8 +11,11 @@ namespace DeltaX.Modules.Shift.Repositories
         ShiftCrewDto GetShiftCrew(string profileName, DateTime now);
         int InsertShiftHistory(IEnumerable<ShiftHistoryRecord> shifts);
         ShiftProfileRecord GetShiftProfile(string profileName);
+        List<ShiftProfileRecord> GetShiftProfiles();
         int InsertShiftHistoryFromPattern(string profileName, IEnumerable<CrewPatternDto> patterns);
         int InsertShiftProfile(ShiftProfileDto profile);
         List<ShiftRecord> GetShifts(string profileName, bool enable = true);
+        int CreateTables();
+        void DisableShiftProfile(ShiftProfileRecord shiftProfile);
     }
 }

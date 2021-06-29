@@ -3,30 +3,26 @@ using DeltaX.Modules.Shift.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 public class WorkerService : BackgroundService
 {
-    private readonly IShiftService service;
+    private readonly IShiftService shiftService;
     private readonly ShiftConfiguration configuration; 
     private readonly ILogger logger;
 
-    public WorkerService(IShiftService service, IOptions<ShiftConfiguration> options, ILogger<WorkerService> logger)
+    public WorkerService(IShiftService shiftService, IOptions<ShiftConfiguration> options, ILogger<WorkerService> logger)
     {
-        this.service = service;
+        this.shiftService = shiftService;
         this.configuration = options.Value;
         this.logger = logger;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
-    {  
-        var taskService = service.ExecuteAsync(stoppingToken)
+    {
+        var taskService = shiftService.ExecuteAsync(stoppingToken)
             .ContinueWith(t =>
             {
                 if (t.IsFaulted)
@@ -35,6 +31,7 @@ public class WorkerService : BackgroundService
                     Environment.Exit(-1);
                 }
             });
+
         var tasTest = Task.Run( async() =>
         {
             while(!stoppingToken.IsCancellationRequested)
@@ -43,8 +40,15 @@ public class WorkerService : BackgroundService
 
                 foreach (var p in configuration.ShiftProfiles)
                 {
-                    var r = service.GetShiftCrew(p.Name, DateTime.Now);
-                    logger.LogDebug("Current Shift {@r}", r);
+                    try
+                    {
+                        var r = shiftService.GetShiftCrew(p.Name, DateTime.Now); 
+                        logger.LogDebug("Current Shift {@r}", r);
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, "Ni idea");
+                    }
                 }
             }
         });

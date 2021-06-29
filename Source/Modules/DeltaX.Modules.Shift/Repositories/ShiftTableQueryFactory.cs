@@ -1,7 +1,7 @@
 ﻿namespace DeltaX.Modules.Shift.Repositories
 {
     using DeltaX.LinSql.Table;
-    using DeltaX.Modules.Shift.Dtos;
+    using DeltaX.Modules.Shift.Shared.Dtos;
 
     public class ShiftTableQueryFactory : TableQueryFactory
     {

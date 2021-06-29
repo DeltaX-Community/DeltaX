@@ -2,6 +2,7 @@
 {
     using DeltaX.Database;
     using DeltaX.Modules.Shift.Configuration;
+    using DeltaX.Modules.Shift.Shared;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using MySqlConnector;
