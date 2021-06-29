@@ -10,6 +10,6 @@
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }
         public bool Enable { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
     }
 }

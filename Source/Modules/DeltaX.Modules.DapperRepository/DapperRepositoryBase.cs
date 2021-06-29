@@ -1,7 +1,6 @@
 ﻿namespace DeltaX.Modules.DapperRepository
 {
     using Dapper;
-    using DeltaX.Database;
     using DeltaX.LinSql.Query;
     using DeltaX.LinSql.Table;
     using Microsoft.Extensions.Logging;
@@ -10,27 +9,30 @@
     using System.Data;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using System.Transactions;
 
     public class DapperRepositoryBase
     {
         protected TableQueryFactory queryFactory;
-        protected IDatabaseBase db;
-        protected ILogger logger;       
+        protected ILogger logger;
 
-        public DapperRepositoryBase(IDatabaseBase db, TableQueryFactory queryFactory, ILogger logger = null)
+        public DapperRepositoryBase(IUnitOfWork uow, TableQueryFactory queryFactory, ILogger logger = null)
         {
-            this.queryFactory = queryFactory;
-            this.db = db;
+            this.UnitOfWork = uow;
+            this.queryFactory = queryFactory; 
             this.logger = logger;
         }
-         
+
+        public IUnitOfWork UnitOfWork { get; private set; }
+        public IDbConnection Conn => UnitOfWork.Connection;
+        public IDbTransaction Tran => UnitOfWork.Transaction;
+
+
         public Task DeleteAsync<TEntity>(TEntity entity)
             where TEntity : class
         {
             var query = queryFactory.GetDeleteQuery<TEntity>();
             logger.LogDebug("DeleteAsync query:{query} entity:{@entity}", query, entity);
-            return db.RunAsync(conn => conn.ExecuteAsync(query, entity));
+            return Conn.ExecuteAsync(query, entity, Tran);
         }
 
         public Task DeleteAsync<TEntity>(string whereClause, object param)
@@ -38,7 +40,7 @@
         {
             var query = queryFactory.GetDeleteQuery<TEntity>(whereClause);
             logger.LogDebug("DeleteAsync query:{query} whereClause:{whereClause} param:{@param}", query, whereClause, param);
-            return db.RunAsync(conn => conn.ExecuteAsync(query, param));
+            return Conn.ExecuteAsync(query, param, Tran);
         }
 
         public async Task<TEntity> InsertAsync<TEntity>(TEntity item, IEnumerable<string> fieldsToInsert = null)
@@ -51,7 +53,7 @@
             {
                 query += "; " + queryFactory.DialectQuery.IdentityQueryFormatSql;
                 logger.LogDebug("InsertAsync query:{query} item:{@item}", query, item);
-                var fieldId = await db.RunAsync(conn => conn.ExecuteScalarAsync(query, item));
+                var fieldId = await Conn.ExecuteScalarAsync(query, item, Tran);
 
                 // Set Property Value  
                 var propertyColumn = identityColumn.GetPropertyInfo();
@@ -60,7 +62,7 @@
             else
             {
                 logger.LogDebug("InsertAsync query:{query} item:{@item}", query, item);
-                await db.RunAsync(conn => conn.ExecuteAsync(query, item));
+                await Conn.ExecuteAsync(query, item, Tran);
             }
 
             return item;
@@ -73,7 +75,7 @@
             query += "; " + queryFactory.DialectQuery.IdentityQueryFormatSql;
             logger.LogDebug("InsertAsync query:{query} item:{@item}", query, item);
 
-            return db.RunAsync(conn => conn.ExecuteScalarAsync<Tkey>(query, item));
+            return Conn.ExecuteScalarAsync<Tkey>(query, item, Tran);
         }
 
         public TEntity Get<TEntity>(object param)
@@ -82,7 +84,7 @@
             var query = queryFactory.GetSingleQuery<TEntity>();
             // logger.LogDebug("GetAsync query:{query} param:{@param}", query, param);
 
-            return db.RunSync(conn => conn.QueryFirstOrDefault<TEntity>(query, param));
+            return Conn.QueryFirstOrDefault<TEntity>(query, param, Tran);
         }
 
         public TEntity Get<TEntity>(TEntity entity)
@@ -97,7 +99,7 @@
             var query = queryFactory.GetSingleQuery<TEntity>(whereClause);
             // logger.LogDebug("GetAsync query:{query} whereClause:{whereClause} param:{@param}", query, whereClause, param);
 
-            return db.RunSync(conn => conn.QueryFirstOrDefault<TEntity>(query, param));
+            return Conn.QueryFirstOrDefault<TEntity>(query, param, Tran);
         }
 
         public IEnumerable<TEntity> GetPagedList<TEntity>(int skipCount = 0, int rowsPerPage = 1000,
@@ -122,7 +124,7 @@
             var query = queryFactory.GetPagedListQuery<TEntity>(skipCount, rowsPerPage, whereClause, orderByClause);
             // logger.LogDebug("GetPagedListAsync query:{query} whereClause:{whereClause} param:{@param}", query, whereClause, param);
 
-            return db.RunSync(conn => conn.Query<TEntity>(query, param));
+            return Conn.Query<TEntity>(query, param, Tran);
         }
 
         public IEnumerable<TEntity> GetItems<TEntity>(
@@ -136,7 +138,7 @@
 
             // logger.LogDebug("GetItemsAsync query:{query} param:{@param}", query.sql, query.parameters);
 
-            return db.RunSync(conn => conn.Query<TEntity>(query.sql, query.parameters));
+            return Conn.Query<TEntity>(query.sql, query.parameters, Tran);
         }
 
         public Task<int> UpdateAsync<TEntity>(string whereClause, object param, IEnumerable<string> fieldsToSet = null)
@@ -145,7 +147,7 @@
             var query = queryFactory.GetUpdateQuery<TEntity>(whereClause, fieldsToSet);
             logger.LogDebug("UpdateAsync query:{query} whereClause:{whereClause} param:{@param}", query, whereClause, param);
 
-            return db.RunAsync(conn => conn.ExecuteAsync(query, param));
+            return Conn.ExecuteAsync(query, param, Tran);
         }
 
         public Task<int> UpdateAsync<TEntity>(TEntity entity, IEnumerable<string> fieldsToSet = null)
@@ -154,7 +156,7 @@
             var query = queryFactory.GetUpdateQuery<TEntity>(null, fieldsToSet);
             logger.LogDebug("UpdateAsync query:{query} entity:{@entity}", query, entity);
 
-            return db.RunAsync(conn => conn.ExecuteAsync(query, entity));
+            return Conn.ExecuteAsync(query, entity, Tran);
         }
 
         public long GetCount<TEntity>(TEntity entity)
@@ -163,7 +165,7 @@
             var query = queryFactory.GetCountQuery<TEntity>();
             // logger.LogDebug("GetCountAsync query:{query} entity:{@entity}", query, entity);
 
-            return db.RunSync(conn => conn.ExecuteScalar<long>(query, entity));
+            return Conn.ExecuteScalar<long>(query, entity, Tran);
         }
 
         public long GetCount<TEntity>(string whereClause, object param)
@@ -172,7 +174,7 @@
             var query = queryFactory.GetCountQuery<TEntity>(whereClause);
             // logger.LogDebug("GetCountAsync query:{query} whereClause:{whereClause} param:{@param}", query, whereClause, param);
 
-            return db.RunSync(conn => conn.ExecuteScalar<long>(query, param));
+            return Conn.ExecuteScalar<long>(query, param, Tran);
         }
     }
 }

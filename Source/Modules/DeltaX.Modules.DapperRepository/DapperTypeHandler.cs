@@ -9,6 +9,7 @@
         public static void SetDapperTypeHandler()
         {
             SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
+            SqlMapper.AddTypeHandler(new DateTimeHandler());
             SqlMapper.AddTypeHandler(new GuidHandler());
             SqlMapper.AddTypeHandler(new TimeSpanHandler());
         }
@@ -50,6 +51,41 @@
                     return dto;
                 case string str:
                     return DateTimeOffset.Parse(str);
+                default:
+                    throw new InvalidOperationException("Must be DateTime or DateTimeOffset object to be mapped.");
+            }
+        }
+    }
+
+    class DateTimeHandler : BaseTypeHandler<DateTime>
+    {
+        public override void SetValue(IDbDataParameter parameter, DateTime value)
+        {
+            switch (parameter.DbType)
+            {
+                case DbType.DateTime:
+                case DbType.DateTime2:
+                case DbType.AnsiString: // Seems to be some MySQL type mapping here
+                    parameter.Value = value.ToUniversalTime();
+                    break;
+                case DbType.DateTimeOffset:
+                    parameter.Value = value;
+                    break;
+            }
+            base.SetValue(parameter, value);
+        }
+
+        public override DateTime Parse(object value)
+        {
+            switch (value)
+            {
+                case DateTime time:
+                    DateTime.SpecifyKind(time, DateTimeKind.Local);
+                    return time.ToUniversalTime();
+                case DateTimeOffset dto:
+                    return dto.DateTime;
+                case string str:
+                    return DateTime.Parse(str);
                 default:
                     throw new InvalidOperationException("Must be DateTime or DateTimeOffset object to be mapped.");
             }

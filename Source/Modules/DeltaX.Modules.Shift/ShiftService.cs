@@ -4,6 +4,7 @@ namespace DeltaX.Modules.Shift
 {
     using DeltaX.Modules.Shift.Configuration;
     using DeltaX.Modules.Shift.Dtos;
+    using Microsoft.Extensions.DependencyInjection;
     using DeltaX.Modules.Shift.Repositories;
     using DeltaX.RealTime;
     using DeltaX.RealTime.Interfaces;
@@ -12,23 +13,59 @@ namespace DeltaX.Modules.Shift
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks; 
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
 
     class ShiftService : IShiftService
-    {
+    { 
+        private ShiftCrewDto currentShiftCrew;
         private readonly ShiftConfiguration configuration;
-        private readonly IShiftRepository repository;
+        private readonly IServiceProvider serviceProvider;
+        private readonly ILogger<ShiftService> logger;
         private readonly IRtConnector connector;
         private Dictionary<string, List<ShiftHistoryRecord>> cacheHistoryPatterns = new Dictionary<string, List<ShiftHistoryRecord>>();
         private Dictionary<string, List<ShiftRecord>> cacheShifts = new Dictionary<string, List<ShiftRecord>>();
 
         public event EventHandler<ShiftCrewDto> PublishShiftCrew;
 
-        public ShiftService(IShiftRepository repository, IOptions<ShiftConfiguration> options, IRtConnector connector = null)
+        public ShiftService(
+            IOptions<ShiftConfiguration> options, 
+            IRtConnector connector = null, 
+            IServiceProvider serviceProvider = null, 
+            ILogger<ShiftService> logger = null)
         {
-            this.repository = repository;
             this.configuration = options.Value;
             this.connector = connector;
+            this.serviceProvider = serviceProvider;
+            this.logger = logger;
+        }
+
+
+        public ShiftCrewDto GetShiftCrew(string profileName, DateTime now)
+        {
+            ShiftCrewDto result = null;
+
+            Scoped((scope, repository) =>
+            {
+                result = repository.GetShiftCrew(profileName, now);
+                if (result == null)
+                {
+                    UpdateShift(repository);
+                    result = repository.GetShiftCrew(profileName, now);
+                }
+            });
+
+            return result;
+        }
+
+        public ShiftProfileDto GetShiftProfiles(string profileName, DateTime? start = null, DateTime? end = null)
+        {
+            start ??= DateTime.Now;
+            end ??= DateTime.Now;
+            return configuration.ShiftProfiles
+                .Where(p => p.Name == profileName && p.Start <= start && p.End > end)
+                .OrderByDescending(p => p.Start)
+                .First();
         }
 
         private (DateTime start, DateTime end)? GetShiftDate(ShiftDto shift, DateTime now)
@@ -52,8 +89,8 @@ namespace DeltaX.Modules.Shift
             return null;
         }
 
-        private void GenerateHistory(string profileName, DateTime begin, DateTime? end = null)
-        {
+        private void GenerateHistory(IShiftRepository repository, string profileName, DateTime begin, DateTime? end = null)
+        { 
             end ??= DateTime.Now;
             var profile = GetShiftProfiles(profileName, begin, end);
 
@@ -100,95 +137,105 @@ namespace DeltaX.Modules.Shift
 
                 now = shiftDate.end;
             }
-
-            lock (repository) repository.InsertShiftHistory(shiftsToInsert);
+            
+            repository.InsertShiftHistory(shiftsToInsert);
         }
 
-        private void InsertShiftProfile(ShiftProfileDto profile)
+        private void InsertShiftProfile(IShiftRepository repository, ShiftProfileDto profile)
+        { 
+            var profileRecord = repository.GetShiftProfile(profile.Name);
+            if (profileRecord == null || profileRecord.Start != profile.Start)
+            {
+                repository.InsertShiftProfile(profile);
+            }
+
+            repository.InsertShiftHistoryFromPattern(profile.Name, profile.CrewPatterns);
+        }
+
+        private void UpdateShiftProfiles(IShiftRepository repository)
         {
-            lock (repository)
+            var now = DateTime.Now;
+            foreach (var profile in configuration.ShiftProfiles.Where(p => p.Start <= now && p.End > now))
             {
                 var profileRecord = repository.GetShiftProfile(profile.Name);
-                if (profileRecord == null || profileRecord.Start != profile.Start)
+                if (profileRecord != null && profileRecord.Start != profile.Start)
+                { 
+                    repository.DisableShiftProfile(profileRecord);
+                    profileRecord = null;
+                }
+
+                if (profileRecord == null)
                 {
                     repository.InsertShiftProfile(profile);
+                    repository.InsertShiftHistoryFromPattern(profile.Name, profile.CrewPatterns);
                 }
-
-                repository.InsertShiftHistoryFromPattern(profile.Name, profile.CrewPatterns);
             }
         }
-
-        public ShiftCrewDto GetShiftCrew(string profileName, DateTime now)
+         
+        private void UpdateShift(IShiftRepository repository)
         {
-            var result = repository.GetShiftCrew(profileName, now);
-
-            if (result == null)
+            var now = DateTime.Now;
+            foreach (var profile in configuration.ShiftProfiles.Where(p => p.Start <= now && p.End > now))
             {
-                UpdateShift();
-                result = repository.GetShiftCrew(profileName, now);
-            }
-            return result;
-        }
-
-        public ShiftProfileDto GetShiftProfiles(string profileName, DateTime? start = null, DateTime? end = null)
-        {
-            start ??= DateTime.Now;
-            end ??= DateTime.Now;
-            return configuration.ShiftProfiles
-                .Where(p => p.Name == profileName && p.Start <= start && p.End > end)
-                .OrderByDescending(p => p.Start)
-                .First();
-        }
-
-        private ShiftCrewDto currentShiftCrew;
-
-        public void UpdateShift()
-        {
-            lock (this)
-            {
-                var now = DateTime.Now;
-                foreach (var profile in configuration.ShiftProfiles.Where(p => p.Start <= now && p.End > now))
+                var shiftCrew = repository.GetShiftCrew(profile.Name, now);
+                if (shiftCrew == null)
                 {
-                    var shiftCrew = repository.GetShiftCrew(profile.Name, now);
-                    if (shiftCrew == null)
+                    var lastShift = repository.GetLastShiftHistory(profile.Name);
+                    if (lastShift == null)
                     {
-                        var lastShift = repository.GetLastShiftHistory(profile.Name);
-                        if (lastShift == null)
-                        {
-                            InsertShiftProfile(profile);
-                            shiftCrew = repository.GetShiftCrew(profile.Name, now);
-                        }
-                    }
-
-                    var lastShiftEnd = shiftCrew?.End ?? profile.Start;
-                    if (lastShiftEnd < now)
-                    {
-                        GenerateHistory(profile.Name, lastShiftEnd.DateTime);
+                        InsertShiftProfile(repository, profile);
                         shiftCrew = repository.GetShiftCrew(profile.Name, now);
                     }
+                }
 
-                    if (currentShiftCrew == null || currentShiftCrew.Start != shiftCrew.Start)
+                var lastShiftEnd = shiftCrew?.End ?? profile.Start;
+                if (lastShiftEnd < now)
+                {
+                    GenerateHistory(repository, profile.Name, lastShiftEnd.DateTime);
+                    shiftCrew = repository.GetShiftCrew(profile.Name, now);
+                }
+
+                if (currentShiftCrew == null || currentShiftCrew.Start != shiftCrew.Start)
+                {
+                    currentShiftCrew = shiftCrew;
+                    if (connector != null && !string.IsNullOrWhiteSpace(profile.TagPublish))
                     {
-                        currentShiftCrew = shiftCrew;
-                        if (connector != null && !string.IsNullOrWhiteSpace(profile.TagPublish))
-                        {
-                            connector.SetJson(profile.TagPublish, shiftCrew);
-                        }
-                        PublishShiftCrew?.Invoke(this, shiftCrew);
+                        connector.SetJson(profile.TagPublish, shiftCrew);
                     }
+                    PublishShiftCrew?.Invoke(this, shiftCrew);
                 }
             }
         }
-       
+
+        private void Scoped(Action<IServiceScope, IShiftRepository> action)
+        {
+            using var scope = this.serviceProvider.CreateScope();
+            using var unitOfWork = scope.ServiceProvider.GetService<IShiftUnitOfWork>();
+            var repository = scope.ServiceProvider.GetService<IShiftRepository>();
+            try
+            {
+                unitOfWork.Begin();
+                action(scope, repository);
+                unitOfWork.Commit();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Rollback transaction");
+                unitOfWork.Rollback();
+            }
+        }
 
         public Task ExecuteAsync(CancellationToken? cancellation)
         {
             cancellation ??= CancellationToken.None;
             return Task.Run(async () =>
             {
+                Scoped((scope, repository) => UpdateShiftProfiles(repository));
+
                 while (!cancellation.Value.IsCancellationRequested)
                 {
-                    UpdateShift();
+                    Scoped((scope, repository) => UpdateShift(repository));
+                     
                     var interval = configuration.CheckShiftIntervalMinutes;
                     var timeWait = TimeSpan.FromMinutes(interval - DateTime.Now.Minute % interval);
                     await Task.Delay(timeWait, cancellation.Value);

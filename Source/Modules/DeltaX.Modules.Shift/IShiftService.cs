@@ -7,9 +7,10 @@ namespace DeltaX.Modules.Shift
 {
     public interface IShiftService
     {
-        Task ExecuteAsync(CancellationToken? cancellation);
+        event EventHandler<ShiftCrewDto> PublishShiftCrew;
+
+        Task ExecuteAsync(CancellationToken? cancellation); 
         ShiftCrewDto GetShiftCrew(string profileName, DateTime now);
-        ShiftProfileDto GetShiftProfiles(string profileName, DateTime? start = null, DateTime? end = null);
-        void UpdateShift();
+        ShiftProfileDto GetShiftProfiles(string profileName, DateTime? start = null, DateTime? end = null); 
     }
 }
