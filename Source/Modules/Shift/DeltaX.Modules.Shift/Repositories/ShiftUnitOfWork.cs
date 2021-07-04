@@ -14,13 +14,15 @@
     {
         IDbConnection connection = null;
         IDbTransaction transaction = null;
-        Guid id = Guid.Empty;
+        Guid id = Guid.Empty; 
 
-        public ShiftUnitOfWork(IOptions<ShiftConfiguration> options, ILogger<ShiftUnitOfWork> logger)
+        public ShiftUnitOfWork(
+            IOptions<ShiftConfiguration> options,
+            IDbConnection connection,
+            ILogger<ShiftUnitOfWork> logger)
         {
             this.id = Guid.NewGuid();
-            var dbConnectionFactory = new DbConnectionFactory(typeof(MySqlConnection), new[] { options.Value.ConnectionString }, logger);
-            this.connection = dbConnectionFactory.GetConnection(); 
+            this.connection = connection;
         } 
 
         public IDbConnection Connection

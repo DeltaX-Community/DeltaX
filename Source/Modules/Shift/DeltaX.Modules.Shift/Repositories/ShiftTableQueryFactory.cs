@@ -5,7 +5,8 @@
 
     public class ShiftTableQueryFactory : TableQueryFactory
     {
-        public ShiftTableQueryFactory(DialectType dialectType = DialectType.MySQL) : base(dialectType)
+        public ShiftTableQueryFactory(DialectType dialectType = DialectType.MySQL) 
+            : base(dialectType)
         {
             this.ConfigureTable<ShiftProfileRecord>("ShiftProfile", cfg =>
             {

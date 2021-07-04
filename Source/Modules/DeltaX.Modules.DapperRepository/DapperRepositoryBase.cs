@@ -10,7 +10,7 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
-    public class DapperRepositoryBase
+    public class DapperRepositoryBase : IDapperRepository
     {
         protected TableQueryFactory queryFactory;
         protected ILogger logger;
@@ -18,7 +18,7 @@
         public DapperRepositoryBase(IUnitOfWork uow, TableQueryFactory queryFactory, ILogger logger = null)
         {
             this.UnitOfWork = uow;
-            this.queryFactory = queryFactory; 
+            this.queryFactory = queryFactory;
             this.logger = logger;
         }
 
@@ -102,9 +102,13 @@
             return Conn.QueryFirstOrDefault<TEntity>(query, param, Tran);
         }
 
-        public IEnumerable<TEntity> GetPagedList<TEntity>(int skipCount = 0, int rowsPerPage = 1000,
-            string whereClause = null, string orderByClause = null, object param = null)
-           where TEntity : class
+        public IEnumerable<TEntity> GetPagedList<TEntity>(
+            int skipCount = 0,
+            int rowsPerPage = 1000,
+            string whereClause = null,
+            string orderByClause = null,
+            object param = null)
+            where TEntity : class
         {
             if (!string.IsNullOrEmpty(whereClause))
             {
@@ -129,7 +133,7 @@
 
         public IEnumerable<TEntity> GetItems<TEntity>(
             Expression<Func<TEntity, bool>> propertiesCondition)
-           where TEntity : class
+            where TEntity : class
         {
             var query = new QueryBuilder<TEntity>()
                .Where(propertiesCondition)
@@ -141,7 +145,10 @@
             return Conn.Query<TEntity>(query.sql, query.parameters, Tran);
         }
 
-        public Task<int> UpdateAsync<TEntity>(string whereClause, object param, IEnumerable<string> fieldsToSet = null)
+        public Task<int> UpdateAsync<TEntity>(
+            string whereClause,
+            object param,
+            IEnumerable<string> fieldsToSet = null)
             where TEntity : class
         {
             var query = queryFactory.GetUpdateQuery<TEntity>(whereClause, fieldsToSet);
@@ -150,8 +157,10 @@
             return Conn.ExecuteAsync(query, param, Tran);
         }
 
-        public Task<int> UpdateAsync<TEntity>(TEntity entity, IEnumerable<string> fieldsToSet = null)
-           where TEntity : class
+        public Task<int> UpdateAsync<TEntity>(
+            TEntity entity,
+            IEnumerable<string> fieldsToSet = null)
+            where TEntity : class
         {
             var query = queryFactory.GetUpdateQuery<TEntity>(null, fieldsToSet);
             logger.LogDebug("UpdateAsync query:{query} entity:{@entity}", query, entity);
@@ -160,7 +169,7 @@
         }
 
         public long GetCount<TEntity>(TEntity entity)
-           where TEntity : class
+            where TEntity : class
         {
             var query = queryFactory.GetCountQuery<TEntity>();
             // logger.LogDebug("GetCountAsync query:{query} entity:{@entity}", query, entity);

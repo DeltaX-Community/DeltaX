@@ -32,7 +32,7 @@ public class WorkerService : BackgroundService
                 }
             });
 
-        var tasTest = Task.Run( async() =>
+        var taskTest = Task.Run( async() =>
         {
             while(!stoppingToken.IsCancellationRequested)
             {
@@ -53,7 +53,7 @@ public class WorkerService : BackgroundService
             }
         });
 
-        return Task.WhenAll(taskService, tasTest);
+        return Task.WhenAll(taskService, taskTest);
 
         //DateTime date = DateTime.Parse("2021-03-26T00:00:00-03:00");
         //var shift = service.GetShift(date);

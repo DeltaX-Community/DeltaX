@@ -1,29 +1,26 @@
 ﻿namespace DeltaX.Domain.Common.Repositories
 {
     using DeltaX.Domain.Common.Entities;
-    using DeltaX.Domain.Common.Events;
+    using System;
     using System.Collections.Generic;
     using System.Data;
 
+    public interface IUnitOfWork : IDisposable
+    {
+        Guid Id { get; }
+        IDbConnection Connection { get; }
+        IDbTransaction Transaction { get; }
+        bool IsInTransaction();
+        void BeginTransaction();
+        void CommitTransaction();
+        void RollbackTransaction();
+    }
 
-    public interface IUnitOfWork
-    { 
-        IDbConnection DbConnection { get; }
-
-        IDbTransaction DbTransaction { get; }
+    public interface IUnitOfWorkTracker : IUnitOfWork
+    {  
 
         IEnumerable<IAggregateRoot> ChangeTracker { get; }
 
         void AddChangeTracker(IAggregateRoot entity);
-
-        bool IsInTransaction();
-
-        void BeginTransaction();
-
-        void CommitTransaction();
-
-        void RollbackTransaction();
-
-        void SaveChanges();
     }
 }

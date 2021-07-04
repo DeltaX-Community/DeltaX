@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />   
-    <ProjectReference Include="..\DeltaX.Modules.DapperRepository\DeltaX.Modules.DapperRepository.csproj" />
+    <ProjectReference Include="..\..\..\Core\DeltaX.Configuration\DeltaX.Configuration.csproj" />   
+    <ProjectReference Include="..\..\DeltaX.Modules.DapperRepository\DeltaX.Modules.DapperRepository.csproj" />
   </ItemGroup>
 </Project>
