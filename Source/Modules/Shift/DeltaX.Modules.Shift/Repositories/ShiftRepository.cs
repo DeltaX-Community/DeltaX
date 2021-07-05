@@ -115,7 +115,6 @@
             string profileName,
             bool enable = true)
         {
-
             (var sql, var param) = new QueryBuilder<CrewRecord>()
                 .Join<ShiftProfileRecord>((s, p) => s.IdShiftProfile == p.IdShiftProfile)
                 .Where((s, p) => p.Name == profileName && p.Enable && s.Enable == enable)
@@ -193,6 +192,7 @@
             using (var command = Conn.CreateCommand())
             {
                 command.Transaction = Tran;
+                command.CommandType = CommandType.Text;
                 command.CommandText = ShiftQueries.sqlCreateTables;
                 var result = command.ExecuteNonQuery();
                 logger.LogInformation("CreateDatabase Execute result {result}", result);

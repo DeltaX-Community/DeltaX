@@ -1,6 +1,6 @@
 ﻿namespace DeltaX.Modules.Shift.Shared
 {
-    using DeltaX.Modules.DapperRepository; 
+    using DeltaX.Domain.Common.Repositories;
 
     public interface IShiftUnitOfWork : IUnitOfWork
     { 

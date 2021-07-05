@@ -18,8 +18,8 @@
             DapperTypeHandler.SetDapperTypeHandler();
             return builder.ConfigureServices((hostContext, services) =>
             {
-                services.AddSingleton<ShiftTableQueryFactory>(serv => {
-
+                services.AddSingleton<ShiftTableQueryFactory>(serv =>
+                {
                     var config = serv.GetService<IOptions<ShiftConfiguration>>();
                     return new ShiftTableQueryFactory(config.Value.DatabaseDialectType);
                 });
@@ -27,12 +27,12 @@
                 services.AddSingleton<IDatabaseBase>(serv =>
                 {
                     var config = serv.GetService<IOptions<ShiftConfiguration>>();
-                    return serv.GetService<DatabaseManager>()
-                        .GetDatabase(config.Value.DatabaseConnectionFactory);
+                    return serv.GetService<DatabaseManager>().GetDatabase(config.Value.DatabaseConnectionFactory);
                 });
                 services.AddScoped<IDbConnection>(serv => serv.GetService<IDatabaseBase>().GetConnection());
                 services.AddScoped<IShiftUnitOfWork, ShiftUnitOfWork>();
                 services.AddScoped<IShiftRepository, ShiftRepository>();
+                services.AddScoped<ShiftServiceScoped>();
                 services.AddSingleton<IShiftService, ShiftService>();
                 services.Configure<ShiftConfiguration>(options => hostContext.Configuration.GetSection("Shift").Bind(options));
             });

@@ -1,11 +1,9 @@
 ﻿namespace DeltaX.Modules.Shift.Repositories
-{
-    using DeltaX.Database;
+{ 
     using DeltaX.Modules.Shift.Configuration;
     using DeltaX.Modules.Shift.Shared;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using MySqlConnector;
+    using Microsoft.Extensions.Options; 
     using System;
     using System.Data;
 
@@ -40,17 +38,17 @@
             get { return id; }
         }
 
-        public void Begin()
+        public void BeginTransaction()
         {
             transaction = connection.BeginTransaction();
         }
 
-        public void Commit()
+        public void CommitTransaction()
         {
             transaction?.Commit(); 
         }
 
-        public void Rollback()
+        public void RollbackTransaction()
         {
             transaction?.Rollback(); 
         }
@@ -62,6 +60,11 @@
 
             connection?.Dispose();
             connection = null;
+        }
+
+        public bool IsInTransaction()
+        {
+            return transaction != null;
         }
     }
 }

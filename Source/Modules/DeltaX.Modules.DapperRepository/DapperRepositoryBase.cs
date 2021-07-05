@@ -1,6 +1,7 @@
 ﻿namespace DeltaX.Modules.DapperRepository
 {
     using Dapper;
+    using DeltaX.Domain.Common.Repositories;
     using DeltaX.LinSql.Query;
     using DeltaX.LinSql.Table;
     using Microsoft.Extensions.Logging;
