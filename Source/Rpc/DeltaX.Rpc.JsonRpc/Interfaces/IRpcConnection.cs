@@ -13,7 +13,7 @@
         
         event EventHandler<bool> OnConnectionChange;
 
-        public Task ConnectAsync(CancellationToken? cancellationToken = null);
+        public Task RunAsync(CancellationToken? cancellationToken = null);
 
         bool IsConnected();
 

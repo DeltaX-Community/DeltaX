@@ -123,7 +123,7 @@
             return true;
         }
 
-        public Task ConnectAsync(CancellationToken? cancellationToken = null)
+        public Task RunAsync(CancellationToken? cancellationToken = null)
         {
             this.connected = true;
             return listener.StartAsync()

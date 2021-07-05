@@ -154,7 +154,7 @@
             return client?.IsConnected == true;
         }
 
-        public Task ConnectAsync(CancellationToken? cancellationToken = null)
+        public Task RunAsync(CancellationToken? cancellationToken = null)
         {
             return client.RunAsync(cancellationToken);
         }

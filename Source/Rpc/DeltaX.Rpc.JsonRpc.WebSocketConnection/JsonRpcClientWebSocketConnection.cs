@@ -79,7 +79,7 @@
             return true;
         }
 
-        public Task ConnectAsync(CancellationToken? cancellationToken = null)
+        public Task RunAsync(CancellationToken? cancellationToken = null)
         {
             throw new NotImplementedException();
         }

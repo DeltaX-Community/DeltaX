@@ -29,7 +29,7 @@ namespace DeltaX.RpcWebSocket.FunctionalTest
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {  
             return rpcConnection
-                .ConnectAsync(stoppingToken)
+                .RunAsync(stoppingToken)
                 .ContinueWith((t) =>
                 {
                     if (t.IsFaulted)

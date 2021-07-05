@@ -40,7 +40,7 @@ public class WorkerService : BackgroundService
         rpc.UpdateRegisteredMethods();
 
         return rpcConnection
-            .ConnectAsync(stoppingToken)
+            .RunAsync(stoppingToken)
             .ContinueWith((t) =>
             {
                 if (t.IsFaulted)

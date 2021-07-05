@@ -108,7 +108,7 @@
             throw new NotImplementedException();
         }
 
-        public Task ConnectAsync(CancellationToken? cancellationToken = null)
+        public Task RunAsync(CancellationToken? cancellationToken = null)
         {
             return wsMiddleware.RunAsync(cancellationToken);
         }
