@@ -120,8 +120,14 @@
             notification?.OnUpdateShiftCrew(shiftCrew);
         }
 
-        public Task RunAsync(CancellationToken? cancellation)
+        private TimeSpan GetIntervalNextTick()
         {
+            var next = DateTime.Now.AddMinutes(configuration.CheckShiftIntervalMinutes - DateTime.Now.Minute % configuration.CheckShiftIntervalMinutes);
+            return new DateTime(next.Year, next.Month, next.Day, next.Hour, next.Minute, 0, 0) - DateTime.Now; 
+        }
+
+        public Task RunAsync(CancellationToken? cancellation)
+        {  
             cancellation ??= CancellationToken.None;
             return Task.Run(async () =>
             {
@@ -143,10 +149,8 @@
                         shiftScope.UpdateShiftProfiles(now);
                         shiftScope.UpdateShift(now);
                     });
-
-                    var interval = configuration.CheckShiftIntervalMinutes;
-                    var timeWait = TimeSpan.FromMinutes(interval - DateTime.Now.Minute % interval);
-                    await Task.Delay(timeWait, cancellation.Value);
+                     
+                    await Task.Delay(GetIntervalNextTick(), cancellation.Value);
                 }
             });
         }

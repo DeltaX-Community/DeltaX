@@ -1,15 +1,9 @@
 ﻿namespace DeltaX.RealTime
 {
     using DeltaX.ActivatorFactory;
-    using DeltaX.RealTime.Interfaces; 
+    using DeltaX.RealTime.Interfaces;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-
-    public class RealTimeConnectorSection
-    {  
-        public string Type { get; set; }
-        public string SectionName { get; set; } 
-    }
 
     public class RtConnectorFactory
     {

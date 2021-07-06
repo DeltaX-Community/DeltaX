@@ -1,16 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Connections\DeltaX.Connections.MqttClientHelper\DeltaX.Connections.MqttClientHelper.csproj" />
-    <ProjectReference Include="..\..\Core\DeltaX.ActivatorFactory\DeltaX.ActivatorFactory.csproj" />
-    <ProjectReference Include="..\..\Core\DeltaX.MemoryMappedRecord\DeltaX.MemoryMappedRecord.csproj" />
+  <ItemGroup> 
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" /> 
+  </ItemGroup>
+  
+  <ItemGroup> 
+    <ProjectReference Include="..\..\Core\DeltaX.ActivatorFactory\DeltaX.ActivatorFactory.csproj" /> 
     <ProjectReference Include="..\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
-    <ProjectReference Include="..\DeltaX.RealTime.RtMemoryMapped\DeltaX.RealTime.RtMemoryMapped.csproj" />
-    <ProjectReference Include="..\DeltaX.RealTime.RtMqtt\DeltaX.RealTime.RtMqtt.csproj" />
   </ItemGroup>
 
 </Project>

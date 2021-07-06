@@ -219,8 +219,8 @@
                 var lastShift = repository.GetLastShiftHistory(profile.Name);
                 if (lastShift == null)
                 {
-                    InsertShiftProfile(profile);
-                    lastShift = repository.GetLastShiftHistory(profile.Name); 
+                    logger.LogError("Not has last shift for profile:{profileName}", profile.Name); ;
+                    continue;
                 }
 
                 // Add next shift 
@@ -239,10 +239,14 @@
                     shiftCrew = repository.GetShiftCrew(profile.Name, now);
                 }
 
-                if (currentShiftCrew.GetValueOrDefault(profile.Name)?.Start != shiftCrew.Start)
+                // Publish current shift
+                if (shiftCrew.Start <= DateTime.Now && shiftCrew.End > DateTime.Now)
                 {
-                    currentShiftCrew[profile.Name] = shiftCrew; 
-                    PublishShiftCrew?.Invoke(this, shiftCrew); 
+                    if (currentShiftCrew.GetValueOrDefault(profile.Name)?.Start != shiftCrew.Start)
+                    {
+                        currentShiftCrew[profile.Name] = shiftCrew;
+                        PublishShiftCrew?.Invoke(this, shiftCrew);
+                    }
                 }
             }
         }

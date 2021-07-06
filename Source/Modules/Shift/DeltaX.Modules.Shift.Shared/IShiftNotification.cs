@@ -1,4 +1,4 @@
-﻿namespace DeltaX.Modules.Shift
+﻿namespace DeltaX.Modules.Shift.Shared
 {
     using DeltaX.Modules.Shift.Shared.Dtos;
 
