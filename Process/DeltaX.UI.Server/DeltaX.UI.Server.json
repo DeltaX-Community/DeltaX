@@ -1,0 +1,187 @@
+{
+
+  "ShiftConnectionMySql": {
+    "Type": "MySqlConnector.dll; MySqlConnector.MySqlConnection",
+    "ConnectionString": "server=127.0.0.1;user=root;password=;database=Shift;AutoEnlist=true"
+  },
+
+  "Shift": {
+    "DatabaseDialectType": "MySQL",
+    "DatabaseConnectionFactory": "ShiftConnectionMySql",
+    "ShiftProfiles": [
+      {
+        "Name": "Profile1",
+        "TagPublish": "shift/Profile1",
+        "CycleDays": 7,
+        "Start": "2021-06-21T04:00:00-03:00",
+        "End": "2030-03-1T04:00:00-03:00",
+
+        "Shifts": [
+          {
+            "Name": "Mañana",
+            "Start": "04:00:00",
+            "End": "12:00:00"
+          },
+          {
+            "Name": "Tarde",
+            "Start": "12:00:00",
+            "End": "20:00:00"
+          },
+          {
+            "Name": "Noche",
+            "Start": "20:00:00",
+            "End": "04:00:00"
+          }
+        ],
+        "Crews": [
+          {
+            "Name": "A"
+          },
+          {
+            "Name": "B"
+          },
+          {
+            "Name": "C"
+          }
+        ],
+        "Holidays": [
+          {
+            "Name": "Dia de la memoria por la verdad y la justicia",
+            "Start": "2021-03-24T00:00:00-03:00",
+            "End": "2021-03-25T00:00:00-03:00"
+          }
+        ],
+        "CrewPatterns": [
+          {
+            "Crew": "C",
+            "Shift": "Mañana",
+            "Day": 1
+          },
+          {
+            "Crew": "B",
+            "Shift": "Tarde",
+            "Day": 1
+          },
+          {
+            "Crew": "A",
+            "Shift": "Noche",
+            "Day": 1
+          },
+          {
+            "Crew": "C",
+            "Shift": "Mañana",
+            "Day": 2
+          },
+          {
+            "Crew": "A",
+            "Shift": "Tarde",
+            "Day": 2
+          },
+          {
+            "Crew": "B",
+            "Shift": "Noche",
+            "Day": 2
+          },
+          {
+            "Crew": "C",
+            "Shift": "Mañana",
+            "Day": 3
+          },
+          {
+            "Crew": "B",
+            "Shift": "Tarde",
+            "Day": 3
+          },
+          {
+            "Crew": "A",
+            "Shift": "Noche",
+            "Day": 3
+          },
+          {
+            "Crew": "C",
+            "Shift": "Mañana",
+            "Day": 4
+          },
+          {
+            "Crew": "B",
+            "Shift": "Tarde",
+            "Day": 4
+          },
+          {
+            "Crew": "A",
+            "Shift": "Noche",
+            "Day": 4
+          },
+          {
+            "Crew": "C",
+            "Shift": "Mañana",
+            "Day": 5
+          },
+          {
+            "Crew": "A",
+            "Shift": "Tarde",
+            "Day": 5
+          },
+          {
+            "Crew": "B",
+            "Shift": "Noche",
+            "Day": 5
+          },
+          {
+            "Crew": "C",
+            "Shift": "Mañana",
+            "Day": 6
+          },
+          {
+            "Crew": "A",
+            "Shift": "Tarde",
+            "Day": 6
+          },
+          {
+            "Crew": "B",
+            "Shift": "Noche",
+            "Day": 6
+          },
+          {
+            "Crew": null,
+            "Shift": "Mañana",
+            "Day": 7
+          },
+          {
+            "Crew": null,
+            "Shift": "Tarde",
+            "Day": 7
+          },
+          {
+            "Crew": null,
+            "Shift": "Noche",
+            "Day": 7
+          }
+        ]
+      }
+    ]
+  },
+
+  "UIService": {
+    "CorsUrls": [
+      "http://127.0.0.1:8080",
+      "http://127.0.0.1:8081"
+    ],
+    "RealTimeHistoryBasePath": "http://127.0.0.1:5010"
+  },
+  "RtWebSocketBridge": {
+    "RtWebSocketRefreshIntervalMs": 352
+  },
+  "MqttConnector": {
+    "ExtraTopicsSbscribe": [
+      "demo/#"
+    ]
+  },
+  "Kestrel": {
+    "EndPoints": {
+      "Http": {
+        "Url": "http://0.0.0.0:5014"
+      }
+    }
+  }
+}

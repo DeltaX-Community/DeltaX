@@ -44,8 +44,9 @@
 
         public ShiftCrewDto GetShiftCrew(
             string profileName,
-            DateTime now)
+            DateTime? date=null)
         {
+            date ??= DateTime.Now;
 
             if (!startedEvent.WaitOne(TimeSpan.FromMinutes(1)))
             {
@@ -53,16 +54,16 @@
                 return null;
             }
 
-            if (GetShiftProfile(profileName, now) == null)
+            if (GetShiftProfile(profileName, date, date) == null)
             {
-                logger.LogWarning("Not profile available with Name:{0} and Date:{1}", profileName, now);
+                logger.LogWarning("Not profile available with Name:{0} and Date:{1}", profileName, date);
                 return null;
             }
 
             ShiftCrewDto result = null;
             lock (this) Scoped((_, shiftScope) =>
             {
-                result = shiftScope.GetShiftCrew(profileName, now);
+                result = shiftScope.GetShiftCrew(profileName, date);
             });
             return result;
         }
@@ -108,6 +109,7 @@
 
         private void ShiftScopedPublishShiftCrew(object sender, ShiftCrewDto shiftCrew)
         {
+            logger.LogInformation("PublishShiftCrew {@shiftCrew}", shiftCrew);
             var profile = GetShiftProfile(shiftCrew.NameShiftProfile);
             if (profile != null && connector != null && !string.IsNullOrWhiteSpace(profile.TagPublish))
             {
@@ -118,7 +120,7 @@
             notification?.OnUpdateShiftCrew(shiftCrew);
         }
 
-        public Task ExecuteAsync(CancellationToken? cancellation)
+        public Task RunAsync(CancellationToken? cancellation)
         {
             cancellation ??= CancellationToken.None;
             return Task.Run(async () =>
@@ -128,7 +130,6 @@
                     var repository = scope.ServiceProvider.GetService<IShiftRepository>();
                     repository.CreateTables();
                     shiftScope.UpdateShiftProfiles();
-                    shiftScope.UpdateShift(); 
                 });
 
                 logger.LogInformation("Initailized");

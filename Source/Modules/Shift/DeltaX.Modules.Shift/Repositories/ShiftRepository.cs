@@ -57,11 +57,12 @@
                 .Join<ShiftProfileRecord>((h, p) => h.IdShiftProfile == p.IdShiftProfile)
                 .Join<CrewRecord>((h, p, c) => h.IdCrew == c.IdCrew, JoinType.LeftJoin)
                 .Join<ShiftRecord>((h, p, c, s) => h.IdShift == s.IdShift)
-                .Where((h, p, c, s) => p.Name == profileName && p.Enable == true && h.Start <= now && h.End > now)
+                .Where((h, p, c, s) => p.Name == profileName && h.Start <= now && h.End > now)
                 .Select<ShiftHistoryRecord>()
                 .Select((h, p, c, s) => p.Name, nameof(ShiftCrewDto.NameShiftProfile))
                 .Select((h, p, c, s) => s.Name, nameof(ShiftCrewDto.NameShift))
                 .Select((h, p, c, s) => c.Name, nameof(ShiftCrewDto.NameCrew))
+                .OrderBy((h, p, c, s) => h.IdShiftHistory, false)
                 .Limit(0, 1)
                 .GetSqlParameters();
 

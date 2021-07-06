@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DeltaX.ActivatorFactory\DeltaX.ActivatorFactory.csproj" />
+    <ProjectReference Include="..\DeltaX.CommonExtensions\DeltaX.CommonExtensions.csproj" />
     <ProjectReference Include="..\DeltaX.Configuration\DeltaX.Configuration.csproj" />
   </ItemGroup>
 

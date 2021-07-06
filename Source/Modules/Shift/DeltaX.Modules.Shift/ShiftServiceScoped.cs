@@ -36,13 +36,15 @@
 
         public ShiftCrewDto GetShiftCrew(
             string profileName,
-            DateTime now)
+            DateTime? now = null)
         {
-            var result = repository.GetShiftCrew(profileName, now);
+            now ??= DateTime.Now;
+
+            var result = repository.GetShiftCrew(profileName, now.Value);
             if (result == null)
             {
                 UpdateShift();
-                result = repository.GetShiftCrew(profileName, now);
+                result = repository.GetShiftCrew(profileName, now.Value);
             }
             return result;
         }
@@ -115,12 +117,10 @@
                     IdCrew = crewRecord?.IdCrew,
                     IdShift = shiftRecord.IdShift,
                     IdShiftProfile = shiftRecord.IdShiftProfile
-                });
-
-                cacheHistoryPatterns.Remove(profile.Name);
-                cacheShifts.Remove(profile.Name);
-                cacheCrews.Remove(profile.Name);
+                }); 
             }
+
+            cacheHistoryPatterns.Remove(profile.Name);
 
             return repository.InsertShiftHistory(shiftsToInsert);
         }
@@ -179,6 +179,9 @@
             if (profileRecord == null || profileRecord.Start != profile.Start)
             {
                 repository.InsertShiftProfile(profile);
+                cacheHistoryPatterns.Remove(profile.Name);
+                cacheShifts.Remove(profile.Name);
+                cacheCrews.Remove(profile.Name);
             }
 
             if (profile.CrewPatterns?.Any() == true)
@@ -215,22 +218,22 @@
         {
             var now = DateTime.Now;
             foreach (var profile in configuration.ShiftProfiles.Where(p => p.Start <= now && p.End > now))
-            {
-                var shiftCrew = repository.GetShiftCrew(profile.Name, now);
+            { 
                 var lastShift = repository.GetLastShiftHistory(profile.Name);
                 if (lastShift == null)
                 {
                     InsertShiftProfile(profile);
-                    lastShift = repository.GetLastShiftHistory(profile.Name);
+                    lastShift = repository.GetLastShiftHistory(profile.Name); 
                 }
 
                 // Add next shift 
                 if (lastShift.Start < now)
                 {
-                    var end = lastShift.End < now ? now.AddDays(1) : lastShift.End.DateTime.AddMinutes(1);
+                    var end = lastShift.End < now ? now.AddDays(1) : lastShift.End.DateTime.AddDays(1);
+                    end = end > profile.End ? profile.End.DateTime : end;
                     GenerateHistory(profile, lastShift.End.DateTime, end);
-                    shiftCrew = repository.GetShiftCrew(profile.Name, now);
                 }
+                var shiftCrew = repository.GetShiftCrew(profile.Name, now);
 
                 var lastShiftEnd = shiftCrew?.End ?? profile.Start;
                 if (lastShiftEnd < now)

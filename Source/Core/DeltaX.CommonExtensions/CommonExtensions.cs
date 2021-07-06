@@ -1,6 +1,37 @@
 ﻿namespace DeltaX.CommonExtensions
 {
     using System;
+    using System.Runtime.CompilerServices;
+
+    public static class GuardExtensions
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void AssertArgument(this bool condition, Action onFail)
+        {
+            if (condition)
+            {
+                onFail.Invoke();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void AssertArgumentNull(this object paramValue, string paramName, string message = null)
+        {
+            if (paramValue is string valStr)
+            {
+                AssertArgument(string.IsNullOrEmpty(valStr), () => throw new ArgumentNullException(paramName, message));
+            }
+            else if (paramValue is bool valBool)
+            {
+                AssertArgument(valBool, () => throw new ArgumentNullException(paramName, message));
+            }
+            else
+            {
+                AssertArgument(paramValue == null, () => throw new ArgumentNullException(paramName, message));
+            }
+        }
+    }
+
 
     public static class CommonExtensions
     {

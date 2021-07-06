@@ -10,6 +10,6 @@ namespace DeltaX.Modules.Shift
     {
         event EventHandler<ShiftCrewDto> PublishShiftCrew;
 
-        Task ExecuteAsync(CancellationToken? cancellation); 
+        Task RunAsync(CancellationToken? cancellation); 
     }
 }

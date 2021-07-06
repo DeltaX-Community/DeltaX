@@ -22,7 +22,7 @@ public class WorkerService : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var taskService = shiftService.ExecuteAsync(stoppingToken)
+        var taskService = shiftService.RunAsync(stoppingToken)
             .ContinueWith(t =>
             {
                 if (t.IsFaulted)
