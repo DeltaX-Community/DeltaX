@@ -3,5 +3,6 @@
 public class UIConfiguration : RtWebSocketBridgeConfiguration
 {
     public string RealTimeHistoryBasePath { get; set; } 
-    public string[] CorsUrls { get; set; } 
+    public string[] CorsUrls { get; set; }
+    public bool UseSwagger { get; set; }
 }

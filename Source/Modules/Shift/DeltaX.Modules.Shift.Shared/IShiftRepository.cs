@@ -12,7 +12,7 @@
         ShiftCrewDto GetShiftCrew(string profileName, DateTime now);
         int InsertShiftHistory(IEnumerable<ShiftHistoryRecord> shifts);
         ShiftProfileRecord GetShiftProfile(string profileName);
-        List<ShiftProfileRecord> GetShiftProfiles(); 
+        List<ShiftProfileRecord> GetShiftProfiles(bool enable = true); 
         int InsertShiftProfile(ShiftProfileDto profile);
         List<ShiftRecord> GetShifts(string profileName, bool enable = true);
         List<CrewRecord> GetSCrews(string profileName, bool enable = true);

@@ -85,19 +85,19 @@
         {
             using var scope = this.serviceProvider.CreateScope();
 
-            var repository = scope.ServiceProvider.GetService<IShiftRepository>();
+            var uow = scope.ServiceProvider.GetService<IShiftUnitOfWork>();
             var shiftScope = scope.ServiceProvider.GetService<ShiftServiceScoped>();
             shiftScope.PublishShiftCrew += ShiftScopedPublishShiftCrew;
             try
             {
-                repository.UnitOfWork.BeginTransaction();
+                uow.BeginTransaction();
                 action.Invoke(scope, shiftScope);
-                repository.UnitOfWork.CommitTransaction();
+                uow.CommitTransaction();
             }
             catch (Exception e)
             {
                 logger.LogError(e, "Rollback transaction");
-                repository.UnitOfWork.RollbackTransaction();
+                uow.RollbackTransaction();
                 throw;
             }
             finally
@@ -129,7 +129,7 @@
                 {
                     var repository = scope.ServiceProvider.GetService<IShiftRepository>();
                     repository.CreateTables();
-                    shiftScope.UpdateShiftProfiles();
+                    shiftScope.UpdateShiftProfiles(DateTime.Now);
                 });
 
                 logger.LogInformation("Initailized");
@@ -139,7 +139,9 @@
                 {
                     lock (this) Scoped((scope, shiftScope) =>
                     {
-                        shiftScope.UpdateShift();
+                        var now = DateTime.Now;
+                        shiftScope.UpdateShiftProfiles(now);
+                        shiftScope.UpdateShift(now);
                     });
 
                     var interval = configuration.CheckShiftIntervalMinutes;

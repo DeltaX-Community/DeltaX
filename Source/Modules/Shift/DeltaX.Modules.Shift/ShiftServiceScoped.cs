@@ -43,14 +43,14 @@
             var result = repository.GetShiftCrew(profileName, now.Value);
             if (result == null)
             {
-                UpdateShift();
+                UpdateShift(DateTime.Now);
                 result = repository.GetShiftCrew(profileName, now.Value);
             }
             return result;
         }
 
         private (DateTime start, DateTime end)? GetShiftDate(
-            ShiftDto shift,
+            ShiftRecord shift,
             DateTime now)
         {
             var start = now.Date + shift.Start;
@@ -142,10 +142,9 @@
             var date = begin.Value;
             while (date < end)
             {
-                // El Turno (sifht) está dado por comparacion de horas en el día
-                var shift = profile.Shifts.FirstOrDefault(s => GetShiftDate(s, date) != null);
-                var shiftRecord = shiftsRecords.FirstOrDefault(s => s.Name == shift?.Name);
-                if (shift == null || shiftRecord == null)
+                // El Turno (sifht) está dado por comparacion de horas en el día 
+                var shiftRecord = shiftsRecords.FirstOrDefault(s => GetShiftDate(s, date) != null);
+                if (shiftRecord == null)
                 {
                     date = date.AddMinutes(10);
                     continue;
@@ -157,7 +156,7 @@
                 var historyDate = profile.Start.LocalDateTime.AddDays(patternDay);
                 var pattern = historyRecords?.FirstOrDefault(h => h.Start <= historyDate && h.End > historyDate);
 
-                var shiftDate = GetShiftDate(shift, date).Value;
+                var shiftDate = GetShiftDate(shiftRecord, date).Value;
                 shiftsToInsert.Add(new ShiftHistoryRecord
                 {
                     Start = shiftDate.start,
@@ -190,9 +189,8 @@
             }
         }
 
-        public void UpdateShiftProfiles()
+        public void UpdateShiftProfiles(DateTime now)
         {
-            var now = DateTime.Now;
             var dbProfiles = repository.GetShiftProfiles();
             foreach (var profile in configuration.ShiftProfiles.Where(p => p.Start <= now && p.End > now))
             {
@@ -214,9 +212,8 @@
             }
         }
 
-        public void UpdateShift()
-        {
-            var now = DateTime.Now;
+        public void UpdateShift(DateTime now)
+        { 
             foreach (var profile in configuration.ShiftProfiles.Where(p => p.Start <= now && p.End > now))
             { 
                 var lastShift = repository.GetLastShiftHistory(profile.Name);

@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging; 
-
+using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 Host
     .CreateDefaultBuilder(args)
@@ -42,6 +42,10 @@ Host
             hostContext.Configuration.GetSection("UIService").Bind(options));
 
         services.AddControllers();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "DeltaX.UI.Server", Version = "v1" });
+        });
     })
     .Build()
     .RunApp();

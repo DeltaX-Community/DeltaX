@@ -102,10 +102,10 @@
             return Conn.Query<ShiftRecord>(sql, param, Tran).ToList();
         }
 
-        public List<ShiftProfileRecord> GetShiftProfiles()
+        public List<ShiftProfileRecord> GetShiftProfiles(bool enable = true)
         {
             (var sql, var param) = new QueryBuilder<ShiftProfileRecord>()
-                .Where((p) => p.Enable)
+                .Where((p) => p.Enable == enable)
                 .Select<ShiftProfileRecord>()
                 .GetSqlParameters(queryFactory);
 
