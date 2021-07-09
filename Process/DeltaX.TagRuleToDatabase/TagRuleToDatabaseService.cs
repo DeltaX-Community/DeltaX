@@ -1,10 +1,8 @@
 ﻿using DeltaX.CommonExtensions;
-using DeltaX.MemoryMappedRecord;
 using DeltaX.Modules.TagRuleEvaluator;
 using DeltaX.RealTime;
 using DeltaX.RealTime.Interfaces;
 using DeltaX.RealTime.RtExpression;
-using DeltaX.RealTime.RtMemoryMapped;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;

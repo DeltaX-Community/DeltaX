@@ -8,20 +8,13 @@ using Microsoft.Extensions.Hosting;
 
 Host.CreateDefaultBuilder(args)
     .UseDefaultHostBuilder(args, false)
+    .UseRtConnector()
     .ConfigureServices((hostContext, services) =>
     {
-        services.AddHostedService<WorkerService>();
-
-        services.AddSingleton<ProcessInfoStatistics>();
-        services.AddSingleton<RtConnectorFactory>();
+        services.AddHostedService<WorkerService>(); 
+        services.AddSingleton<ProcessInfoStatistics>(); 
         services.AddSingleton<TagRuleToDatabaseService>();
-        services.AddSingleton<IDatabaseManager, DatabaseManager>();
-
-        services.AddSingleton<IRtConnector>(services => {
-            var connFactory = services.GetService<RtConnectorFactory>();
-            var configuration = services.GetService<IConfiguration>();
-            return connFactory.GetConnector(configuration.GetValue<string>("RealTimeConnectorSectionName"));
-        });
+        services.AddSingleton<IDatabaseManager, DatabaseManager>(); 
 
         services.Configure<TagRuleToDatabaseConfiguration>(options =>
             hostContext.Configuration.GetSection("TagRuleToDatabase").Bind(options));
