@@ -18,7 +18,7 @@ Host
         webBuilder.UseStartup<Startup>();
     })
     .UseWindowsService()
-    .UseRealTimeWebSocketServices()
+    .UseRealTimeRpcWebSocketBridge()
     .ConfigureServices((hostContext, services) =>
     {
         services.AddHostedService<WorkerService>();

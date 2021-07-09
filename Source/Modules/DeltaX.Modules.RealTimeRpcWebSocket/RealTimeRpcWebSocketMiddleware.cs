@@ -200,7 +200,7 @@
 
             return Task.Run(async () =>
             {
-                logger.LogWarning("Execution Started: {time}", DateTimeOffset.Now);
+                logger.LogInformation("Execution Started: {time}", DateTimeOffset.Now);
 
                 while (true)
                 {
@@ -216,7 +216,7 @@
                 }
             }).ContinueWith((t) =>
             {
-                logger.LogWarning("Execution Stoped: {time}", DateTimeOffset.Now);
+                logger.LogInformation("Execution Stoped: {time}", DateTimeOffset.Now);
             });
         }
     }

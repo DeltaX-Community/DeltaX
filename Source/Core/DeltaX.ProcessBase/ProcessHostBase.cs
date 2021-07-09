@@ -23,8 +23,10 @@
                 Console.WriteLine("Running {0} in Console Mode...", process.ProcessName);
                 Console.WriteLine("\nHelp for install on cmd as Administrator:");
                 Console.WriteLine($" - install service:     \n    sc create {servName} binpath=\"{binPath}\" ");
+                Console.WriteLine($" - install service whit argument:\n    sc create {servName} binpath=\"\\\"{binPath}\\\" \\\"extra_config.json\\\"\" ");
                 Console.WriteLine($" - uninstall service:   \n    sc delete {servName} ");
                 Console.WriteLine($" - description service: \n    sc description {servName} \"{description}\"");
+
                 if (pressKeyToContinue)
                 {
                     Console.WriteLine("\nPress key to continue");

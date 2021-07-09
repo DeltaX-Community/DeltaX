@@ -5,12 +5,12 @@
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
 
     public class Rpc
-    {
-        private IRpcConnection connection;
+    { 
         private ILogger logger;
         private Dictionary<string, dynamic> callers = new Dictionary<string, dynamic>();
 
@@ -28,7 +28,7 @@
 
         public int TimeoutMs { get; set; }
 
-        public IRpcConnection Connection { get => connection; set => connection = value; }
+        public IRpcConnection Connection { get; set; }
 
         protected virtual void OnConnectionReceive(object sender, IMessage msg)
         {
@@ -185,6 +185,12 @@
             where TSharedInterface : class
         {
             return GetServices<TSharedInterface>(namePrefix, isNotification: true);
+        }
+
+
+        public Task RunAsync(CancellationToken? cancellationToken = null)
+        {
+            return Connection.RunAsync(cancellationToken);
         }
     }
 }

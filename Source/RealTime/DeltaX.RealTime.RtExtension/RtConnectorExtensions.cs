@@ -1,11 +1,11 @@
 ﻿namespace DeltaX.RealTime
 {
-    using DeltaX.RealTime.Interfaces;
-    using DeltaX.RealTime;
+    using DeltaX.RealTime.Interfaces; 
     using System;
     using DeltaX.RealTime.Decorators;
     using System.Text.Json;
      
+
     public static class RtConnectorExtensions
     {
         public static bool SetNumeric(this IRtConnector conn, string topic, double value, IRtTagOptions options = null)
@@ -28,7 +28,6 @@
             return conn.WriteValue(topic, RtValue.Create(JsonSerializer.Serialize(json)), options);
         }
 
-
         public static IRtTag AddTag(this IRtConnector conn, string topic, IRtTagOptions options = null)
         {
             return conn.AddTag(topic, topic, options);
@@ -47,6 +46,16 @@
                 tag = conn.AddTag(tagName, topic, options);
             }
             return tag;
+        }
+
+        public static RtTagType<TValue> GetOrAddTag<TValue>(this IRtConnector conn, string topic, IRtTagOptions options = null)
+        {
+            return new RtTagType<TValue>(conn.GetOrAddTag(topic, topic, options));
+        }
+
+        public static RtTagType<TValue> AddTagDefinition<TValue>(this IRtConnector conn, string tagDefinition, IRtTagOptions options = null)
+        {
+            return new RtTagType<TValue>(conn.AddTagDefinition(tagDefinition, options));
         }
 
         public static IRtTag AddTagDefinition(this IRtConnector conn, string tagDefinition, IRtTagOptions options = null)

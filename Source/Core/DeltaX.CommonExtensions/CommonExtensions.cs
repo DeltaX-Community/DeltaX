@@ -1,36 +1,6 @@
 ﻿namespace DeltaX.CommonExtensions
 {
     using System;
-    using System.Runtime.CompilerServices;
-
-    public static class GuardExtensions
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void AssertArgument(this bool condition, Action onFail)
-        {
-            if (condition)
-            {
-                onFail.Invoke();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void AssertArgumentNull(this object paramValue, string paramName, string message = null)
-        {
-            if (paramValue is string valStr)
-            {
-                AssertArgument(string.IsNullOrEmpty(valStr), () => throw new ArgumentNullException(paramName, message));
-            }
-            else if (paramValue is bool valBool)
-            {
-                AssertArgument(valBool, () => throw new ArgumentNullException(paramName, message));
-            }
-            else
-            {
-                AssertArgument(paramValue == null, () => throw new ArgumentNullException(paramName, message));
-            }
-        }
-    }
 
 
     public static class CommonExtensions
@@ -43,6 +13,27 @@
         public static string GetString(this byte[] source)
         {
             return System.Text.Encoding.ASCII.GetString(source);
+        }
+
+        public static bool IsNumericType(this object o)
+        {
+            switch (Type.GetTypeCode(o.GetType()))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Single:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
 

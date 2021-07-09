@@ -157,7 +157,7 @@
         internal void ReadAndRaiseTagOnUpdated(RtTagMemoryMapped tag, double lastUpdated)
         {
             var updated = ReadTagUpdated(tag.Topic);
-            if (updated.HasValue && Math.Abs(lastUpdated - updated.Value) > 0.0001)
+            if (updated.HasValue && Math.Abs(lastUpdated - updated.Value) > 0.001)
             {
                 tag.RaiseOnUpdatedValue(ReadTagValue(tag.Topic), updated.Value.FromUnixTimestamp(), true);
                 RaiseOnUpdatedValue(tag);
@@ -169,7 +169,7 @@
             var status = ReadTagStatus(tag.Topic);
             if (lastStatus != status)
             {
-                tag.RaiseStatusChanged( status); 
+                tag.RaiseStatusChanged(status);
             }
         }
 

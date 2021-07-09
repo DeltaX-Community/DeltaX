@@ -178,8 +178,8 @@
     "RealTimeHistoryBasePath": "http://127.0.0.1:5010",
     "UseSwagger": true
   },
-  "RtWebSocketBridge": {
-    "RtWebSocketRefreshIntervalMs": 352
+  "RealTimeRpcWebSocketBridge": {
+    "RtWebSocketRefreshIntervalMs": 250
   },
   "MqttConnector": {
     "ExtraTopicsSbscribe": [

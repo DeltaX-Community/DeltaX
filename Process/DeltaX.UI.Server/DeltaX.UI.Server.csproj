@@ -27,4 +27,8 @@
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtMemoryMapped\DeltaX.RealTime.RtMemoryMapped.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

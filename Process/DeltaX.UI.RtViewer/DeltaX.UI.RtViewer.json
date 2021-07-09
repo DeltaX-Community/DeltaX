@@ -6,7 +6,7 @@
     ],
     "RealTimeHistoryBasePath": "http://127.0.0.1:5010"
   },
-  "RtWebSocketBridge": {
+  "RealTimeRpcWebSocketBridge": {
     "RtWebSocketRefreshIntervalMs": 352
   },
   "MqttConnector": {

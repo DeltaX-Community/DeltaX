@@ -5,11 +5,20 @@
     ]
   },
   "RealTimeHistoricDB": {
-    "ConnectionString": "Filename=..\\..\\Data\\RealTimeHistoricDB.sqlite3",
+    "ConnectionString": "Filename=D:\\DEV\\repos\\DeltaX-Community\\DeltaX\\Data\\RealTimeHistoricDB.sqlite3",
     "CheckTagChangeIntervalMilliseconds": 200,
     "SaveChangeIntervalSeconds": 30,
     "DaysPresistence": 20,
-    "UseSwagger": true
+    "UseSwagger": true,
+    "CorsUrls": [
+      "http://localhost:5055",
+      "http://127.0.0.1:5055",
+      "http://127.0.0.1:8080",
+      "https://127.0.0.1:8081",
+      "http://localhost:8080",
+      "http://127.0.0.1:5011",
+      "http://127.0.0.1:5014"
+    ]
   },
   "Serilog": {
     "MinimumLevel": {

@@ -17,15 +17,15 @@ Host
     {
         webBuilder.UseStartup<Startup>();
     })
-    .UseRtConnectorService()
-    .UseRealTimeWebSocketServices()
+    .UseRtConnector()
+    .UseRealTimeRpcWebSocketBridge()
     .UseShiftService()
     .ConfigureServices((hostContext, services) =>
     {
         services.AddHostedService<WorkerService>(); 
-        services.AddSingleton<Rpc>(); 
+        services.AddSingleton<RpcHistoryService>();
+        services.AddSingleton<SimulationService>();
         services.AddSingleton<IShiftNotification>(s => s.GetService<Rpc>()?.GetNotifyServices<IShiftNotification>());
-        services.AddSingleton<ILogger>(s => s.GetService<ILoggerFactory>().CreateLogger("")); 
 
         services.Configure<UIConfiguration>(options => hostContext.Configuration.GetSection("UIService").Bind(options));
 

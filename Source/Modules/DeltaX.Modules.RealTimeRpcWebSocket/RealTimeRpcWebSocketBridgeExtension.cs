@@ -6,6 +6,7 @@
     using System;
     using DeltaX.Rpc.JsonRpc.WebSocketConnection;
     using DeltaX.Rpc.JsonRpc.Interfaces;
+    using DeltaX.Rpc.JsonRpc;
     using DeltaX.RealTime.Interfaces;
     using Microsoft.Extensions.Options;
     using DeltaX.Modules.RealTimeRpcWebSocket.Configuration;
@@ -13,24 +14,26 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.AspNetCore.Builder;
 
-    public static class RtWebSocketBridgeExtension
+    public static class RealTimeRpcWebSocketBridgeExtension
     {
 
-        public static IHostBuilder UseRealTimeWebSocketServices(
-            this IHostBuilder builder)
+        public static IHostBuilder UseRealTimeRpcWebSocketBridge(
+            this IHostBuilder builder,
+            string sectionName = "RealTimeRpcWebSocketBridge")
         {
             return builder.ConfigureServices((hostContext, services) =>
             {
                 services.Configure<RtWebSocketBridgeConfiguration>(options =>
-                    hostContext.Configuration.GetSection("RtWebSocketBridge").Bind(options));
+                    hostContext.Configuration.GetSection(sectionName).Bind(options));
 
-                services.AddRealTimeWebSocketServices();
+                services.AddRealTimeRpcWebSocketBridge();
             });
         }
 
-        public static IServiceCollection AddRealTimeWebSocketServices(
+        public static IServiceCollection AddRealTimeRpcWebSocketBridge(
             this IServiceCollection services)
         {
+            services.AddSingleton<Rpc>(); 
             services.AddSingleton<ProcessInfoStatistics>();
             services.AddSingleton<WebSocketHandlerHub>();
             services.AddSingleton<TagChangeTrackerManager>();

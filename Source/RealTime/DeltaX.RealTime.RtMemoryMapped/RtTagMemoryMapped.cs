@@ -12,7 +12,8 @@
             Connector = connector  ;
             TagName = tagName;
             Topic = topic;
-            base.Options = options; 
+            base.Options = options;
+            base.Status = connector.ReadTagStatus(Topic);
         }
 
         public  RtConnectorMemoryMapped ConnectorMM; 

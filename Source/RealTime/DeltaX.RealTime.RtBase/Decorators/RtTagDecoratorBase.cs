@@ -19,17 +19,17 @@
         public virtual event EventHandler<IRtTag> ValueSetted;
         public virtual event EventHandler<IRtTag> StatusChanged;
 
-        protected void OnTagValueSetted(object sender, IRtTag e)
+        protected virtual void OnTagValueSetted(object sender, IRtTag e)
         {
             ValueSetted?.Invoke(sender, this);
         }
 
-        protected void OnTagValueUpdated(object sender, IRtTag e)
+        protected virtual void OnTagValueUpdated(object sender, IRtTag e)
         {
             ValueUpdated?.Invoke(sender, this);
         }
 
-        protected void OnStatusChanged(object sender, IRtTag e)
+        protected virtual void OnStatusChanged(object sender, IRtTag e)
         {
             StatusChanged?.Invoke(sender, this);
         }

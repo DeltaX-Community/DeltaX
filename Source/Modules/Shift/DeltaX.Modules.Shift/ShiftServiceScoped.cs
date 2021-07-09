@@ -13,10 +13,10 @@
 
     public class ShiftServiceScoped
     {
-        private Dictionary<string, ShiftCrewDto> currentShiftCrew = new Dictionary<string, ShiftCrewDto>();
         private readonly ShiftConfiguration configuration;
         private readonly IShiftRepository repository;
-        private readonly ILogger<ShiftService> logger;  
+        private readonly ILogger<ShiftService> logger;
+        private static Dictionary<string, ShiftCrewDto> cacheShiftCrew = new Dictionary<string, ShiftCrewDto>();
         private static Dictionary<string, List<ShiftHistoryRecord>> cacheHistoryPatterns = new Dictionary<string, List<ShiftHistoryRecord>>();
         private static Dictionary<string, List<ShiftRecord>> cacheShifts = new Dictionary<string, List<ShiftRecord>>();
         private static Dictionary<string, List<CrewRecord>> cacheCrews = new Dictionary<string, List<CrewRecord>>();
@@ -242,9 +242,9 @@
                 // Publish current shift
                 if (shiftCrew.Start <= DateTime.Now && shiftCrew.End > DateTime.Now)
                 {
-                    if (currentShiftCrew.GetValueOrDefault(profile.Name)?.Start != shiftCrew.Start)
+                    if (cacheShiftCrew.GetValueOrDefault(profile.Name)?.Start != shiftCrew.Start)
                     {
-                        currentShiftCrew[profile.Name] = shiftCrew;
+                        cacheShiftCrew[profile.Name] = shiftCrew;
                         PublishShiftCrew?.Invoke(this, shiftCrew);
                     }
                 }

@@ -4,8 +4,6 @@
     using DeltaX.CommonExtensions;
     using DeltaX.RealTime.Interfaces;
     using System;
-    using System.Text.Json;
-    using System.Text.RegularExpressions;
 
     public class RtTagBinaryDataParser : RtTagDecoratorBase, IRtTag
     {

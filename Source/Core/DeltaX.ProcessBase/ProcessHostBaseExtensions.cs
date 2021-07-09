@@ -75,7 +75,8 @@
                 .UseAppConfiguration(jsonFiles)
                 .UseSerilog()
                 .UseWindowsService()
-                .UseContentRoot(ProcessHostBase.ProcessDirectory);
+                .UseContentRoot(ProcessHostBase.ProcessDirectory)
+                .ConfigureServices((_, srv) => srv.AddSingleton<Logging.ILogger>(s => s.GetService<ILoggerFactory>().CreateLogger("")));
         }
     }
 }

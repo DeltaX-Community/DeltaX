@@ -4,8 +4,6 @@
     using Microsoft.Extensions.Configuration;
     using System.Collections.Concurrent;
     using DeltaX.ActivatorFactory;
-    using System.Diagnostics;
-    using System;
     using DeltaX.CommonExtensions;
 
     public class DatabaseManager 
@@ -23,7 +21,7 @@
 
         public IDatabaseBase GetDatabase(string connectionFactory)
         {
-            connectionFactory.AssertArgumentNull(nameof(connectionFactory));
+            Assert.IsNotNull(connectionFactory, nameof(connectionFactory));
 
             if (!databases.TryGetValue(connectionFactory, out _))
             {

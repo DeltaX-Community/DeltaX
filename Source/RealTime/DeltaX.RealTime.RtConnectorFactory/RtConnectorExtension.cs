@@ -5,9 +5,9 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
-    public static class RtConnectorServiceExtension
+    public static class RtConnectorExtension
     {
-        public static IHostBuilder UseRtConnectorService(this IHostBuilder builder, string sectionName = "RealTimeConnectorSectionName")
+        public static IHostBuilder UseRtConnector(this IHostBuilder builder, string realTimeConnectorSectionName = "RealTimeConnectorSectionName")
         { 
             return builder.ConfigureServices((hostContext, services) =>
             {
@@ -15,7 +15,7 @@
                 services.AddSingleton<IRtConnector>(serv =>
                 {
                     var connFactory = serv.GetService<RtConnectorFactory>(); 
-                    var conn = connFactory.GetConnector(hostContext.Configuration.GetValue<string>(sectionName));
+                    var conn = connFactory.GetConnector(hostContext.Configuration.GetValue<string>(realTimeConnectorSectionName));
                     conn.ConnectAsync();
                     return conn;
                 });

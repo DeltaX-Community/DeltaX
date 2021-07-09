@@ -1,4 +1,4 @@
-﻿{
+{
 
   "ShiftConnectionMySql": {
     "Type": "MySqlConnector.dll; MySqlConnector.MySqlConnection",
@@ -26,7 +26,7 @@
 
         "Shifts": [
           {
-            "Name": "Mañana",
+            "Name": "Ma�ana",
             "Start": "04:00:00",
             "End": "12:00:00"
           },
@@ -62,7 +62,7 @@
         "CrewPatterns": [
           {
             "Crew": "C",
-            "Shift": "Mañana",
+            "Shift": "Ma�ana",
             "Day": 1
           },
           {
@@ -77,7 +77,7 @@
           },
           {
             "Crew": "C",
-            "Shift": "Mañana",
+            "Shift": "Ma�ana",
             "Day": 2
           },
           {
@@ -92,7 +92,7 @@
           },
           {
             "Crew": "C",
-            "Shift": "Mañana",
+            "Shift": "Ma�ana",
             "Day": 3
           },
           {
@@ -107,7 +107,7 @@
           },
           {
             "Crew": "C",
-            "Shift": "Mañana",
+            "Shift": "Ma�ana",
             "Day": 4
           },
           {
@@ -122,7 +122,7 @@
           },
           {
             "Crew": "C",
-            "Shift": "Mañana",
+            "Shift": "Ma�ana",
             "Day": 5
           },
           {
@@ -137,7 +137,7 @@
           },
           {
             "Crew": "C",
-            "Shift": "Mañana",
+            "Shift": "Ma�ana",
             "Day": 6
           },
           {
@@ -152,7 +152,7 @@
           },
           {
             "Crew": null,
-            "Shift": "Mañana",
+            "Shift": "Ma�ana",
             "Day": 7
           },
           {
@@ -178,8 +178,8 @@
     "RealTimeHistoryBasePath": "http://127.0.0.1:5010",
     "UseSwagger": true
   },
-  "RtWebSocketBridge": {
-    "RtWebSocketRefreshIntervalMs": 352
+  "RealTimeRpcWebSocketBridge": {
+    "RtWebSocketRefreshIntervalMs": 250
   },
   "MqttConnector": {
     "ExtraTopicsSbscribe": [
