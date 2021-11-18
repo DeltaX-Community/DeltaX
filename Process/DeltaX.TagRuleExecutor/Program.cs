@@ -7,14 +7,12 @@ using Microsoft.Extensions.Hosting;
 
 Host.CreateDefaultBuilder(args) 
     .UseDefaultHostBuilder(args)
+    .UseRtConnector()
     .ConfigureServices((hostContext, services) =>
     {
-        services.AddHostedService<WorkerService>();
-
-        services.AddSingleton<ProcessInfoStatistics>();
-        services.AddSingleton<RtConnectorFactory>();
-        services.AddSingleton<TagRuleChangeExecutorService>();
-        services.AddSingleton<IRtConnector>(services => services.GetService<RtConnectorFactory>().GetDefaultConnector());
+        services.AddHostedService<WorkerService>(); 
+        services.AddSingleton<ProcessInfoStatistics>(); 
+        services.AddSingleton<TagRuleChangeExecutorService>(); 
 
         services.Configure<TagRuleExecutorConfiguration>(options =>
             hostContext.Configuration.GetSection("TagRuleExecutor").Bind(options));

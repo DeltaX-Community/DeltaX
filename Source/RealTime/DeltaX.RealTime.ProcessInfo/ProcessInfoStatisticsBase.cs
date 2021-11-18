@@ -1,4 +1,5 @@
-﻿using DeltaX.RealTime;
+﻿using DeltaX.CommonExtensions;
+using DeltaX.RealTime;
 using DeltaX.RealTime.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -81,44 +82,46 @@ namespace DeltaX.RealTime.ProcessInfo
                 foreach (var tag in filteredTags)
                 {
                     var value = tag.Info.GetValue(this, null);
+
+                    // Skip set value
                     if ((value == null && tag.PrevValue == null) || Object.Equals(value, tag.PrevValue))
                     {
-                        continue; // Skip set value
+                        continue;
                     }
-                    bool res = false;
+
+                    tag.PrevValue = value;
+
 
                     if (value == null)
                     {
-                        res = tag.Tag.SetText(string.Empty);
+                        tag.Tag.SetText(string.Empty);
                     }
                     else if (value is string str)
                     {
-                        res = tag.Tag.SetText(str);
+                        tag.Tag.SetText(str);
+                    }
+                    else if (value.IsNumericType() || value is bool)
+                    {
+                        tag.Tag.SetNumeric(Convert.ToDouble(value));
                     }
                     else if (value is byte[] bry)
                     {
-                        res = tag.Tag.SetBinary(bry);
+                        tag.Tag.SetBinary(bry);
                     }
                     else if (value is DateTimeOffset dt)
                     {
-                        res = tag.Tag.SetDateTime(dt);
+                        tag.Tag.SetDateTime(dt);
                     }
                     else
                     {
                         try
                         {
-                            var val = (double)value;
-                            res = tag.Tag.SetNumeric(val);
+                            tag.Tag.SetJson(value);
                         }
                         catch
                         {
-                            res = tag.Tag.SetText(value.ToString());
+                            tag.Tag.SetText(value.ToString());
                         }
-                    }
-
-                    if (res)
-                    {
-                        tag.PrevValue = value;
                     }
                 }
             });

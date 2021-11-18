@@ -26,7 +26,8 @@
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtBase\DeltaX.RealTime.RtBase.csproj" />
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtConnectorFactory\DeltaX.RealTime.RtConnectorFactory.csproj" />
     <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExpression\DeltaX.RealTime.RtExpression.csproj" />
-    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExtension\DeltaX.RealTime.RtExtension.csproj" /> 
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtExtension\DeltaX.RealTime.RtExtension.csproj" />
+    <ProjectReference Include="..\..\Source\RealTime\DeltaX.RealTime.RtMemoryMapped\DeltaX.RealTime.RtMemoryMapped.csproj" /> 
   </ItemGroup>
 
   <ItemGroup>
